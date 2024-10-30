@@ -1,4 +1,4 @@
-# MiTech Engine
+# SourceTech Engine
 
 <a href="https://discord.com/invite/TZubjHHKty"><img src="https://img.shields.io/discord/1145198169441960067?color=7289da&logo=discord&logoColor=white" alt="QS Discord" /></a>
 
@@ -20,7 +20,7 @@ This is a modern engine created for Quake Sandbox.
 * Non-intrusive support for SDL2 backend (video, audio, input), selectable at compile time
 * Tons of bug fixes and other improvements
 
-**MiTech features**:
+**SourceTech features**:
 
 * Brush limit up to 524288
 * Entity limit up to 4096
@@ -38,10 +38,9 @@ This is a modern engine created for Quake Sandbox.
 * Seamless change of QVM
 * Improved lighting (high resolution lightmaps and post-processing)
 * Render distance for entity (server-side)
-* MGui (MiTech GUI) interface system with QVM and map integration
+* MGui interface system with QVM and map integration
 * Vehicles and additional properties of the entity
 * Support huge size maps up to 4GB
-* Android support
 
 ## Vulkan renderer
 
