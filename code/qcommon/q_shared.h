@@ -28,12 +28,12 @@ Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 
 #define	STANDALONE				1
 
-#define Q3_VERSION            "MiTech 5.0"
+#define Q3_VERSION            "SourceTech 1.0"
 #ifndef SVN_VERSION
   #define SVN_VERSION Q3_VERSION
 #endif
-#define CLIENT_WINDOW_TITLE   "MiTech: Engine"
-#define CONSOLE_WINDOW_TITLE  "MiTech: Console"
+#define CLIENT_WINDOW_TITLE   "SourceTech: Engine"
+#define CONSOLE_WINDOW_TITLE  "SourceTech: Console"
 // 1.32 released 7-10-2002
 
 //#define DEFAULT_GAME			"edawn"
@@ -41,7 +41,7 @@ Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 #define BASEGAME				"milab"
 #define BASEDEMO				"milabt"
 #define BASETA					"milabc"
-#define STEAMPATH_NAME			"mitech"
+#define STEAMPATH_NAME			"SourceTech"
 #define STEAMPATH_APPID			"2200"
 
 #define MAX_TEAMNAME            32
