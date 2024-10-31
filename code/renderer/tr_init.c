@@ -1565,11 +1565,11 @@ static void R_Register( void )
 	r_dlightScale = ri.Cvar_Get( "r_dlightScale", "1.0", CVAR_ARCHIVE_ND );
 	ri.Cvar_CheckRange( r_dlightScale, "0.1", "1", CV_FLOAT );
 	ri.Cvar_SetDescription( r_dlightScale, "Scales dynamic light radius." );
-	r_dlightSpecPower = ri.Cvar_Get( "r_dlightSpecPower", "6", CVAR_ARCHIVE_ND );
+	r_dlightSpecPower = ri.Cvar_Get( "r_dlightSpecPower", "2", CVAR_ARCHIVE_ND );
 	ri.Cvar_CheckRange( r_dlightSpecPower, "1", "32", CV_FLOAT );
 	ri.Cvar_SetDescription( r_dlightSpecPower, "Factors specularity effect from dynamic lights on surfaces." );
 	ri.Cvar_SetGroup( r_dlightSpecPower, CVG_RENDERER );
-	r_dlightSpecColor = ri.Cvar_Get( "r_dlightSpecColor", "0.0", CVAR_ARCHIVE_ND );
+	r_dlightSpecColor = ri.Cvar_Get( "r_dlightSpecColor", "-1.0", CVAR_ARCHIVE_ND );
 	ri.Cvar_CheckRange( r_dlightSpecColor, "-1", "1", CV_FLOAT );
 	ri.Cvar_SetDescription( r_dlightSpecColor, "Color base for specular component:\n <= 0: use current texture and modulate by abs(r_dlightSpecColor)\n > 0: use constant color with RGB components set to \\r_dlightSpecColor" );
 	ri.Cvar_SetGroup( r_dlightSpecColor, CVG_RENDERER );
