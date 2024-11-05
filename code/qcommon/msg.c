@@ -289,9 +289,9 @@ void MSG_WriteString( msg_t *sb, const char *s ) {
 	}
 
 	for ( i = 0 ; i < l; i++ ) {
-		// get rid of 0x80+ and '%' chars, because old clients don't like them
-		if ( s[i] & 0x80 || s[i] == '%' )
-			v = '.';
+		// get rid of 0x80+, because old clients don't like them
+		if ( s[i] & 0x80 )
+			v = s[i] - 0x80;
 		else
 			v = s[i];
 		MSG_WriteChar( sb, v );
@@ -311,9 +311,9 @@ void MSG_WriteBigString( msg_t *sb, const char *s ) {
 	}
 
 	for ( i = 0 ; i < l ; i++ ) {
-		// get rid of 0x80+ and '%' chars, because old clients don't like them
-		if ( s[i] & 0x80 || s[i] == '%' )
-			v = '.';
+		// get rid of 0x80+, because old clients don't like them
+		if ( s[i] & 0x80 )
+			v = s[i] - 0x80;
 		else
 			v = s[i];
 		MSG_WriteChar( sb, v );
@@ -403,13 +403,9 @@ const char *MSG_ReadString( msg_t *msg ) {
 		if ( c <= 0 /*c == -1 || c == 0 */ || l >= sizeof(string)-1 ) {
 			break;
 		}
-		// translate all fmt spec to avoid crash bugs
-		if ( c == '%' ) {
-			c = '.';
-		} else
 		// don't allow higher ascii values
 		if ( c > 127 ) {
-			c = '.';
+			c -= 0x80;
 		}
 		string[ l++ ] = c;
 	} while ( qtrue );
@@ -430,13 +426,9 @@ const char *MSG_ReadBigString( msg_t *msg ) {
 		if ( c <= 0 /*c == -1 || c == 0*/ || l >= sizeof(string)-1 ) {
 			break;
 		}
-		// translate all fmt spec to avoid crash bugs
-		if ( c == '%' ) {
-			c = '.';
-		} else
 		// don't allow higher ascii values
 		if ( c > 127 ) {
-			c = '.';
+			c -= 0x80;
 		}
 		string[ l++ ] = c;
 	} while ( qtrue );
@@ -457,13 +449,9 @@ const char *MSG_ReadStringLine( msg_t *msg ) {
 		if ( c <= 0 /*c == -1 || c == 0*/ || c == '\n' || l >= sizeof(string)-1 ) {
 			break;
 		}
-		// translate all fmt spec to avoid crash bugs
-		if ( c == '%' ) {
-			c = '.';
-		} else
 		// don't allow higher ascii values
 		if ( c > 127 ) {
-			c = '.';
+			c -= 0x80;
 		}
 		string[ l++ ] = c;
 	} while ( qtrue );
@@ -506,8 +494,8 @@ int MSG_HashKey(const char *string, int maxlen) {
 
 	hash = 0;
 	for (i = 0; i < maxlen && string[i] != '\0'; i++) {
-		if (string[i] & 0x80 || string[i] == '%')
-			hash += '.' * (119 + i);
+		if (string[i] & 0x80)
+			hash += (string[i]-0x80) * (119 + i);
 		else
 			hash += string[i] * (119 + i);
 	}
