@@ -134,7 +134,7 @@ static void SCR_DrawChar( int x, int y, float size, int ch ) {
 	}
 
 	// Unicode Russian support
-	if (ch < 0x80) {
+	if (ch > 0x80) {
 		ch += 48;
 	}
 
@@ -178,7 +178,7 @@ void SCR_DrawSmallChar( int x, int y, int ch ) {
 	}
 
 	// Unicode Russian support
-	if (ch < 0x80) {
+	if (ch > 0x80) {
 		ch += 48;
 	}
 
