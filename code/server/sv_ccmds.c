@@ -279,10 +279,10 @@ static void SV_MapRestart_f( void ) {
 		if(sv_maxclients->modified){
 		Com_Printf( "variable sv_maxclients change -- restarting.\n" );
 		}
-		if(sv_maxclients->modified){
+		if(sv_gametype->modified){
 		Com_Printf( "variable sv_gametype change -- restarting.\n" );
 		}
-		if(sv_maxclients->modified){
+		if(sv_pure->modified){
 		Com_Printf( "variable sv_pure change -- restarting.\n" );
 		}
 		// restart the map the slow way
