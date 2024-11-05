@@ -133,11 +133,6 @@ static void SCR_DrawChar( int x, int y, float size, int ch ) {
 		return;
 	}
 
-	// Unicode Russian support
-	if (ch > 0x80) {
-		ch = ch - 0x80; // -128 offset of damn unicode
-	}
-
 	ax = x;
 	ay = y;
 	aw = size;
@@ -175,11 +170,6 @@ void SCR_DrawSmallChar( int x, int y, int ch ) {
 
 	if ( y < -smallchar_height ) {
 		return;
-	}
-
-	// Unicode Russian support
-	if (ch > 0x80) {
-		ch = ch - 0x80; // -128 offset of damn unicode
 	}
 
 	row = ch>>4;
