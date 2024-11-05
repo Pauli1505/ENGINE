@@ -70,7 +70,7 @@ static void CL_Netchan_Encode( msg_t *msg ) {
 		if (!string[index])
 			index = 0;
 		if (string[index] > 127) {
-			key ^= (string[index]-0x80+64) << (i & 1);
+			key ^= (string[index]+0xB0) << (i & 1);
 		}
 		else {
 			key ^= string[index] << (i & 1);
@@ -118,7 +118,7 @@ static void CL_Netchan_Decode( msg_t *msg ) {
 		if (!string[index])
 			index = 0;
 		if (string[index] > 127) {
-			key ^= (string[index]-0x80+64) << (i & 1);
+			key ^= (string[index]+0xB0) << (i & 1);
 		}
 		else {
 			key ^= string[index] << (i & 1);
