@@ -1195,9 +1195,9 @@ void HandleEvents( void )
 
 						if( utf32 != 0 )
 						{
-							// Add an offset of 176 for russian
+							// Add an offset of -128 for russian
 							if(key == 0x00){
-							utf32 += 176;
+							utf32 -= 128;
 							}
 							if ( IN_IsConsoleKey( 0, utf32 ) )
 							{
