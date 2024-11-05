@@ -1450,8 +1450,6 @@ typedef enum _flag_status {
 } flagStatus_t;
 
 
-#define UNICODEOFFSET cl_unicodeoffset->integer
-
 #define	MAX_GLOBAL_SERVERS				4096
 #define	MAX_OTHER_SERVERS					128
 #define MAX_PINGREQUESTS					32
