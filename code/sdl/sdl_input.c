@@ -1160,7 +1160,7 @@ void HandleEvents( void )
 				{
 					char *c = e.text.text;
 
-					key = IN_TranslateSDLToQ3Key( &e.key.keysym, qtrue );
+					key = IN_TranslateSDLToQ3Key( &e.key.keysym, qfalse );
 
 					// Quick and dirty UTF-8 to UTF-32 conversion
 					while ( *c )
@@ -1195,8 +1195,10 @@ void HandleEvents( void )
 
 						if( utf32 != 0 )
 						{
-							// Add an offset of 176 for russian keys
-							//utf32 += 176;
+							// Add an offset of 176 for russian
+							if(key == 0x00){
+							utf32 += 176;
+							}
 							if ( IN_IsConsoleKey( 0, utf32 ) )
 							{
 								Com_QueueEvent( in_eventTime, SE_KEY, K_CONSOLE, qtrue, 0, NULL );
