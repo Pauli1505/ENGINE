@@ -178,25 +178,8 @@ void SCR_DrawSmallChar( int x, int y, int ch ) {
 	}
 
 	// Unicode Russian support
-	if (ch < 0) {
-		static int prev_unicode = 0;
-
-		if ((ch == -48) || (ch == -47)) {
-			prev_unicode = ch;
-		}
-		if (ch >= -112) {
-			if ((ch == -111) && (prev_unicode == -47)) {
-				ch = ch - 13;
-			} else {
-				ch = ch + 48;
-			}
-		} else {
-			if ((ch == -127) && (prev_unicode == -48)) {
-				// ch = ch +
-			} else {
-				ch = ch + 112; // +64 offset of damn unicode
-			}
-		}
+	if (ch > 0x80) {
+		ch = ch - 0x80; // -128 offset of damn unicode
 	}
 
 	row = ch>>4;
