@@ -197,64 +197,6 @@ static qboolean IN_IsConsoleKey( keyNum_t key, int character )
 	return qfalse;
 }
 
-keyNum_t RusToEngBinds(keyNum_t key) {
-    switch (key) {
-        case 145: return 102;   // 'F'
-        case 146: return 100;   // 'D'
-        case 147: return 117;   // 'U'
-        case 148: return 108;   // 'L'
-        case 149: return 116;   // 'T'
-        case 150: return 112;   // 'P'
-        case 151: return 98;    // 'B'
-        case 152: return 113;   // 'Q'
-        case 153: return 114;   // 'R'
-        case 154: return 107;   // 'K'
-        case 155: return 118;   // 'V'
-        case 156: return 121;   // 'Y'
-        case 157: return 106;   // 'J'
-        case 158: return 103;   // 'G'
-        case 159: return 104;   // 'H'
-        case 160: return 99;    // 'C'
-        case 161: return 110;   // 'N'
-        case 162: return 101;   // 'E'
-        case 163: return 97;    // 'A'
-        case 164: return 119;   // 'W'
-        case 165: return 120;   // 'X'
-        case 166: return 105;   // 'I'
-        case 167: return 111;   // 'O'
-        case 168: return 115;   // 'S'
-        case 169: return 109;   // 'M'
-        case 170: return 122;   // 'Z'
-        
-        case 177: return 102;  // 'f'
-        case 178: return 100;  // 'd'
-        case 179: return 117;  // 'u'
-        case 180: return 108;  // 'l'
-        case 181: return 116;  // 't'
-        case 182: return 112;  // 'p'
-        case 183: return 98;   // 'b'
-        case 184: return 113;  // 'q'
-        case 185: return 114;  // 'r'
-        case 186: return 107;  // 'k'
-        case 187: return 118;  // 'v'
-        case 188: return 121;  // 'y'
-        case 189: return 106;  // 'j'
-        case 190: return 103;  // 'g'
-        case 191: return 104;  // 'h'
-        case 192: return 99;   // 'c'
-        case 193: return 110;  // 'n'
-        case 194: return 101;  // 'e'
-        case 195: return 97;   // 'a'
-        case 196: return 119;  // 'w'
-        case 197: return 120;  // 'x'
-        case 198: return 105;  // 'i'
-        case 199: return 111;  // 'o'
-        case 200: return 115;  // 's'
-        case 201: return 109;  // 'm'
-        case 202: return 122;  // 'z'
-        default: return 0; // Если символ не распознан, вернуть его без изменений
-    }
-}
 
 /*
 ===============
@@ -392,7 +334,19 @@ static keyNum_t IN_TranslateSDLToQ3Key( SDL_Keysym *keysym, qboolean down )
 			case SDLK_CAPSLOCK:     key = K_CAPSLOCK;      break;
 
 			default:
-				key = RusToEngBinds(key);
+#if 1
+				key = 0;
+#else
+				if( !( keysym->sym & SDLK_SCANCODE_MASK ) && keysym->scancode <= 95 )
+				{
+					// Map Unicode characters to 95 world keys using the key's scan code.
+					// FIXME: There aren't enough world keys to cover all the scancodes.
+					// Maybe create a map of scancode to quake key at start up and on
+					// key map change; allocate world key numbers as needed similar
+					// to SDL 1.2.
+					key = K_WORLD_0 + (int)keysym->scancode;
+				}
+#endif
 				break;
 		}
 	}
@@ -1189,112 +1143,14 @@ void HandleEvents( void )
 						Com_QueueEvent( in_eventTime, SE_CHAR, key, 0, 0, NULL );
 					else if( keys[K_CTRL].down && key >= 'a' && key <= 'z' )
 						Com_QueueEvent( in_eventTime, SE_CHAR, CTRL(key), 0, 0, NULL );
-				} else {
-					char *c = e.text.text;
-					// Quick and dirty UTF-8 to UTF-32 conversion
-					while ( *c )
-					{
-						int utf32 = 0;
-
-						if( ( *c & 0x80 ) == 0 )
-							utf32 = *c++;
-						else if( ( *c & 0xE0 ) == 0xC0 ) // 110x xxxx
-						{
-							utf32 |= ( *c++ & 0x1F ) << 6;
-							utf32 |= ( *c++ & 0x3F );
-						}
-						else if( ( *c & 0xF0 ) == 0xE0 ) // 1110 xxxx
-						{
-							utf32 |= ( *c++ & 0x0F ) << 12;
-							utf32 |= ( *c++ & 0x3F ) << 6;
-							utf32 |= ( *c++ & 0x3F );
-						}
-						else if( ( *c & 0xF8 ) == 0xF0 ) // 1111 0xxx
-						{
-							utf32 |= ( *c++ & 0x07 ) << 18;
-							utf32 |= ( *c++ & 0x3F ) << 12;
-							utf32 |= ( *c++ & 0x3F ) << 6;
-							utf32 |= ( *c++ & 0x3F );
-						}
-						else
-						{
-							Com_DPrintf( "Unrecognised UTF-8 lead byte: 0x%x\n", (unsigned int)*c );
-							c++;
-						}
-
-						if( utf32 != 0 )
-						{
-							if ( IN_IsConsoleKey( 0, utf32 ) ) {
-								Com_QueueEvent( in_eventTime, SE_KEY, K_CONSOLE, qtrue, 0, NULL );
-								Com_QueueEvent( in_eventTime, SE_KEY, K_CONSOLE, qfalse, 0, NULL );
-							} else {
-								// Add an offset of -0x80 for russian
-								if(key == 0x00){
-								utf32 -= 0x80;
-								}
-								utf32 = RusToEngBinds(utf32);
-								Com_QueueEvent( in_eventTime, SE_KEY, utf32, qtrue, 0, NULL );
-							}
-						}
-					}
 				}
 
 				lastKeyDown = key;
 				break;
 
 			case SDL_KEYUP:
-				key = IN_TranslateSDLToQ3Key( &e.key.keysym, qfalse );
-				if ( key ) {
+				if( ( key = IN_TranslateSDLToQ3Key( &e.key.keysym, qfalse ) ) )
 					Com_QueueEvent( in_eventTime, SE_KEY, key, qfalse, 0, NULL );
-				} else {
-					char *c = e.text.text;
-					// Quick and dirty UTF-8 to UTF-32 conversion
-					while ( *c )
-					{
-						int utf32 = 0;
-
-						if( ( *c & 0x80 ) == 0 )
-							utf32 = *c++;
-						else if( ( *c & 0xE0 ) == 0xC0 ) // 110x xxxx
-						{
-							utf32 |= ( *c++ & 0x1F ) << 6;
-							utf32 |= ( *c++ & 0x3F );
-						}
-						else if( ( *c & 0xF0 ) == 0xE0 ) // 1110 xxxx
-						{
-							utf32 |= ( *c++ & 0x0F ) << 12;
-							utf32 |= ( *c++ & 0x3F ) << 6;
-							utf32 |= ( *c++ & 0x3F );
-						}
-						else if( ( *c & 0xF8 ) == 0xF0 ) // 1111 0xxx
-						{
-							utf32 |= ( *c++ & 0x07 ) << 18;
-							utf32 |= ( *c++ & 0x3F ) << 12;
-							utf32 |= ( *c++ & 0x3F ) << 6;
-							utf32 |= ( *c++ & 0x3F );
-						}
-						else
-						{
-							Com_DPrintf( "Unrecognised UTF-8 lead byte: 0x%x\n", (unsigned int)*c );
-							c++;
-						}
-
-						if( utf32 != 0 )
-						{
-							if ( IN_IsConsoleKey( 0, utf32 ) ) {
-								Com_QueueEvent( in_eventTime, SE_KEY, K_CONSOLE, qtrue, 0, NULL );
-								Com_QueueEvent( in_eventTime, SE_KEY, K_CONSOLE, qfalse, 0, NULL );
-							} else {
-								// Add an offset of -0x80 for russian
-								if(key == 0x00){
-								utf32 -= 0x80;
-								}
-								utf32 = RusToEngBinds(utf32);
-								Com_QueueEvent( in_eventTime, SE_KEY, utf32, qfalse, 0, NULL );
-							}
-						}
-					}
-				}
 
 				lastKeyDown = 0;
 				break;
@@ -1345,7 +1201,7 @@ void HandleEvents( void )
 							} else {
 								// Add an offset of -0x80 for russian
 								if(key == 0x00){
-								utf32 -= 0x80;
+									utf32 -= 0x80;
 								}
 								Com_QueueEvent( in_eventTime, SE_CHAR, utf32, 0, 0, NULL );
 							}
