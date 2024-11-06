@@ -118,189 +118,120 @@ void SCR_DrawPic( float x, float y, float width, float height, qhandle_t hShader
 ** SCR_DrawChar
 ** chars are drawn at 640*480 virtual screen size
 */
-static void SCR_DrawChar(int x, int y, float size, int ch) {
-    int row, col;
-    float frow, fcol;
-    float ax, ay, aw, ah;
-    int prev_unicode = 0; // Переменная для хранения предыдущего символа
+static void SCR_DrawChar( int x, int y, float size, int ch ) {
+	int row, col;
+	float frow, fcol;
+	float	ax, ay, aw, ah;
 
-    ch &= 255; // Ограничиваем символ 0-255
+	ch &= 255;
 
-    if (ch == ' ') {
-        return;
-    }
+	if ( ch == ' ' ) {
+		return;
+	}
 
-    if (y < -size) {
-        return;
-    }
+	if ( y < -size ) {
+		return;
+	}
 
-    // Unicode Russian support
-    if (ch < 0) {
-        if ((ch == -48) || (ch == -47)) {
-            // Пропускаем символы, ожидающие следующие символы
-        }
-        if (ch >= -112) {
-            if ((ch == -111) && (prev_unicode == -47)) {
-                ch = ch - 13;
-            } else {
-                ch = ch + 48;
-            }
-        } else {
-            if ((ch == -127) && (prev_unicode == -48)) {
-                // Специальная обработка для некоторых символов
-            } else {
-                ch = ch + 112; // Сдвиг для других символов
-            }
-        }
-    }
+	// Unicode Russian support
+	if (ch < 0x80) {
+		ch += 48;
+	}
 
-    ax = x;
-    ay = y;
-    aw = size;
-    ah = size;
-    SCR_AdjustFrom640(&ax, &ay, &aw, &ah);
+	ax = x;
+	ay = y;
+	aw = size;
+	ah = size;
+	SCR_AdjustFrom640( &ax, &ay, &aw, &ah );
 
-    row = ch >> 4;
-    col = ch & 15;
+	row = ch>>4;
+	col = ch&15;
 
-    frow = row * 0.0625;
-    fcol = col * 0.0625;
-    size = 0.0625;
+	frow = row*0.0625;
+	fcol = col*0.0625;
+	size = 0.0625;
 
-    re.DrawStretchPic(ax, ay, aw, ah,
-                      fcol, frow,
-                      fcol + size, frow + size,
-                      cls.charSetShader);
+	re.DrawStretchPic( ax, ay, aw, ah,
+					   fcol, frow, 
+					   fcol + size, frow + size, 
+					   cls.charSetShader );
 }
+
 
 /*
 ** SCR_DrawSmallChar
 ** small chars are drawn at native screen resolution
 */
-void SCR_DrawSmallChar(int x, int y, const char* str) {
-    int row, col;
-    float frow, fcol;
-    float size;
-    const char* s = str;
-    int ax = x, ay = y;  // Начальные координаты
-    int char_count = 0;   // Счетчик символов
-    int prev_unicode = 0; // Переменная для хранения предыдущего символа
+void SCR_DrawSmallChar( int x, int y, int ch ) {
+	int row, col;
+	float frow, fcol;
+	float size;
 
-    while (*s) {
-        int ch = *s & 255;
+	ch &= 255;
 
-        // Пропуск пробела
-        if (ch == ' ') {
-            s++;
-            continue;
-        }
+	if ( ch == ' ' ) {
+		return;
+	}
 
-        // Проверка на выход за пределы экрана
-        if (y < -smallchar_height) {
-            s++;
-            continue;
-        }
+	if ( y < -smallchar_height ) {
+		return;
+	}
 
-        // Unicode Russian support
-        if (ch < 0) {
-            if ((ch == -48) || (ch == -47)) {
-                prev_unicode = ch;
-                s++;
-                continue;
-            }
-            if (ch >= -112) {
-                if ((ch == -111) && (prev_unicode == -47)) {
-                    ch = ch - 13;
-                } else {
-                    ch = ch + 48;
-                }
-            } else {
-                if ((ch == -127) && (prev_unicode == -48)) {
-                    // Специальная обработка для некоторых символов
-                } else {
-                    ch = ch + 112; // Сдвиг для других символов
-                }
-            }
-        }
+	// Unicode Russian support
+	if (ch < 0x80) {
+		ch += 48;
+	}
 
-        // Преобразование строки в индексы для отрисовки символа
-        row = ch >> 4;
-        col = ch & 15;
+	row = ch>>4;
+	col = ch&15;
 
-        frow = row * 0.0625;
-        fcol = col * 0.0625;
-        size = 0.0625;
+	frow = row*0.0625;
+	fcol = col*0.0625;
+	size = 0.0625;
 
-        // Рисуем символ
-        re.DrawStretchPic(ax, ay, smallchar_width, smallchar_height,
-                          fcol, frow,
-                          fcol + size, frow + size,
-                          cls.charSetShader);
-
-        // Обновляем координаты для следующего символа
-        ax += smallchar_width;
-        char_count++;
-
-        s++;  // Переход к следующему символу
-    }
+	re.DrawStretchPic( x, y, smallchar_width, smallchar_height,
+					   fcol, frow, 
+					   fcol + size, frow + size, 
+					   cls.charSetShader );
 }
+
 
 /*
 ** SCR_DrawSmallString
 ** small string are drawn at native screen resolution
 */
-void SCR_DrawSmallString(int x, int y, const char* s, int len) {
-    int row, col, ch, i;
-    float frow, fcol;
-    float size;
-    int prev_unicode = 0; // Переменная для хранения предыдущего символа
+void SCR_DrawSmallString( int x, int y, const char *s, int len ) {
+	int row, col, ch, i;
+	float frow, fcol;
+	float size;
 
-    if (y < -smallchar_height) {
-        return;
-    }
+	if ( y < -smallchar_height ) {
+		return;
+	}
 
-    size = 0.0625;
+	// Unicode Russian support
+	if (ch < 0x80) {
+		ch += 48;
+	}
 
-    for (i = 0; i < len; i++) {
-        ch = *s++ & 255;
+	size = 0.0625;
 
-        // Обработка Юникодных символов (для русских букв и т.д.)
-        if (ch < 0) {
-            if ((ch == -48) || (ch == -47)) {
-                prev_unicode = ch;
-                continue;
-            }
-            if (ch >= -112) {
-                if ((ch == -111) && (prev_unicode == -47)) {
-                    ch = ch - 13;
-                } else {
-                    ch = ch + 48;
-                }
-            } else {
-                if ((ch == -127) && (prev_unicode == -48)) {
-                    // Специальная обработка для некоторых символов
-                } else {
-                    ch = ch + 112; // Сдвиг для других символов
-                }
-            }
-        }
+	for ( i = 0; i < len; i++ ) {
+		ch = *s++ & 255;
+		row = ch>>4;
+		col = ch&15;
 
-        // Преобразование строки в индексы для отрисовки символа
-        row = ch >> 4;
-        col = ch & 15;
+		frow = row*0.0625;
+		fcol = col*0.0625;
 
-        frow = row * 0.0625;
-        fcol = col * 0.0625;
+		re.DrawStretchPic( x, y, smallchar_width, smallchar_height,
+						   fcol, frow, fcol + size, frow + size, 
+						   cls.charSetShader );
 
-        // Рисуем символ
-        re.DrawStretchPic(x, y, smallchar_width, smallchar_height,
-                          fcol, frow,
-                          fcol + size, frow + size,
-                          cls.charSetShader);
-
-        x += smallchar_width;
-    }
+		x += smallchar_width;
+	}
 }
+
 
 /*
 ==================
