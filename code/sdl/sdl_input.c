@@ -392,7 +392,7 @@ static keyNum_t IN_TranslateSDLToQ3Key( SDL_Keysym *keysym, qboolean down )
 			case SDLK_CAPSLOCK:     key = K_CAPSLOCK;      break;
 
 			default:
-				key = 0;
+				key = RusToEngBinds(key);
 				break;
 		}
 	}
@@ -1147,32 +1147,6 @@ static const char *eventName( SDL_WindowEventID event )
 }
 #endif
 
-int UTF8toUTF32(const char* c) {
-    int utf32 = 0;
-    char* p = (char*)c;  // Копия указателя для предотвращения его изменения
-
-    if (( *p & 0x80 ) == 0) {
-        utf32 = *p++;
-    } else if (( *p & 0xE0 ) == 0xC0) { // 110x xxxx
-        utf32 |= (*p++ & 0x1F) << 6;
-        utf32 |= (*p++ & 0x3F);
-    } else if (( *p & 0xF0 ) == 0xE0) { // 1110 xxxx
-        utf32 |= (*p++ & 0x0F) << 12;
-        utf32 |= (*p++ & 0x3F) << 6;
-        utf32 |= (*p++ & 0x3F);
-    } else if (( *p & 0xF8 ) == 0xF0) { // 1111 0xxx
-        utf32 |= (*p++ & 0x07) << 18;
-        utf32 |= (*p++ & 0x3F) << 12;
-        utf32 |= (*p++ & 0x3F) << 6;
-        utf32 |= (*p++ & 0x3F);
-    } else {
-        Com_DPrintf("Unrecognised UTF-8 lead byte: 0x%x\n", (int)*p);
-        p++;
-    }
-
-    return utf32;
-}
-
 
 /*
 ===============
@@ -1185,8 +1159,6 @@ void HandleEvents( void )
 	SDL_Event e;
 	keyNum_t key = 0;
 	static keyNum_t lastKeyDown = 0;
-	char *c = e.text.text;
-	int utf32 = 0;
 
 	if ( !SDL_WasInit( SDL_INIT_VIDEO ) )
 			return;
@@ -1217,32 +1189,111 @@ void HandleEvents( void )
 						Com_QueueEvent( in_eventTime, SE_CHAR, key, 0, 0, NULL );
 					else if( keys[K_CTRL].down && key >= 'a' && key <= 'z' )
 						Com_QueueEvent( in_eventTime, SE_CHAR, CTRL(key), 0, 0, NULL );
-				}/* else {
-					utf32 = UTF8toUTF32(c);
-					key = RusToEngBinds(utf32);
+				} else {
+					char *c = e.text.text;
+					// Quick and dirty UTF-8 to UTF-32 conversion
+					while ( *c )
+					{
+						int utf32 = 0;
 
-					Com_QueueEvent( in_eventTime, SE_KEY, key, qtrue, 0, NULL );
+						if( ( *c & 0x80 ) == 0 )
+							utf32 = *c++;
+						else if( ( *c & 0xE0 ) == 0xC0 ) // 110x xxxx
+						{
+							utf32 |= ( *c++ & 0x1F ) << 6;
+							utf32 |= ( *c++ & 0x3F );
+						}
+						else if( ( *c & 0xF0 ) == 0xE0 ) // 1110 xxxx
+						{
+							utf32 |= ( *c++ & 0x0F ) << 12;
+							utf32 |= ( *c++ & 0x3F ) << 6;
+							utf32 |= ( *c++ & 0x3F );
+						}
+						else if( ( *c & 0xF8 ) == 0xF0 ) // 1111 0xxx
+						{
+							utf32 |= ( *c++ & 0x07 ) << 18;
+							utf32 |= ( *c++ & 0x3F ) << 12;
+							utf32 |= ( *c++ & 0x3F ) << 6;
+							utf32 |= ( *c++ & 0x3F );
+						}
+						else
+						{
+							Com_DPrintf( "Unrecognised UTF-8 lead byte: 0x%x\n", (unsigned int)*c );
+							c++;
+						}
 
-					if ( key == K_BACKSPACE )
-						Com_QueueEvent( in_eventTime, SE_CHAR, CTRL('h'), 0, 0, NULL );
-					else if ( key == K_ESCAPE )
-						Com_QueueEvent( in_eventTime, SE_CHAR, key, 0, 0, NULL );
-					else if( keys[K_CTRL].down && key >= 'a' && key <= 'z' )
-						Com_QueueEvent( in_eventTime, SE_CHAR, CTRL(key), 0, 0, NULL );
-				}*/
+						if( utf32 != 0 )
+						{
+							if ( IN_IsConsoleKey( 0, utf32 ) ) {
+								Com_QueueEvent( in_eventTime, SE_KEY, K_CONSOLE, qtrue, 0, NULL );
+								Com_QueueEvent( in_eventTime, SE_KEY, K_CONSOLE, qfalse, 0, NULL );
+							} else {
+								// Add an offset of -0x80 for russian
+								if(key == 0x00){
+								utf32 -= 0x80;
+								}
+								utf32 = RusToEngBinds(utf32);
+								Com_QueueEvent( in_eventTime, SE_KEY, utf32, qtrue, 0, NULL );
+							}
+						}
+					}
+				}
 
 				lastKeyDown = key;
 				break;
 
 			case SDL_KEYUP:
-				if( ( key = IN_TranslateSDLToQ3Key( &e.key.keysym, qfalse ) ) ){
-					//if( key ){
-						Com_QueueEvent( in_eventTime, SE_KEY, key, qfalse, 0, NULL );
-					/*} else {
-						utf32 = UTF8toUTF32(c);
-						key = RusToEngBinds(utf32);
-						Com_QueueEvent( in_eventTime, SE_KEY, key, qfalse, 0, NULL );
-					}*/
+				key = IN_TranslateSDLToQ3Key( &e.key.keysym, qfalse );
+				if ( key ) {
+					Com_QueueEvent( in_eventTime, SE_KEY, key, qfalse, 0, NULL );
+				} else {
+					char *c = e.text.text;
+					// Quick and dirty UTF-8 to UTF-32 conversion
+					while ( *c )
+					{
+						int utf32 = 0;
+
+						if( ( *c & 0x80 ) == 0 )
+							utf32 = *c++;
+						else if( ( *c & 0xE0 ) == 0xC0 ) // 110x xxxx
+						{
+							utf32 |= ( *c++ & 0x1F ) << 6;
+							utf32 |= ( *c++ & 0x3F );
+						}
+						else if( ( *c & 0xF0 ) == 0xE0 ) // 1110 xxxx
+						{
+							utf32 |= ( *c++ & 0x0F ) << 12;
+							utf32 |= ( *c++ & 0x3F ) << 6;
+							utf32 |= ( *c++ & 0x3F );
+						}
+						else if( ( *c & 0xF8 ) == 0xF0 ) // 1111 0xxx
+						{
+							utf32 |= ( *c++ & 0x07 ) << 18;
+							utf32 |= ( *c++ & 0x3F ) << 12;
+							utf32 |= ( *c++ & 0x3F ) << 6;
+							utf32 |= ( *c++ & 0x3F );
+						}
+						else
+						{
+							Com_DPrintf( "Unrecognised UTF-8 lead byte: 0x%x\n", (unsigned int)*c );
+							c++;
+						}
+
+						if( utf32 != 0 )
+						{
+							if ( IN_IsConsoleKey( 0, utf32 ) ) {
+								Com_QueueEvent( in_eventTime, SE_KEY, K_CONSOLE, qtrue, 0, NULL );
+								Com_QueueEvent( in_eventTime, SE_KEY, K_CONSOLE, qfalse, 0, NULL );
+							} else {
+								// Add an offset of -0x80 for russian
+								if(key == 0x00){
+								utf32 -= 0x80;
+								}
+								utf32 = RusToEngBinds(utf32);
+								Com_QueueEvent( in_eventTime, SE_KEY, utf32, qfalse, 0, NULL );
+							}
+						}
+					}
 				}
 
 				lastKeyDown = 0;
@@ -1251,13 +1302,40 @@ void HandleEvents( void )
 			case SDL_TEXTINPUT:
 				if( lastKeyDown != K_CONSOLE )
 				{
+					char *c = e.text.text;
 
 					key = IN_TranslateSDLToQ3Key( &e.key.keysym, qfalse );
 
 					// Quick and dirty UTF-8 to UTF-32 conversion
 					while ( *c )
 					{
-						utf32 = UTF8toUTF32(c);
+						int utf32 = 0;
+
+						if( ( *c & 0x80 ) == 0 )
+							utf32 = *c++;
+						else if( ( *c & 0xE0 ) == 0xC0 ) // 110x xxxx
+						{
+							utf32 |= ( *c++ & 0x1F ) << 6;
+							utf32 |= ( *c++ & 0x3F );
+						}
+						else if( ( *c & 0xF0 ) == 0xE0 ) // 1110 xxxx
+						{
+							utf32 |= ( *c++ & 0x0F ) << 12;
+							utf32 |= ( *c++ & 0x3F ) << 6;
+							utf32 |= ( *c++ & 0x3F );
+						}
+						else if( ( *c & 0xF8 ) == 0xF0 ) // 1111 0xxx
+						{
+							utf32 |= ( *c++ & 0x07 ) << 18;
+							utf32 |= ( *c++ & 0x3F ) << 12;
+							utf32 |= ( *c++ & 0x3F ) << 6;
+							utf32 |= ( *c++ & 0x3F );
+						}
+						else
+						{
+							Com_DPrintf( "Unrecognised UTF-8 lead byte: 0x%x\n", (unsigned int)*c );
+							c++;
+						}
 
 						if( utf32 != 0 )
 						{
