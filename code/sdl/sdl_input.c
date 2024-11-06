@@ -199,38 +199,59 @@ static qboolean IN_IsConsoleKey( keyNum_t key, int character )
 
 keyNum_t rustoengkey(keyNum_t key) {
     switch (key) {
-        case 145: return 'F'; case 177: return 'f';
-        case 146: return '<'; case 178: return ',';
-        case 147: return 'D'; case 179: return 'd';
-        case 148: return 'U'; case 180: return 'u';
-        case 149: return 'L'; case 181: return 'l';
-        case 150: return 'T'; case 182: return 't';
-        case 151: return '~'; case 183: return '`';
-        case 152: return ':'; case 184: return ';';
-        case 153: return 'P'; case 185: return 'p';
-        case 154: return 'B'; case 186: return 'b';
-        case 155: return 'Q'; case 187: return 'q';
-        case 156: return 'R'; case 188: return 'r';
-        case 157: return 'K'; case 189: return 'k';
-        case 158: return 'V'; case 190: return 'v';
-        case 159: return 'Y'; case 191: return 'y';
-        case 160: return 'J'; case 192: return 'j';
-        case 161: return 'G'; case 193: return 'g';
-        case 162: return 'H'; case 194: return 'h';
-        case 163: return 'C'; case 195: return 'c';
-        case 164: return 'N'; case 196: return 'n';
-        case 165: return 'E'; case 197: return 'e';
-        case 166: return 'A'; case 198: return 'a';
-        case 167: return '{'; case 199: return '[';
-        case 168: return 'W'; case 200: return 'w';
-        case 169: return 'X'; case 201: return 'x';
-        case 170: return 'I'; case 202: return 'i';
-        case 171: return 'O'; case 203: return 'o';
-        case 172: return '}'; case 204: return ']';
-        case 173: return 'S'; case 205: return 's';
-        case 174: return 'M'; case 206: return 'm';
-        case 175: return '"'; case 207: return '\'';
-        case 176: return '>'; case 208: return '.';
+        case 145: return 70;   // 'F'
+        case 146: return 68;   // 'D'
+        case 147: return 85;   // 'U'
+        case 148: return 76;   // 'L'
+        case 149: return 84;   // 'T'
+        case 150: return 80;   // 'P'
+        case 151: return 66;   // 'B'
+        case 152: return 81;   // 'Q'
+        case 153: return 82;   // 'R'
+        case 154: return 75;   // 'K'
+        case 155: return 86;   // 'V'
+        case 156: return 89;   // 'Y'
+        case 157: return 74;   // 'J'
+        case 158: return 71;   // 'G'
+        case 159: return 72;   // 'H'
+        case 160: return 67;   // 'C'
+        case 161: return 78;   // 'N'
+        case 162: return 69;   // 'E'
+        case 163: return 65;   // 'A'
+        case 164: return 87;   // 'W'
+        case 165: return 88;   // 'X'
+        case 166: return 73;   // 'I'
+        case 167: return 79;   // 'O'
+        case 168: return 83;   // 'S'
+        case 169: return 77;   // 'M'
+        case 170: return 90;   // 'Z'
+        
+        case 177: return 102;  // 'f'
+        case 178: return 100;  // 'd'
+        case 179: return 117;  // 'u'
+        case 180: return 108;  // 'l'
+        case 181: return 116;  // 't'
+        case 182: return 112;  // 'p'
+        case 183: return 98;   // 'b'
+        case 184: return 113;  // 'q'
+        case 185: return 114;  // 'r'
+        case 186: return 107;  // 'k'
+        case 187: return 118;  // 'v'
+        case 188: return 121;  // 'y'
+        case 189: return 106;  // 'j'
+        case 190: return 103;  // 'g'
+        case 191: return 104;  // 'h'
+        case 192: return 99;   // 'c'
+        case 193: return 110;  // 'n'
+        case 194: return 101;  // 'e'
+        case 195: return 97;   // 'a'
+        case 196: return 119;  // 'w'
+        case 197: return 120;  // 'x'
+        case 198: return 105;  // 'i'
+        case 199: return 111;  // 'o'
+        case 200: return 115;  // 's'
+        case 201: return 109;  // 'm'
+        case 202: return 122;  // 'z'
         default: return 0;
     }
 }
@@ -287,6 +308,9 @@ static keyNum_t IN_TranslateSDLToQ3Key( SDL_Keysym *keysym, qboolean down )
 	{
 		// These happen to match the ASCII chars
 		key = (int)keysym->sym;
+		if(!key){
+			key = rustoengkey(key);	
+		}
 	}
 	else if( !key )
 	{
