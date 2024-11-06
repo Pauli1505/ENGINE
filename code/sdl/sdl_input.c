@@ -1147,37 +1147,32 @@ static const char *eventName( SDL_WindowEventID event )
 }
 #endif
 
-int UTF8toUTF32 (char* c){
-	int utf32 = 0;
+int UTF8toUTF32(const char* c) {
+    int utf32 = 0;
+    char* p = (char*)c;  // Копия указателя для предотвращения его изменения
 
-	if( ( *c & 0x80 ) == 0 )
-		utf32 = *c++;
-	else if( ( *c & 0xE0 ) == 0xC0 ) // 110x xxxx
-	{
-		utf32 |= ( *c++ & 0x1F ) << 6;
-		utf32 |= ( *c++ & 0x3F );
-	}
-	else if( ( *c & 0xF0 ) == 0xE0 ) // 1110 xxxx
-	{
-		utf32 |= ( *c++ & 0x0F ) << 12;
-		utf32 |= ( *c++ & 0x3F ) << 6;
-		utf32 |= ( *c++ & 0x3F );
-	}
-	else if( ( *c & 0xF8 ) == 0xF0 ) // 1111 0xxx
-	{
-		utf32 |= ( *c++ & 0x07 ) << 18;
-		utf32 |= ( *c++ & 0x3F ) << 12;
-		utf32 |= ( *c++ & 0x3F ) << 6;
-		utf32 |= ( *c++ & 0x3F );
-	}
-	else
-	{
-		Com_DPrintf( "Unrecognised UTF-8 lead byte: 0x%x\n", (unsigned int)*c );
-		c++;
-	}
+    if (( *p & 0x80 ) == 0) {
+        utf32 = *p++;
+    } else if (( *p & 0xE0 ) == 0xC0) { // 110x xxxx
+        utf32 |= (*p++ & 0x1F) << 6;
+        utf32 |= (*p++ & 0x3F);
+    } else if (( *p & 0xF0 ) == 0xE0) { // 1110 xxxx
+        utf32 |= (*p++ & 0x0F) << 12;
+        utf32 |= (*p++ & 0x3F) << 6;
+        utf32 |= (*p++ & 0x3F);
+    } else if (( *p & 0xF8 ) == 0xF0) { // 1111 0xxx
+        utf32 |= (*p++ & 0x07) << 18;
+        utf32 |= (*p++ & 0x3F) << 12;
+        utf32 |= (*p++ & 0x3F) << 6;
+        utf32 |= (*p++ & 0x3F);
+    } else {
+        Com_DPrintf("Unrecognised UTF-8 lead byte: 0x%x\n", (int)*p);
+        p++;
+    }
 
-	return utf32;
+    return utf32;
 }
+
 
 /*
 ===============
@@ -1222,7 +1217,7 @@ void HandleEvents( void )
 						Com_QueueEvent( in_eventTime, SE_CHAR, key, 0, 0, NULL );
 					else if( keys[K_CTRL].down && key >= 'a' && key <= 'z' )
 						Com_QueueEvent( in_eventTime, SE_CHAR, CTRL(key), 0, 0, NULL );
-				} else {
+				}/* else {
 					utf32 = UTF8toUTF32(c);
 					key = RusToEngBinds(utf32);
 
@@ -1234,20 +1229,20 @@ void HandleEvents( void )
 						Com_QueueEvent( in_eventTime, SE_CHAR, key, 0, 0, NULL );
 					else if( keys[K_CTRL].down && key >= 'a' && key <= 'z' )
 						Com_QueueEvent( in_eventTime, SE_CHAR, CTRL(key), 0, 0, NULL );
-				}
+				}*/
 
 				lastKeyDown = key;
 				break;
 
 			case SDL_KEYUP:
 				if( ( key = IN_TranslateSDLToQ3Key( &e.key.keysym, qfalse ) ) ){
-					if( key ){
+					//if( key ){
 						Com_QueueEvent( in_eventTime, SE_KEY, key, qfalse, 0, NULL );
-					} else {
+					/*} else {
 						utf32 = UTF8toUTF32(c);
 						key = RusToEngBinds(utf32);
 						Com_QueueEvent( in_eventTime, SE_KEY, key, qfalse, 0, NULL );
-					}
+					}*/
 				}
 
 				lastKeyDown = 0;
