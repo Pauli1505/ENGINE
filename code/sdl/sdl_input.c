@@ -197,64 +197,6 @@ static qboolean IN_IsConsoleKey( keyNum_t key, int character )
 	return qfalse;
 }
 
-keyNum_t rustoengkey(keyNum_t key) {
-    switch (key) {
-        case 145: return 70;   // 'F'
-        case 146: return 68;   // 'D'
-        case 147: return 85;   // 'U'
-        case 148: return 76;   // 'L'
-        case 149: return 84;   // 'T'
-        case 150: return 80;   // 'P'
-        case 151: return 66;   // 'B'
-        case 152: return 81;   // 'Q'
-        case 153: return 82;   // 'R'
-        case 154: return 75;   // 'K'
-        case 155: return 86;   // 'V'
-        case 156: return 89;   // 'Y'
-        case 157: return 74;   // 'J'
-        case 158: return 71;   // 'G'
-        case 159: return 72;   // 'H'
-        case 160: return 67;   // 'C'
-        case 161: return 78;   // 'N'
-        case 162: return 69;   // 'E'
-        case 163: return 65;   // 'A'
-        case 164: return 87;   // 'W'
-        case 165: return 88;   // 'X'
-        case 166: return 73;   // 'I'
-        case 167: return 79;   // 'O'
-        case 168: return 83;   // 'S'
-        case 169: return 77;   // 'M'
-        case 170: return 90;   // 'Z'
-        
-        case 177: return 102;  // 'f'
-        case 178: return 100;  // 'd'
-        case 179: return 117;  // 'u'
-        case 180: return 108;  // 'l'
-        case 181: return 116;  // 't'
-        case 182: return 112;  // 'p'
-        case 183: return 98;   // 'b'
-        case 184: return 113;  // 'q'
-        case 185: return 114;  // 'r'
-        case 186: return 107;  // 'k'
-        case 187: return 118;  // 'v'
-        case 188: return 121;  // 'y'
-        case 189: return 106;  // 'j'
-        case 190: return 103;  // 'g'
-        case 191: return 104;  // 'h'
-        case 192: return 99;   // 'c'
-        case 193: return 110;  // 'n'
-        case 194: return 101;  // 'e'
-        case 195: return 97;   // 'a'
-        case 196: return 119;  // 'w'
-        case 197: return 120;  // 'x'
-        case 198: return 105;  // 'i'
-        case 199: return 111;  // 'o'
-        case 200: return 115;  // 's'
-        case 201: return 109;  // 'm'
-        case 202: return 122;  // 'z'
-        default: return 0;
-    }
-}
 
 /*
 ===============
@@ -308,9 +250,6 @@ static keyNum_t IN_TranslateSDLToQ3Key( SDL_Keysym *keysym, qboolean down )
 	{
 		// These happen to match the ASCII chars
 		key = (int)keysym->sym;
-		if(!key){
-			key = rustoengkey(key);	
-		}
 	}
 	else if( !key )
 	{
@@ -395,9 +334,6 @@ static keyNum_t IN_TranslateSDLToQ3Key( SDL_Keysym *keysym, qboolean down )
 			case SDLK_CAPSLOCK:     key = K_CAPSLOCK;      break;
 
 			default:
-#if 1
-				key = rustoengkey(key);
-#else
 				if( !( keysym->sym & SDLK_SCANCODE_MASK ) && keysym->scancode <= 95 )
 				{
 					// Map Unicode characters to 95 world keys using the key's scan code.
@@ -407,7 +343,6 @@ static keyNum_t IN_TranslateSDLToQ3Key( SDL_Keysym *keysym, qboolean down )
 					// to SDL 1.2.
 					key = K_WORLD_0 + (int)keysym->scancode;
 				}
-#endif
 				break;
 		}
 	}
@@ -1256,17 +1191,16 @@ void HandleEvents( void )
 
 						if( utf32 != 0 )
 						{
-							// Add an offset of -0x80 for russian
-							if(key == 0x00){
-							utf32 -= 0x80;
-							}
-							if ( IN_IsConsoleKey( 0, utf32 ) )
-							{
+							if ( IN_IsConsoleKey( 0, utf32 ) ) {
 								Com_QueueEvent( in_eventTime, SE_KEY, K_CONSOLE, qtrue, 0, NULL );
 								Com_QueueEvent( in_eventTime, SE_KEY, K_CONSOLE, qfalse, 0, NULL );
-							}
-							else
+							} else {
+								// Add an offset of -0x80 for russian
+								if(key == 0x00){
+								utf32 -= 0x80;
+								}
 								Com_QueueEvent( in_eventTime, SE_CHAR, utf32, 0, 0, NULL );
+							}
 						}
 					}
 				}
