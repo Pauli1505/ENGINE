@@ -197,6 +197,44 @@ static qboolean IN_IsConsoleKey( keyNum_t key, int character )
 	return qfalse;
 }
 
+keyNum_t rustoengkey(keyNum_t key) {
+    switch (key) {
+        case 'а': return 'f'; case 'А': return 'F';
+        case 'б': return ','; case 'Б': return '<';
+        case 'в': return 'd'; case 'В': return 'D';
+        case 'г': return 'u'; case 'Г': return 'U';
+        case 'д': return 'l'; case 'Д': return 'L';
+        case 'е': return 't'; case 'Е': return 'T';
+        case 'ё': return '`'; case 'Ё': return '~';
+        case 'ж': return ';'; case 'Ж': return ':';
+        case 'з': return 'p'; case 'З': return 'P';
+        case 'и': return 'b'; case 'И': return 'B';
+        case 'й': return 'q'; case 'Й': return 'Q';
+        case 'к': return 'r'; case 'К': return 'R';
+        case 'л': return 'k'; case 'Л': return 'K';
+        case 'м': return 'v'; case 'М': return 'V';
+        case 'н': return 'y'; case 'Н': return 'Y';
+        case 'о': return 'j'; case 'О': return 'J';
+        case 'п': return 'g'; case 'П': return 'G';
+        case 'р': return 'h'; case 'Р': return 'H';
+        case 'с': return 'c'; case 'С': return 'C';
+        case 'т': return 'n'; case 'Т': return 'N';
+        case 'у': return 'e'; case 'У': return 'E';
+        case 'ф': return 'a'; case 'Ф': return 'A';
+        case 'х': return '['; case 'Х': return '{';
+        case 'ц': return 'w'; case 'Ц': return 'W';
+        case 'ч': return 'x'; case 'Ч': return 'X';
+        case 'ш': return 'i'; case 'Ш': return 'I';
+        case 'щ': return 'o'; case 'Щ': return 'O';
+        case 'ъ': return ']'; case 'Ъ': return '}';
+        case 'ы': return 's'; case 'Ы': return 'S';
+        case 'ь': return 'm'; case 'Ь': return 'M';
+        case 'э': return '\''; case 'Э': return '"';
+        case 'ю': return '.'; case 'Ю': return '>';
+        case 'я': return 'z'; case 'Я': return 'Z';
+        default: return 0;
+    }
+}
 
 /*
 ===============
@@ -335,7 +373,7 @@ static keyNum_t IN_TranslateSDLToQ3Key( SDL_Keysym *keysym, qboolean down )
 
 			default:
 #if 1
-				key = 0;
+				key = rustoengkey(key);
 #else
 				if( !( keysym->sym & SDLK_SCANCODE_MASK ) && keysym->scancode <= 95 )
 				{
