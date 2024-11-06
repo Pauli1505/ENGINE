@@ -122,6 +122,7 @@ static void SCR_DrawChar(int x, int y, float size, int ch) {
     int row, col;
     float frow, fcol;
     float ax, ay, aw, ah;
+    int prev_unicode = 0; // Переменная для хранения предыдущего символа
 
     ch &= 255; // Ограничиваем символ 0-255
 
