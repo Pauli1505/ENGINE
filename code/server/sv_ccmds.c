@@ -184,7 +184,7 @@ static void SV_Map_f( void ) {
 		Cvar_SetIntegerValue( "g_gametype", GT_SINGLE_PLAYER );
 		Cvar_Set( "g_doWarmup", "0" );
 		// may not set sv_maxclients directly, always set latched
-		Cvar_SetLatched( "sv_maxclients", "8" );
+		//Cvar_SetLatched( "sv_maxclients", "8" );
 		cmd += 2;
 		if (!Q_stricmp( cmd, "devmap" ) ) {
 			cheat = qtrue;
@@ -273,14 +273,11 @@ static void SV_MapRestart_f( void ) {
 
 	// check for changes in variables that can't just be restarted
 	// check for maxclients change
-	if ( sv_maxclients->modified || sv_gametype->modified || sv_pure->modified ) {
+	if ( sv_gametype->modified || sv_pure->modified ) {
 		char	mapname[MAX_QPATH];
 
 		if(sv_maxclients->modified){
 		Com_Printf( "variable sv_maxclients change -- restarting.\n" );
-		}
-		if(sv_gametype->modified){
-		Com_Printf( "variable sv_gametype change -- restarting.\n" );
 		}
 		if(sv_pure->modified){
 		Com_Printf( "variable sv_pure change -- restarting.\n" );
