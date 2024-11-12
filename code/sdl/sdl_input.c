@@ -1278,7 +1278,7 @@ void HandleEvents( void )
 							} else {
 								// Add input modes
 								if(cl_inputmode->integer == 1){
-									if(e.key.keysym->mod & KMOD_CAPS){
+									if(e.key.keysym.mod & KMOD_CAPS){
 									utf32 = convertToRussianUp(utf32);
 									} else {
 									utf32 = convertToRussian(utf32);
