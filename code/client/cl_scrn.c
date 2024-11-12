@@ -142,11 +142,6 @@ static void SCR_DrawChar( int x, int y, float size, int ch ) {
 		return;
 	}
 
-	// Unicode Russian support
-	if (ch > 0x80) {
-		ch += 48;
-	}
-
 	ax = x;
 	ay = y;
 	aw = size;
@@ -186,11 +181,6 @@ void SCR_DrawSmallChar( int x, int y, int ch ) {
 		return;
 	}
 
-	// Unicode Russian support
-	if (ch > 0x80) {
-		ch += 48;
-	}
-
 	row = ch>>4;
 	col = ch&15;
 
@@ -216,11 +206,6 @@ void SCR_DrawSmallString( int x, int y, const char *s, int len ) {
 
 	if ( y < -smallchar_height ) {
 		return;
-	}
-
-	// Unicode Russian support
-	if (ch > 0x80) {
-		ch += 48;
 	}
 
 	size = 0.0625;
