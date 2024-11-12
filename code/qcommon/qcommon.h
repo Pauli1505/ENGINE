@@ -1023,6 +1023,7 @@ extern	qboolean com_protocolCompat;
 extern 	cvar_t	*cl_selectedmod;
 extern 	cvar_t	*cl_32bit;
 extern 	cvar_t	*cl_oslinux;
+extern 	cvar_t	*cl_inputmode;
 
 // both client and server must agree to pause
 extern	cvar_t	*sv_paused;

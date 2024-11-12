@@ -108,6 +108,7 @@ cvar_t	*com_sv_running;
 cvar_t	*cl_selectedmod;
 cvar_t	*cl_32bit;
 cvar_t	*cl_oslinux;
+cvar_t	*cl_inputmode;
 
 cvar_t	*com_cameraMode;
 #if defined(_WIN32) && defined(_DEBUG)
@@ -3849,6 +3850,8 @@ void Com_Init( char *commandLine ) {
 	#else
 	cl_oslinux = Cvar_Get("cl_oslinux", "0", CVAR_ARCHIVE);
 	#endif
+
+	cl_inputmode = Cvar_Get("cl_inputmode", "0", CVAR_ARCHIVE);
 
 
 	FS_InitFilesystem();
