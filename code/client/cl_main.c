@@ -3204,6 +3204,9 @@ static void CL_InitRenderer( void ) {
 
 	// load character sets
 	cls.charSetShader = re.RegisterShader( "gfx/2d/bigchars" );
+	cls.defaultFont[0] = re.RegisterShader( "gfx/2d/default_font" ); //32x32
+	cls.defaultFont[1] = re.RegisterShader( "gfx/2d/default_font1" ); //64x64
+	cls.defaultFont[2] = re.RegisterShader( "gfx/2d/default_font2" ); //128x128
 	cls.whiteShader = re.RegisterShader( "white" );
 	cls.consoleShader = re.RegisterShader( "console" );
 

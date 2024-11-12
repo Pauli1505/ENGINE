@@ -545,7 +545,7 @@ void CL_ConsolePrint( const char *txt ) {
 		con.color[2] =
 		con.color[3] = 1.0f;
 		con.viswidth = -9999;
-		cls.con_factor = 1.0f;
+		cls.con_factor = 1.25f;
 		con_scale = &null_cvar;
 		con_scale->value = 1.0f;
 		con_scale->modified = qtrue;
