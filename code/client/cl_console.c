@@ -546,7 +546,7 @@ void CL_ConsolePrint( const char *txt ) {
 		con.viswidth = -9999;
 		cls.con_factor = 1.0f;
 		con_scale = &null_cvar;
-		con_scale->value = ((float)cls.glconfig.vidHeight / 480.0f);
+		con_scale->value = 1.0f;
 		con_scale->modified = qtrue;
 		Con_CheckResize();
 		con.initialized = qtrue;
