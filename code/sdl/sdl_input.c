@@ -1215,7 +1215,7 @@ void HandleEvents( void )
 					break;
 				}
 
-				if ( key == K_10 ) {
+				if ( key == K_F10 ) {
 					Cbuf_AddText( "toggle cl_inputmode 0 1\n" );
 					break;
 				}
