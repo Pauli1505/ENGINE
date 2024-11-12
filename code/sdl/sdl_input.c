@@ -1216,15 +1216,6 @@ void HandleEvents( void )
 				}
 
 				if ( key ) {
-					// Add input modes
-					if(cl_inputmode->integer == 1){
-						if(e.key.keysym.mod & KMOD_CAPS){
-						key = convertToRussianUp(key);
-						} else {
-						key = convertToRussian(key);
-						}
-					}
-					
 					Com_QueueEvent( in_eventTime, SE_KEY, key, qtrue, 0, NULL );
 
 					if ( key == K_BACKSPACE )
@@ -1240,14 +1231,6 @@ void HandleEvents( void )
 
 			case SDL_KEYUP:
 				if( ( key = IN_TranslateSDLToQ3Key( &e.key.keysym, qfalse ) ) ){
-					// Add input modes
-					if(cl_inputmode->integer == 1){
-						if(e.key.keysym.mod & KMOD_CAPS){
-						key = convertToRussianUp(key);
-						} else {
-						key = convertToRussian(key);
-						}
-					}
 					Com_QueueEvent( in_eventTime, SE_KEY, key, qfalse, 0, NULL );
 				}
 
