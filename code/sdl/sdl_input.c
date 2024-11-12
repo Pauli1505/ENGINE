@@ -447,7 +447,7 @@ static keyNum_t IN_TranslateSDLToQ3Key( SDL_Keysym *keysym, qboolean down )
 
 	// Add input modes
 	if(cl_inputmode->integer == 1){
-		if(e.key.keysym.mod & KMOD_CAPS){
+		if(keysym->mod & KMOD_CAPS){
 		key = convertToRussianUp(key);
 		} else {
 		key = convertToRussian(key);
