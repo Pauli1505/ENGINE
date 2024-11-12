@@ -1107,6 +1107,45 @@ static const char *eventName( SDL_WindowEventID event )
 HandleEvents
 ===============
 */
+
+char convertToRussian(char symbol) {
+    switch (symbol) {
+        case 'q': return 0xE9;  // й
+        case 'w': return 0xE6;  // ц
+        case 'e': return 0xE3;  // у
+        case 'r': return 0xEB;  // к
+        case 't': return 0xE5;  // е
+        case 'y': return 0xED;  // н
+        case 'u': return 0xE7;  // г
+        case 'i': return 0xF8;  // ш
+        case 'o': return 0xF9;  // щ
+        case 'p': return 0xEA;  // з
+        case 'a': return 0xE0;  // а
+        case 's': return 0xFB;  // ы
+        case 'd': return 0xE2;  // в
+        case 'f': return 0xE0;  // а
+        case 'g': return 0xEF;  // п
+        case 'h': return 0xF0;  // р
+        case 'j': return 0xEE;  // о
+        case 'k': return 0xEB;  // л
+        case 'l': return 0xE4;  // д
+        case 'z': return 0xFF;  // я
+        case 'x': return 0xF7;  // ч
+        case 'c': return 0xE1;  // с
+        case 'v': return 0xEC;  // м
+        case 'b': return 0xE8;  // и
+        case 'n': return 0xF2;  // т
+        case 'm': return 0xFC;  // ь
+        case ',': return 0xFE;  // б
+        case '.': return 0xE4;  // ю
+        case ';': return 0xF6;  // ж
+        case '\'': return 0xFD; // э
+        case '[': return 0xFA;  // х
+        case ']': return 0xF5;  // ъ
+        default: return symbol; // остальное без изменений
+    }
+}
+
 //static void IN_ProcessEvents( void )
 void HandleEvents( void )
 {
@@ -1199,9 +1238,9 @@ void HandleEvents( void )
 								Com_QueueEvent( in_eventTime, SE_KEY, K_CONSOLE, qtrue, 0, NULL );
 								Com_QueueEvent( in_eventTime, SE_KEY, K_CONSOLE, qfalse, 0, NULL );
 							} else {
-								// Add an offset of -0x80 for russian
-								if(key == 0x00){
-									utf32 -= 0x80;
+								// Add input modes
+								if(cl_inputmode->integer == 1){
+									convertToRussian(utf32);
 								}
 								Com_QueueEvent( in_eventTime, SE_CHAR, utf32, 0, 0, NULL );
 							}
