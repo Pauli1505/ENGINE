@@ -1145,7 +1145,6 @@ char convertToRussian(char symbol) {
         default: return symbol; // остальное без изменений
     }
 }
-
 char convertToRussianUp(char symbol) {
     switch (symbol) {
         case 'Q': return 0xC9 - M_RUSSIANOFFSET;  // Й
@@ -1211,6 +1210,16 @@ void HandleEvents( void )
 					break;
 				}
 
+				if ( key == K_SHIFT && keys[K_ALT].down ) {
+					Cbuf_AddText( "toggle cl_inputmode 0 1\n" );
+					break;
+				}
+
+				if ( key == K_SPACE && keys[K_SUPER].down ) {
+					Cbuf_AddText( "toggle cl_inputmode 0 1\n" );
+					break;
+				}
+
 				if ( key ) {
 					Com_QueueEvent( in_eventTime, SE_KEY, key, qtrue, 0, NULL );
 
@@ -1272,18 +1281,18 @@ void HandleEvents( void )
 
 						if( utf32 != 0 )
 						{
+							// Add input modes
+							if(cl_inputmode->integer == 1){
+								if(e.key.keysym.mod & KMOD_CAPS){
+								utf32 = convertToRussianUp(utf32);
+								} else {
+								utf32 = convertToRussian(utf32);
+								}
+							}
 							if ( IN_IsConsoleKey( 0, utf32 ) ) {
 								Com_QueueEvent( in_eventTime, SE_KEY, K_CONSOLE, qtrue, 0, NULL );
 								Com_QueueEvent( in_eventTime, SE_KEY, K_CONSOLE, qfalse, 0, NULL );
 							} else {
-								// Add input modes
-								if(cl_inputmode->integer == 1){
-									if(e.key.keysym.mod & KMOD_CAPS){
-									utf32 = convertToRussianUp(utf32);
-									} else {
-									utf32 = convertToRussian(utf32);
-									}
-								}
 								Com_QueueEvent( in_eventTime, SE_CHAR, utf32, 0, 0, NULL );
 							}
 						}
