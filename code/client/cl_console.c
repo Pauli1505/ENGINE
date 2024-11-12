@@ -400,7 +400,6 @@ void Con_Init( void )
 	con_autoclear = Cvar_Get("con_autoclear", "1", CVAR_ARCHIVE_ND);
 	Cvar_SetDescription( con_autoclear, "Enable/disable clearing console input text when console is closed." );
 	con_scale = Cvar_Get( "con_scale", "1", CVAR_ARCHIVE_ND );
-	Cvar_CheckRange( con_scale, "0.5", "8", CV_FLOAT );
 	Cvar_SetDescription( con_scale, "Console font size scale." );
 
 	Field_Clear( &g_consoleField );
@@ -547,7 +546,7 @@ void CL_ConsolePrint( const char *txt ) {
 		con.viswidth = -9999;
 		cls.con_factor = 1.0f;
 		con_scale = &null_cvar;
-		con_scale->value = (cls.glconfig.vidHeight / 480);
+		con_scale->value = ((float)cls.glconfig.vidHeight / 480.0f);
 		con_scale->modified = qtrue;
 		Con_CheckResize();
 		con.initialized = qtrue;
