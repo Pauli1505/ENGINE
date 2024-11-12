@@ -1210,12 +1210,12 @@ void HandleEvents( void )
 					break;
 				}
 
-				if ( key == K_SHIFT && keys[K_ALT].down ) {
+				if ( key == K_X && keys[K_SHIFT].down ) {
 					Cbuf_AddText( "toggle cl_inputmode 0 1\n" );
 					break;
 				}
 
-				if ( key == K_SPACE && keys[K_SUPER].down ) {
+				if ( key == K_10 ) {
 					Cbuf_AddText( "toggle cl_inputmode 0 1\n" );
 					break;
 				}
