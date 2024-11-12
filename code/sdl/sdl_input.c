@@ -1107,41 +1107,41 @@ static const char *eventName( SDL_WindowEventID event )
 HandleEvents
 ===============
 */
-
+#define M_RUSSIANOFFSET 48
 char convertToRussian(char symbol) {
     switch (symbol) {
-        case 'q': return 0xE9;  // й
-        case 'w': return 0xE6;  // ц
-        case 'e': return 0xE3;  // у
-        case 'r': return 0xEB;  // к
-        case 't': return 0xE5;  // е
-        case 'y': return 0xED;  // н
-        case 'u': return 0xE7;  // г
-        case 'i': return 0xF8;  // ш
-        case 'o': return 0xF9;  // щ
-        case 'p': return 0xEA;  // з
-        case 'a': return 0xE0;  // а
-        case 's': return 0xFB;  // ы
-        case 'd': return 0xE2;  // в
-        case 'f': return 0xE0;  // а
-        case 'g': return 0xEF;  // п
-        case 'h': return 0xF0;  // р
-        case 'j': return 0xEE;  // о
-        case 'k': return 0xEB;  // л
-        case 'l': return 0xE4;  // д
-        case 'z': return 0xFF;  // я
-        case 'x': return 0xF7;  // ч
-        case 'c': return 0xE1;  // с
-        case 'v': return 0xEC;  // м
-        case 'b': return 0xE8;  // и
-        case 'n': return 0xF2;  // т
-        case 'm': return 0xFC;  // ь
-        case ',': return 0xFE;  // б
-        case '.': return 0xE4;  // ю
-        case ';': return 0xF6;  // ж
-        case '\'': return 0xFD; // э
-        case '[': return 0xFA;  // х
-        case ']': return 0xF5;  // ъ
+        case 'q': return 0xE9 - M_RUSSIANOFFSET;  // й
+        case 'w': return 0xE6 - M_RUSSIANOFFSET;  // ц
+        case 'e': return 0xE3 - M_RUSSIANOFFSET;  // у
+        case 'r': return 0xEB - M_RUSSIANOFFSET;  // к
+        case 't': return 0xE5 - M_RUSSIANOFFSET;  // е
+        case 'y': return 0xED - M_RUSSIANOFFSET;  // н
+        case 'u': return 0xE7 - M_RUSSIANOFFSET;  // г
+        case 'i': return 0xF8 - M_RUSSIANOFFSET;  // ш
+        case 'o': return 0xF9 - M_RUSSIANOFFSET;  // щ
+        case 'p': return 0xEA - M_RUSSIANOFFSET;  // з
+        case 'a': return 0xE0 - M_RUSSIANOFFSET;  // а
+        case 's': return 0xFB - M_RUSSIANOFFSET;  // ы
+        case 'd': return 0xE2 - M_RUSSIANOFFSET;  // в
+        case 'f': return 0xE0 - M_RUSSIANOFFSET;  // а
+        case 'g': return 0xEF - M_RUSSIANOFFSET;  // п
+        case 'h': return 0xF0 - M_RUSSIANOFFSET;  // р
+        case 'j': return 0xEE - M_RUSSIANOFFSET;  // о
+        case 'k': return 0xEB - M_RUSSIANOFFSET;  // л
+        case 'l': return 0xE4 - M_RUSSIANOFFSET;  // д
+        case 'z': return 0xFF - M_RUSSIANOFFSET;  // я
+        case 'x': return 0xF7 - M_RUSSIANOFFSET;  // ч
+        case 'c': return 0xE1 - M_RUSSIANOFFSET;  // с
+        case 'v': return 0xEC - M_RUSSIANOFFSET;  // м
+        case 'b': return 0xE8 - M_RUSSIANOFFSET;  // и
+        case 'n': return 0xF2 - M_RUSSIANOFFSET;  // т
+        case 'm': return 0xFC - M_RUSSIANOFFSET;  // ь
+        case ',': return 0xFE - M_RUSSIANOFFSET;  // б
+        case '.': return 0xE4 - M_RUSSIANOFFSET;  // ю
+        case ';': return 0xF6 - M_RUSSIANOFFSET;  // ж
+        case '\'': return 0xFD - M_RUSSIANOFFSET; // э
+        case '[': return 0xFA - M_RUSSIANOFFSET;  // х
+        case ']': return 0xF5 - M_RUSSIANOFFSET;  // ъ
         default: return symbol; // остальное без изменений
     }
 }
