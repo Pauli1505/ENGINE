@@ -1240,7 +1240,7 @@ void HandleEvents( void )
 							} else {
 								// Add input modes
 								if(cl_inputmode->integer == 1){
-									convertToRussian(utf32);
+									utf32 = convertToRussian(utf32);
 								}
 								Com_QueueEvent( in_eventTime, SE_CHAR, utf32, 0, 0, NULL );
 							}
