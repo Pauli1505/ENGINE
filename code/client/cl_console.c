@@ -800,7 +800,7 @@ static void Con_DrawSolidConsole( float frac ) {
 
 	}
 
-	re.SetColor( g_color_table[ ColorIndex( COLOR_RED ) ] );
+	re.SetColor( g_color_table[ ColorIndex( COLOR_CYAN ) ] );
 	re.DrawStretchPic( 0, yf, wf, 2, 0, 0, 1, 1, cls.whiteShader );
 
 	//y = yf;
@@ -821,7 +821,7 @@ static void Con_DrawSolidConsole( float frac ) {
 	if ( con.display != con.current )
 	{
 		// draw arrows to show the buffer is backscrolled
-		re.SetColor( g_color_table[ ColorIndex( COLOR_RED ) ] );
+		re.SetColor( g_color_table[ ColorIndex( COLOR_CYAN ) ] );
 		for ( x = 0 ; x < con.linewidth ; x += 4 )
 			SCR_DrawSmallChar( con.xadjust + (x+1)*smallchar_width, y, '^' );
 		y -= smallchar_height;
