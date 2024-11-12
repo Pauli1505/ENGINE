@@ -1111,7 +1111,7 @@ HandleEvents
 char convertToRussian(char symbol) {
     switch (symbol) {
         case 'q': return 0xE9 - M_RUSSIANOFFSET;  // й
-        case 'w': return 0xE6 - M_RUSSIANOFFSET;  // ц
+        case 'w': return 0xF6 - M_RUSSIANOFFSET;  // ц
         case 'e': return 0xF3 - M_RUSSIANOFFSET;  // у
         case 'r': return 0xEA - M_RUSSIANOFFSET;  // к
         case 't': return 0xE5 - M_RUSSIANOFFSET;  // е
@@ -1142,6 +1142,44 @@ char convertToRussian(char symbol) {
         case '\'': return 0xFD - M_RUSSIANOFFSET; // э
         case '[': return 0xF5 - M_RUSSIANOFFSET;  // х
         case ']': return 0xFA - M_RUSSIANOFFSET;  // ъ
+        default: return symbol; // остальное без изменений
+    }
+}
+
+char convertToRussianUp(char symbol) {
+    switch (symbol) {
+        case 'Q': return 0xC9 - M_RUSSIANOFFSET;  // Й
+        case 'W': return 0xD6 - M_RUSSIANOFFSET;  // Ц
+        case 'E': return 0xD3 - M_RUSSIANOFFSET;  // У
+        case 'R': return 0xCA - M_RUSSIANOFFSET;  // К
+        case 'T': return 0xC5 - M_RUSSIANOFFSET;  // Е
+        case 'Y': return 0xCD - M_RUSSIANOFFSET;  // Н
+        case 'U': return 0xC3 - M_RUSSIANOFFSET;  // Г
+        case 'I': return 0xD8 - M_RUSSIANOFFSET;  // Ш
+        case 'O': return 0xD9 - M_RUSSIANOFFSET;  // Щ
+        case 'P': return 0xC7 - M_RUSSIANOFFSET;  // З
+        case 'A': return 0xD4 - M_RUSSIANOFFSET;  // Ф
+        case 'S': return 0xDB - M_RUSSIANOFFSET;  // Ы
+        case 'D': return 0xC2 - M_RUSSIANOFFSET;  // В
+        case 'F': return 0xC0 - M_RUSSIANOFFSET;  // А
+        case 'G': return 0xCF - M_RUSSIANOFFSET;  // П
+        case 'H': return 0xD0 - M_RUSSIANOFFSET;  // Р
+        case 'J': return 0xCE - M_RUSSIANOFFSET;  // О
+        case 'K': return 0xCB - M_RUSSIANOFFSET;  // Л
+        case 'L': return 0xC4 - M_RUSSIANOFFSET;  // Д
+        case 'Z': return 0xDF - M_RUSSIANOFFSET;  // Я
+        case 'X': return 0xD7 - M_RUSSIANOFFSET;  // Ч
+        case 'C': return 0xD1 - M_RUSSIANOFFSET;  // С
+        case 'V': return 0xCC - M_RUSSIANOFFSET;  // М
+        case 'B': return 0xC8 - M_RUSSIANOFFSET;  // И
+        case 'N': return 0xD2 - M_RUSSIANOFFSET;  // Т
+        case 'M': return 0xDC - M_RUSSIANOFFSET;  // Ь
+        case ',': return 0xC1 - M_RUSSIANOFFSET;  // Б
+        case '.': return 0xDE - M_RUSSIANOFFSET;  // Ю
+        case ';': return 0xC6 - M_RUSSIANOFFSET;  // Ж
+        case '\'': return 0xDD - M_RUSSIANOFFSET; // Э
+        case '[': return 0xD5 - M_RUSSIANOFFSET;  // Х
+        case ']': return 0xDA - M_RUSSIANOFFSET;  // Ъ
         default: return symbol; // остальное без изменений
     }
 }
@@ -1240,7 +1278,11 @@ void HandleEvents( void )
 							} else {
 								// Add input modes
 								if(cl_inputmode->integer == 1){
+									if(e.key.keysym->mod & KMOD_CAPS){
+									utf32 = convertToRussianUp(utf32);
+									} else {
 									utf32 = convertToRussian(utf32);
+									}
 								}
 								Com_QueueEvent( in_eventTime, SE_CHAR, utf32, 0, 0, NULL );
 							}
