@@ -122,6 +122,15 @@ static void SCR_DrawChar( int x, int y, float size, int ch ) {
 	int row, col;
 	float frow, fcol;
 	float	ax, ay, aw, ah;
+	int		q;
+
+	q = 0;
+	if(size > 16){
+	q = 1;	
+	}
+	if(size > 32){
+	q = 2;	
+	}
 
 	ch &= 255;
 
@@ -154,7 +163,7 @@ static void SCR_DrawChar( int x, int y, float size, int ch ) {
 	re.DrawStretchPic( ax, ay, aw, ah,
 					   fcol, frow, 
 					   fcol + size, frow + size, 
-					   cls.charSetShader );
+					   cls.defaultFont[q] );
 }
 
 
@@ -192,7 +201,7 @@ void SCR_DrawSmallChar( int x, int y, int ch ) {
 	re.DrawStretchPic( x, y, smallchar_width, smallchar_height,
 					   fcol, frow, 
 					   fcol + size, frow + size, 
-					   cls.charSetShader );
+					   cls.defaultFont[0] );
 }
 
 
@@ -226,7 +235,7 @@ void SCR_DrawSmallString( int x, int y, const char *s, int len ) {
 
 		re.DrawStretchPic( x, y, smallchar_width, smallchar_height,
 						   fcol, frow, fcol + size, frow + size, 
-						   cls.charSetShader );
+						   cls.defaultFont[0] );
 
 		x += smallchar_width;
 	}
