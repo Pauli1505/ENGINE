@@ -1238,7 +1238,7 @@ void HandleEvents( void )
 				break;
 
 			case SDL_TEXTINPUT:
-				if( lastKeyDown != K_CONSOLE && cl_inputmode != 0 )
+				if( lastKeyDown != K_CONSOLE )
 				{
 					char *c = e.text.text;
 

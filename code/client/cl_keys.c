@@ -332,13 +332,6 @@ static void Field_CharEvent( field_t *edit, int ch ) {
 		return;
 	}
 
-	//
-	// ignore any other non printable chars
-	//
-	if ( ch < ' ' ) {
-		return;
-	}
-
 	if ( key_overstrikeMode ) {
 		// - 2 to leave room for the leading slash and trailing \0
 		if ( edit->cursor == MAX_EDIT_LINE - 2 )
