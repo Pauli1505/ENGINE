@@ -668,7 +668,7 @@ static void Con_DrawNotify( void )
 	currentColorIndex = ColorIndex( COLOR_WHITE );
 	re.SetColor( g_color_table[ currentColorIndex ] );
 
-	v = 320;
+	v = 380;
 	for (i= con.current-NUM_CON_TIMES+1 ; i<=con.current ; i++)
 	{
 		if (i < 0)
@@ -715,12 +715,12 @@ static void Con_DrawNotify( void )
 		if (chat_team)
 		{
 			SCR_DrawBigString( SMALLCHAR_WIDTH, v, "Team chat:", 1.0f, qfalse );
-			skip = 10;
+			skip = 11;
 		}
 		else
 		{
 			SCR_DrawBigString( SMALLCHAR_WIDTH, v, "Chat:", 1.0f, qfalse );
-			skip = 5;
+			skip = 6;
 		}
 
 		Field_BigDraw( &chatField, skip * BIGCHAR_WIDTH, v,
