@@ -3851,7 +3851,7 @@ void Com_Init( char *commandLine ) {
 	cl_oslinux = Cvar_Get("cl_oslinux", "0", CVAR_ARCHIVE);
 	#endif
 
-	cl_inputmode = Cvar_Get("cl_inputmode", "0", CVAR_ARCHIVE);
+	cl_inputmode = Cvar_Get("cl_inputmode", "0", 0);
 
 
 	FS_InitFilesystem();
