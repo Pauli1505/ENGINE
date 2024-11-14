@@ -230,13 +230,7 @@ static void R_SetupEntityLightingGrid( trRefEntity_t *ent ) {
 
 		VectorMA( direction, factor, normal, direction );
 	}
-
-	if ( totalFactor > 0 && totalFactor < 0.99 ) {
-		totalFactor = 1.0f / totalFactor;
-		VectorScale( ent->ambientLight, totalFactor, ent->ambientLight );
-		VectorScale( ent->directedLight, totalFactor, ent->directedLight );
-	}
-
+	
 	VectorScale( ent->ambientLight, r_ambientScale->value, ent->ambientLight );
 	VectorScale( ent->directedLight, r_directedScale->value, ent->directedLight );
 
