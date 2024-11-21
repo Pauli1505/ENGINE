@@ -136,6 +136,11 @@ static weaponconfig_t *weaponconfig;
 //========================================================================
 static int BotValidWeaponNumber(int weaponnum)
 {
+	if (weaponnum <= 0 || weaponnum > weaponconfig->numweapons)
+	{
+		botimport.Print(PRT_ERROR, "weapon number out of range\n");
+		return qfalse;
+	} //end if
 	return qtrue;
 } //end of the function BotValidWeaponNumber
 //========================================================================
@@ -384,9 +389,7 @@ void BotGetWeaponInfo(int weaponstate, int weapon, weaponinfo_t *weaponinfo)
 {
 	bot_weaponstate_t *ws;
 
-	weapon = 7;		//FORCE RAILGUN SKILL FOR WEAPONS QS
-
-	if (!BotValidWeaponNumber(weapon)) return;		//shit
+	if (!BotValidWeaponNumber(weapon)) return;
 	ws = BotWeaponStateFromHandle(weaponstate);
 	if (!ws) return;
 	if (!weaponconfig) return;
@@ -400,7 +403,34 @@ void BotGetWeaponInfo(int weaponstate, int weapon, weaponinfo_t *weaponinfo)
 //===========================================================================
 int BotChooseBestFightWeapon(int weaponstate, int *inventory)
 {
-	return 0;
+	int i, index, bestweapon;
+	float weight, bestweight;
+	weaponconfig_t *wc;
+	bot_weaponstate_t *ws;
+
+	ws = BotWeaponStateFromHandle(weaponstate);
+	if (!ws) return 0;
+	wc = weaponconfig;
+	if (!weaponconfig) return 0;
+
+	//if the bot has no weapon weight configuration
+	if (!ws->weaponweightconfig) return 0;
+
+	bestweight = 0;
+	bestweapon = 0;
+	for (i = 0; i < wc->numweapons; i++)
+	{
+		if (!wc->weaponinfo[i].valid) continue;
+		index = ws->weaponweightindex[i];
+		if (index < 0) continue;
+		weight = FuzzyWeight(inventory, ws->weaponweightconfig, index);
+		if (weight > bestweight)
+		{
+			bestweight = weight;
+			bestweapon = i;
+		} //end if
+	} //end for
+	return bestweapon;
 } //end of the function BotChooseBestFightWeapon
 //===========================================================================
 //
