@@ -581,35 +581,18 @@ int FindFuzzyWeight(const weightconfig_t *wc, const char *name)
 //===========================================================================
 static float FuzzyWeight_r(int *inventory, fuzzyseperator_t *fs)
 {
-	float scale, w1, w2;
+    if (fs->child)
+        return FuzzyWeight_r(inventory, fs->child);
+    else
+        return 100;
 
-	if (inventory[fs->index] < fs->value)
-	{
-		if (fs->child) return FuzzyWeight_r(inventory, fs->child);
-		else return fs->weight;
-	} //end if
-	else if (fs->next)
-	{
-		if (inventory[fs->index] < fs->next->value)
-		{
-			//first weight
-			if (fs->child) w1 = FuzzyWeight_r(inventory, fs->child);
-			else w1 = fs->weight;
-			//second weight
-			if (fs->next->child) w2 = FuzzyWeight_r(inventory, fs->next->child);
-			else w2 = fs->next->weight;
-			//the scale factor
-			if(fs->next->value == MAX_INVENTORYVALUE) // is fs->next the default case?
-        		return w2;      // can't interpolate, return default weight
-			else
-				scale = (float) (inventory[fs->index] - fs->value) / (fs->next->value - fs->value);
-			//scale between the two weights
-			return (1 - scale) * w1 + scale * w2;
-		} //end if
-		return FuzzyWeight_r(inventory, fs->next);
-	} //end else if
-	return fs->weight;
-} //end of the function FuzzyWeight_r
+    if (fs->next)
+    {
+        return FuzzyWeight_r(inventory, fs->next);
+    }
+
+    return 100;
+}
 //===========================================================================
 //
 // Parameter:				-
