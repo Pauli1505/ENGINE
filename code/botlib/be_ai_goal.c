@@ -47,9 +47,9 @@ Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 #include "be_ai_move.h"
 
 //#define DEBUG_AI_GOAL
-#ifdef QSBOTS
+#ifdef RANDOMIZE
 #define UNDECIDEDFUZZY
-#endif //QSBOTS
+#endif //RANDOMIZE
 #define DROPPEDWEIGHT
 //minimum avoid goal time
 #define AVOID_MINIMUM_TIME		10
@@ -1354,13 +1354,11 @@ int BotChooseLTGItem(int goalstate, vec3_t origin, int *inventory, int travelfla
 		//get the fuzzy weight function for this item
 		iteminfo = &ic->iteminfo[li->iteminfo];
 		weightnum = gs->itemweightindex[iteminfo->number];
-		if (weightnum < 0){
-			iteminfo = &ic->iteminfo[1];
-			weightnum = gs->itemweightindex[1];
-		}
+		if (weightnum < 0)
+			continue;
 
 #ifdef UNDECIDEDFUZZY
-		weight = 100;
+		weight = FuzzyWeightUndecided(inventory, gs->itemweightconfig, weightnum);
 #else
 		weight = FuzzyWeight(inventory, gs->itemweightconfig, weightnum);
 #endif //UNDECIDEDFUZZY
@@ -1397,6 +1395,28 @@ int BotChooseLTGItem(int goalstate, vec3_t origin, int *inventory, int travelfla
 	//if no goal item found
 	if (!bestitem)
 	{
+		/*
+		//if not in lava or slime
+		if (!AAS_AreaLava(areanum) && !AAS_AreaSlime(areanum))
+		{
+			if (AAS_RandomGoalArea(areanum, travelflags, &goal.areanum, goal.origin))
+			{
+				VectorSet(goal.mins, -15, -15, -15);
+				VectorSet(goal.maxs, 15, 15, 15);
+				goal.entitynum = 0;
+				goal.number = 0;
+				goal.flags = GFL_ROAM;
+				goal.iteminfo = 0;
+				//push the goal on the stack
+				BotPushGoal(goalstate, &goal);
+				//
+#ifdef DEBUG
+				botimport.Print(PRT_MESSAGE, "chosen roam goal area %d\n", goal.areanum);
+#endif //DEBUG
+				return qtrue;
+			} //end if
+		} //end if
+		*/
 		return qfalse;
 	} //end if
 	//create a bot goal for this item
@@ -1509,7 +1529,7 @@ int BotChooseNBGItem(int goalstate, vec3_t origin, int *inventory, int travelfla
 			continue;
 		//
 #ifdef UNDECIDEDFUZZY
-		weight = 100;
+		weight = FuzzyWeightUndecided(inventory, gs->itemweightconfig, weightnum);
 #else
 		weight = FuzzyWeight(inventory, gs->itemweightconfig, weightnum);
 #endif //UNDECIDEDFUZZY
