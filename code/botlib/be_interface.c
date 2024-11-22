@@ -139,8 +139,8 @@ static int Export_BotLibSetup( void )
 	errnum = AAS_Setup();			//be_aas_main.c
 	if (errnum != BLERR_NOERROR) return errnum;
 	errnum = EA_Setup();			//be_ea.c
-	if (errnum != BLERR_NOERROR) return errnum;
-	errnum = BotSetupWeaponAI();	//be_ai_weap.c
+	//if (errnum != BLERR_NOERROR) return errnum;
+	//errnum = BotSetupWeaponAI();	//be_ai_weap.c
 	if (errnum != BLERR_NOERROR)return errnum;
 	errnum = BotSetupGoalAI();		//be_ai_goal.c
 	if (errnum != BLERR_NOERROR) return errnum;
