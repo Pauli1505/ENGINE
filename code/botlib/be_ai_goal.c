@@ -278,12 +278,12 @@ static itemconfig_t *LoadItemConfig( const char *filename )
 	itemconfig_t *ic;
 	iteminfo_t *ii;
 
-	max_iteminfo = (int) LibVarValue("max_iteminfo", "256");
+	max_iteminfo = (int) LibVarValue("max_iteminfo", "4096");
 	if (max_iteminfo < 0)
 	{
 		botimport.Print(PRT_ERROR, "max_iteminfo = %d\n", max_iteminfo);
-		max_iteminfo = 256;
-		LibVarSet( "max_iteminfo", "256" );
+		max_iteminfo = 4096;
+		LibVarSet( "max_iteminfo", "4096" );
 	}
 
 	Q_strncpyz( path, filename, sizeof( path ) );
