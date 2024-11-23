@@ -676,6 +676,7 @@ static char *ARB_BuildPostProcessProgram( char *buf ) {
 }
 
 static const char *gammaFP = {
+	"!!ARBfp1.0 \n"
 	"%s" // for customshaders
 };
 
