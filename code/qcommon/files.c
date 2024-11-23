@@ -5689,7 +5689,7 @@ const char *FS_GetBaseGameDir( void )
 }
 
 
-static const char *FS_GetBasePath( void )
+const char *FS_GetBasePath( void )
 {
 	if ( fs_basepath && fs_basepath->string[0] != '\0' )
 		return fs_basepath->string;

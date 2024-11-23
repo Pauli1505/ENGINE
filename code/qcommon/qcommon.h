@@ -861,6 +861,7 @@ void FS_VM_CloseFiles( handleOwner_t owner );
 const char *FS_GetCurrentGameDir( void );
 const char *FS_GetBaseGameDir( void );
 
+const char *FS_GetBasePath( void );
 const char *FS_GetHomePath( void );
 
 qboolean FS_StripExt( char *filename, const char *ext );
