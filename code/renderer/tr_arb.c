@@ -639,7 +639,7 @@ static char *ARB_BuildPostProcessProgram( char *buf ) {
     char *file_contents;
 	const char *ospath;
 
-	ospath = FS_BuildOSPath( FS_GetBasePath(), FS_GetCurrentGameDir(), r_qs_postprocess->string );
+	ospath = FS_BuildOSPath( fs_basepath->string, FS_GetCurrentGameDir(), r_qs_postprocess->string );
 
     if (strlen(r_qs_postprocess->string) <= 0) {
         *buf = '\0';
