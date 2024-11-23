@@ -1302,7 +1302,8 @@ extern	cvar_t	*r_skipBackEnd;
 
 extern	cvar_t	*r_anaglyphMode;
 
-extern	cvar_t	*r_greyscale;
+extern	cvar_t	*r_ps_greyscale;
+extern	cvar_t	*r_ps_negative;
 
 extern	cvar_t	*r_ignoreGLErrors;
 
@@ -1987,7 +1988,8 @@ typedef enum {
 #endif
 	SPRITE_FRAGMENT,
 #ifdef USE_FBO
-	GAMMA_FRAGMENT,
+	PS1_FRAGMENT,
+	PS2_FRAGMENT,
 	BLOOM_EXTRACT_FRAGMENT,
 	BLUR_FRAGMENT,
 	BLUR2_FRAGMENT,
