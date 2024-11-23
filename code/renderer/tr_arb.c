@@ -639,7 +639,7 @@ static char *ARB_BuildPostProcessProgram( char *buf ) {
     char *file_contents;
 	const char *ospath;
 
-	ospath = FS_BuildOSPath( FS_GetHomePath(), FS_GetCurrentGameDir(), r_qs_postprocess->string );
+	ospath = FS_BuildOSPath( FS_GetBasePath(), FS_GetCurrentGameDir(), r_qs_postprocess->string );
 
     if (strlen(r_qs_postprocess->string) <= 0) {
         *buf = '\0';
@@ -676,19 +676,7 @@ static char *ARB_BuildPostProcessProgram( char *buf ) {
 }
 
 static const char *gammaFP = {
-	"!!ARBfp1.0 \n"
-	"OPTION ARB_precision_hint_fastest; \n"
-	"PARAM gamma = program.local[0]; \n"
-	"TEMP base; \n"
-	"TEX base, fragment.texcoord[0], texture[0], 2D; \n"
-	"POW base.x, base.x, gamma.x; \n"
-	"POW base.y, base.y, gamma.y; \n"
-	"POW base.z, base.z, gamma.z; \n"
-	"MUL base.xyz, base, gamma.w; \n"
-	"%s" // for greyscale shader if needed
-	"MOV base.w, 1.0; \n"
-	"MOV_SAT result.color, base; \n"
-	"END \n"
+	"%s" // for customshaders
 };
 
 static char *ARB_BuildBloomProgram( char *buf ) {
