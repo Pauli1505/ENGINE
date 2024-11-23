@@ -641,7 +641,7 @@ static char *ARB_BuildPostProcessProgram( char *buf ) {
 
 	ospath = FS_BuildOSPath( FS_GetHomePath(), FS_GetCurrentGameDir(), r_qs_postprocess->string );
 
-    if (r_qs_postprocess->value == 0) {
+    if (strlen(r_qs_postprocess->string) <= 0) {
         *buf = '\0';
         return buf;
     }
