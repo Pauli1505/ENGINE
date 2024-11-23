@@ -556,7 +556,7 @@ static void ComputeShaderColors( const shaderStage_t *pStage, vec4_t baseColor, 
 	// FIXME: find some way to implement this.
 #if 0
 	// if in greyscale rendering mode turn all color values into greyscale.
-	if(r_qs_postprocess->integer)
+	if(r_ps_greyscale->integer)
 	{
 		int scale;
 		

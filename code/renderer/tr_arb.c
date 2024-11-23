@@ -632,52 +632,41 @@ static const char *spriteFP = {
 
 
 #ifdef USE_FBO
-static char *ARB_BuildPostProcessProgram( char *buf ) {
-    FILE *file;
-    long file_size;
-    size_t read_size;
-    char *file_contents;
-	const char *ospath;
+static char *ARB_BuildGreyscaleProgram( char *buf ) {
+	char *s;
 
-	ospath = FS_BuildOSPath( FS_GetBasePath(), FS_GetCurrentGameDir(), r_qs_postprocess->string );
+	if ( r_ps_greyscale->value == 0 ) {
+		*buf = '\0';
+		return buf;
+	}
 
-    if (strlen(r_qs_postprocess->string) <= 0) {
-        *buf = '\0';
-        return buf;
-    }
+	s = Q_stradd( buf, "PARAM sRGB = { 0.2126, 0.7152, 0.0722, 1.0 }; \n" );
 
-    file = fopen(ospath, "r");
-    if (!file) {
-        *buf = '\0';
-        return buf;
-    }
+	if ( r_ps_greyscale->value == 1.0 ) {
+		Q_stradd( s, "DP3 base.xyz, base, sRGB; \n"  );
+	} else {
+		s = Q_stradd( s, "TEMP luma; \n" );
+		s = Q_stradd( s, "DP3 luma, base, sRGB; \n" );
+		/*s +=*/ sprintf( s, "LRP base.xyz, %1.2f, luma, base; \n", r_ps_greyscale->value );
+	}
 
-    fseek(file, 0, SEEK_END);
-    file_size = ftell(file);
-    fseek(file, 0, SEEK_SET);
-
-    file_contents = (char *)malloc(file_size + 1);
-    if (!file_contents) {
-        fclose(file);
-        *buf = '\0';
-        return buf;
-    }
-
-    read_size = fread(file_contents, 1, file_size, file);
-    file_contents[read_size] = '\0';
-
-    fclose(file);
-
-    strcpy(buf, file_contents);
-
-    free(file_contents);
-
-    return buf;
+	return buf;
 }
 
 static const char *gammaFP = {
 	"!!ARBfp1.0 \n"
-	"%s" // for customshaders
+	"OPTION ARB_precision_hint_fastest; \n"
+	"PARAM gamma = program.local[0]; \n"
+	"TEMP base; \n"
+	"TEX base, fragment.texcoord[0], texture[0], 2D; \n"
+	"POW base.x, base.x, gamma.x; \n"
+	"POW base.y, base.y, gamma.y; \n"
+	"POW base.z, base.z, gamma.z; \n"
+	"MUL base.xyz, base, gamma.w; \n"
+	"%s" // for greyscale shader if needed
+	"MOV base.w, 1.0; \n"
+	"MOV_SAT result.color, base; \n"
+	"END \n"
 };
 
 static char *ARB_BuildBloomProgram( char *buf ) {
@@ -1049,7 +1038,7 @@ qboolean ARB_UpdatePrograms( void )
 		return qfalse;
 
 #ifdef USE_FBO
-	if ( !ARB_CompileProgram( Fragment, va( gammaFP, ARB_BuildPostProcessProgram( buf ) ), programs[ PS_FRAGMENT ] ) )
+	if ( !ARB_CompileProgram( Fragment, va( gammaFP, ARB_BuildGreyscaleProgram( buf ) ), programs[ PS1_FRAGMENT ] ) )
 		return qfalse;
 
 	if ( !ARB_CompileProgram( Fragment, ARB_BuildBloomProgram( buf ), programs[ BLOOM_EXTRACT_FRAGMENT ] ) )
@@ -1070,7 +1059,7 @@ qboolean ARB_UpdatePrograms( void )
 	if ( !ARB_CompileProgram( Fragment, blend2FP, programs[ BLEND2_FRAGMENT ] ) )
 		return qfalse;
 
-	if ( !ARB_CompileProgram( Fragment, va( blend2gammaFP, ARB_BuildPostProcessProgram( buf ) ), programs[ BLEND2_GAMMA_FRAGMENT ] ) )
+	if ( !ARB_CompileProgram( Fragment, va( blend2gammaFP, ARB_BuildGreyscaleProgram( buf ) ), programs[ BLEND2_GAMMA_FRAGMENT ] ) )
 		return qfalse;
 #endif // USE_FBO
 
@@ -2024,7 +2013,7 @@ void FBO_PostProcess( void )
 	if ( backEnd.screenshotMask == 0 && !windowAdjusted && !minimized ) {
 		FBO_Bind( GL_FRAMEBUFFER, 0 );
 		GL_BindTexture( 0, frameBuffers[ fboReadIndex ].color );
-		ARB_ProgramEnable( DUMMY_VERTEX, PS_FRAGMENT );
+		ARB_ProgramEnable( DUMMY_VERTEX, PS1_FRAGMENT );
 		qglProgramLocalParameter4fARB( GL_FRAGMENT_PROGRAM_ARB, 0, gamma, gamma, gamma, obScale );
 		RenderQuad( w, h );
 		ARB_ProgramDisable();
@@ -2034,7 +2023,7 @@ void FBO_PostProcess( void )
 	// apply gamma shader
 	FBO_Bind( GL_FRAMEBUFFER, frameBuffers[ 1 ].fbo ); // destination - secondary buffer
 	GL_BindTexture( 0, frameBuffers[ fboReadIndex ].color );  // source - main color buffer
-	ARB_ProgramEnable( DUMMY_VERTEX, PS_FRAGMENT );
+	ARB_ProgramEnable( DUMMY_VERTEX, PS1_FRAGMENT );
 	qglProgramLocalParameter4fARB( GL_FRAGMENT_PROGRAM_ARB, 0, gamma, gamma, gamma, obScale );
 	RenderQuad( w, h );
 	ARB_ProgramDisable();
