@@ -632,38 +632,45 @@ static const char *spriteFP = {
 
 
 #ifdef USE_FBO
-static char *ARB_BuildGreyscaleProgram( char *buf ) {
-	char *s;
+static char *ARB_BuildPostProcessProgram( char *buf ) {
+    FILE *file;
+    long file_size;
+    size_t read_size;
+    char *file_contents;
+	const char *ospath;
 
-	if ( r_ps_greyscale->value == 0 ) {
-		*buf = '\0';
-		return buf;
-	}
+	ospath = FS_BuildOSPath( FS_GetHomePath(), FS_GetCurrentGameDir(), r_qs_postprocess->string );
 
-	s = Q_stradd( buf, "PARAM sRGB = { 0.2126, 0.7152, 0.0722, 1.0 }; \n" );
-
-	if ( r_ps_greyscale->value == 1.0 ) {
-		Q_stradd( s, "DP3 base.xyz, base, sRGB; \n"  );
-	} else {
-		s = Q_stradd( s, "TEMP luma; \n" );
-		s = Q_stradd( s, "DP3 luma, base, sRGB; \n" );
-		/*s +=*/ sprintf( s, "LRP base.xyz, %1.2f, luma, base; \n", r_ps_greyscale->value );
-	}
-
-	return buf;
-}
-
-static char *ARB_BuildNegativeProgram( char *buf ) {
-    char *s;
-
-    if ( r_ps_negative->value == 0 ) {
+    if (r_qs_postprocess->value == 0) {
         *buf = '\0';
         return buf;
     }
 
-    s = Q_stradd( buf, "TEMP negativeColor; \n" );
-    s = Q_stradd( s, "SUB negativeColor, 1.0, base; \n" );
-    s = Q_stradd( s, "MOV base, negativeColor; \n" );
+    file = fopen(ospath, "r");
+    if (!file) {
+        *buf = '\0';
+        return buf;
+    }
+
+    fseek(file, 0, SEEK_END);
+    file_size = ftell(file);
+    fseek(file, 0, SEEK_SET);
+
+    file_contents = (char *)malloc(file_size + 1);
+    if (!file_contents) {
+        fclose(file);
+        *buf = '\0';
+        return buf;
+    }
+
+    read_size = fread(file_contents, 1, file_size, file);
+    file_contents[read_size] = '\0';
+
+    fclose(file);
+
+    strcpy(buf, file_contents);
+
+    free(file_contents);
 
     return buf;
 }
@@ -1053,10 +1060,7 @@ qboolean ARB_UpdatePrograms( void )
 		return qfalse;
 
 #ifdef USE_FBO
-	if ( !ARB_CompileProgram( Fragment, va( gammaFP, ARB_BuildGreyscaleProgram( buf ) ), programs[ PS1_FRAGMENT ] ) )
-		return qfalse;
-
-	if ( !ARB_CompileProgram( Fragment, va( gammaFP, ARB_BuildNegativeProgram( buf ) ), programs[ PS2_FRAGMENT ] ) )
+	if ( !ARB_CompileProgram( Fragment, va( gammaFP, ARB_BuildPostProcessProgram( buf ) ), programs[ GAMMA_FRAGMENT ] ) )
 		return qfalse;
 
 	if ( !ARB_CompileProgram( Fragment, ARB_BuildBloomProgram( buf ), programs[ BLOOM_EXTRACT_FRAGMENT ] ) )
@@ -1077,7 +1081,7 @@ qboolean ARB_UpdatePrograms( void )
 	if ( !ARB_CompileProgram( Fragment, blend2FP, programs[ BLEND2_FRAGMENT ] ) )
 		return qfalse;
 
-	if ( !ARB_CompileProgram( Fragment, va( blend2gammaFP, ARB_BuildGreyscaleProgram( buf ) ), programs[ BLEND2_GAMMA_FRAGMENT ] ) )
+	if ( !ARB_CompileProgram( Fragment, va( blend2gammaFP, ARB_BuildPostProcessProgram( buf ) ), programs[ BLEND2_GAMMA_FRAGMENT ] ) )
 		return qfalse;
 #endif // USE_FBO
 
@@ -2030,25 +2034,21 @@ void FBO_PostProcess( void )
 	// check if we can perform final draw directly into back buffer
 	if ( backEnd.screenshotMask == 0 && !windowAdjusted && !minimized ) {
 		FBO_Bind( GL_FRAMEBUFFER, 0 );
-	} else {
-		FBO_Bind( GL_FRAMEBUFFER, frameBuffers[ 1 ].fbo ); // destination - secondary buffer
-	}
-
-	GL_BindTexture( 0, frameBuffers[ fboReadIndex ].color );
-	ARB_ProgramEnable( DUMMY_VERTEX, PS1_FRAGMENT );	//Postprocess 1: greyscale
-	qglProgramLocalParameter4fARB( GL_FRAGMENT_PROGRAM_ARB, 0, gamma, gamma, gamma, obScale );
-	RenderQuad( w, h );
-	ARB_ProgramDisable();
-
-	GL_BindTexture( 0, frameBuffers[ fboReadIndex ].color );
-	ARB_ProgramEnable( DUMMY_VERTEX, PS2_FRAGMENT );	//Postprocess 2: negative
-	qglProgramLocalParameter4fARB( GL_FRAGMENT_PROGRAM_ARB, 0, gamma, gamma, gamma, obScale );
-	RenderQuad( w, h );
-	ARB_ProgramDisable();
-
-	if ( backEnd.screenshotMask == 0 && !windowAdjusted && !minimized ) {
+		GL_BindTexture( 0, frameBuffers[ fboReadIndex ].color );
+		ARB_ProgramEnable( DUMMY_VERTEX, GAMMA_FRAGMENT );
+		qglProgramLocalParameter4fARB( GL_FRAGMENT_PROGRAM_ARB, 0, gamma, gamma, gamma, obScale );
+		RenderQuad( w, h );
+		ARB_ProgramDisable();
 		return;
 	}
+
+	// apply gamma shader
+	FBO_Bind( GL_FRAMEBUFFER, frameBuffers[ 1 ].fbo ); // destination - secondary buffer
+	GL_BindTexture( 0, frameBuffers[ fboReadIndex ].color );  // source - main color buffer
+	ARB_ProgramEnable( DUMMY_VERTEX, GAMMA_FRAGMENT );
+	qglProgramLocalParameter4fARB( GL_FRAGMENT_PROGRAM_ARB, 0, gamma, gamma, gamma, obScale );
+	RenderQuad( w, h );
+	ARB_ProgramDisable();
 
 	if ( !minimized ) {
 		FBO_BlitToBackBuffer( 1 );
