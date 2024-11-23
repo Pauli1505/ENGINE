@@ -635,24 +635,38 @@ static const char *spriteFP = {
 static char *ARB_BuildGreyscaleProgram( char *buf ) {
 	char *s;
 
-	if ( r_greyscale->value == 0 ) {
+	if ( r_ps_greyscale->value == 0 ) {
 		*buf = '\0';
 		return buf;
 	}
 
 	s = Q_stradd( buf, "PARAM sRGB = { 0.2126, 0.7152, 0.0722, 1.0 }; \n" );
 
-	if ( r_greyscale->value == 1.0 ) {
+	if ( r_ps_greyscale->value == 1.0 ) {
 		Q_stradd( s, "DP3 base.xyz, base, sRGB; \n"  );
 	} else {
 		s = Q_stradd( s, "TEMP luma; \n" );
 		s = Q_stradd( s, "DP3 luma, base, sRGB; \n" );
-		/*s +=*/ sprintf( s, "LRP base.xyz, %1.2f, luma, base; \n", r_greyscale->value );
+		/*s +=*/ sprintf( s, "LRP base.xyz, %1.2f, luma, base; \n", r_ps_greyscale->value );
 	}
 
 	return buf;
 }
 
+static char *ARB_BuildNegativeProgram( char *buf ) {
+    char *s;
+
+    if ( r_ps_negative->value == 0 ) {
+        *buf = '\0';
+        return buf;
+    }
+
+    s = Q_stradd( buf, "TEMP negativeColor; \n" );
+    s = Q_stradd( s, "SUB negativeColor, 1.0, base; \n" );
+    s = Q_stradd( s, "MOV base, negativeColor; \n" );
+
+    return buf;
+}
 
 static const char *gammaFP = {
 	"!!ARBfp1.0 \n"
@@ -1039,7 +1053,10 @@ qboolean ARB_UpdatePrograms( void )
 		return qfalse;
 
 #ifdef USE_FBO
-	if ( !ARB_CompileProgram( Fragment, va( gammaFP, ARB_BuildGreyscaleProgram( buf ) ), programs[ GAMMA_FRAGMENT ] ) )
+	if ( !ARB_CompileProgram( Fragment, va( gammaFP, ARB_BuildGreyscaleProgram( buf ) ), programs[ PS1_FRAGMENT ] ) )
+		return qfalse;
+
+	if ( !ARB_CompileProgram( Fragment, va( gammaFP, ARB_BuildNegativeProgram( buf ) ), programs[ PS2_FRAGMENT ] ) )
 		return qfalse;
 
 	if ( !ARB_CompileProgram( Fragment, ARB_BuildBloomProgram( buf ), programs[ BLOOM_EXTRACT_FRAGMENT ] ) )
@@ -2014,7 +2031,8 @@ void FBO_PostProcess( void )
 	if ( backEnd.screenshotMask == 0 && !windowAdjusted && !minimized ) {
 		FBO_Bind( GL_FRAMEBUFFER, 0 );
 		GL_BindTexture( 0, frameBuffers[ fboReadIndex ].color );
-		ARB_ProgramEnable( DUMMY_VERTEX, GAMMA_FRAGMENT );
+		ARB_ProgramEnable( DUMMY_VERTEX, PS1_FRAGMENT );
+		ARB_ProgramEnable( DUMMY_VERTEX, PS2_FRAGMENT );
 		qglProgramLocalParameter4fARB( GL_FRAGMENT_PROGRAM_ARB, 0, gamma, gamma, gamma, obScale );
 		RenderQuad( w, h );
 		ARB_ProgramDisable();
@@ -2024,7 +2042,8 @@ void FBO_PostProcess( void )
 	// apply gamma shader
 	FBO_Bind( GL_FRAMEBUFFER, frameBuffers[ 1 ].fbo ); // destination - secondary buffer
 	GL_BindTexture( 0, frameBuffers[ fboReadIndex ].color );  // source - main color buffer
-	ARB_ProgramEnable( DUMMY_VERTEX, GAMMA_FRAGMENT );
+	ARB_ProgramEnable( DUMMY_VERTEX, PS1_FRAGMENT );
+	ARB_ProgramEnable( DUMMY_VERTEX, PS2_FRAGMENT );
 	qglProgramLocalParameter4fARB( GL_FRAGMENT_PROGRAM_ARB, 0, gamma, gamma, gamma, obScale );
 	RenderQuad( w, h );
 	ARB_ProgramDisable();
