@@ -1303,7 +1303,6 @@ extern	cvar_t	*r_skipBackEnd;
 extern	cvar_t	*r_anaglyphMode;
 
 extern	cvar_t	*r_qs_postprocess;
-extern	cvar_t	*r_ps_negative;
 
 extern	cvar_t	*r_ignoreGLErrors;
 

@@ -57,7 +57,6 @@ cvar_t	*r_skipBackEnd;
 cvar_t	*r_anaglyphMode;
 
 cvar_t	*r_qs_postprocess;
-cvar_t	*r_ps_negative;
 
 static cvar_t *r_ignorehwgamma;
 
@@ -1651,14 +1650,8 @@ static void R_Register( void )
 	ri.Cvar_SetDescription( r_anaglyphMode, "Enable rendering of anaglyph images. Valid options for 3D glasses types:\n 0: Disabled\n 1: Red-cyan\n 2: Red-blue\n 3: Red-green\n 4: Green-magenta" );
 
 	r_qs_postprocess = ri.Cvar_Get( "r_qs_postprocess", "0", CVAR_ARCHIVE_ND );
-	ri.Cvar_CheckRange( r_qs_postprocess, "-1", "1", CV_FLOAT );
-	ri.Cvar_SetDescription( r_qs_postprocess, "Desaturate rendered frame, requires \\r_fbo 1." );
+	ri.Cvar_SetDescription( r_qs_postprocess, "Load ARB shader from file, requires \\r_fbo 1." );
 	ri.Cvar_SetGroup( r_qs_postprocess, CVG_RENDERER );
-
-	r_ps_negative = ri.Cvar_Get( "r_ps_negative", "0", CVAR_ARCHIVE_ND );
-	ri.Cvar_CheckRange( r_ps_negative, "0", "1", CV_FLOAT );
-	ri.Cvar_SetDescription( r_ps_negative, "Negate rendered frame, requires \\r_fbo 1." );
-	ri.Cvar_SetGroup( r_ps_negative, CVG_RENDERER );
 
 	//
 	// temporary variables that can change at any time
