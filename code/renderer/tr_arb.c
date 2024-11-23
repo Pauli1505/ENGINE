@@ -2030,23 +2030,24 @@ void FBO_PostProcess( void )
 	// check if we can perform final draw directly into back buffer
 	if ( backEnd.screenshotMask == 0 && !windowAdjusted && !minimized ) {
 		FBO_Bind( GL_FRAMEBUFFER, 0 );
-		GL_BindTexture( 0, frameBuffers[ fboReadIndex ].color );
-		ARB_ProgramEnable( DUMMY_VERTEX, PS1_FRAGMENT );
-		ARB_ProgramEnable( DUMMY_VERTEX, PS2_FRAGMENT );
-		qglProgramLocalParameter4fARB( GL_FRAGMENT_PROGRAM_ARB, 0, gamma, gamma, gamma, obScale );
-		RenderQuad( w, h );
-		ARB_ProgramDisable();
-		return;
+	} else {
+		FBO_Bind( GL_FRAMEBUFFER, frameBuffers[ 1 ].fbo ); // destination - secondary buffer
 	}
+	GL_BindTexture( 0, frameBuffers[ fboReadIndex ].color );
 
-	// apply gamma shader
-	FBO_Bind( GL_FRAMEBUFFER, frameBuffers[ 1 ].fbo ); // destination - secondary buffer
-	GL_BindTexture( 0, frameBuffers[ fboReadIndex ].color );  // source - main color buffer
-	ARB_ProgramEnable( DUMMY_VERTEX, PS1_FRAGMENT );
-	ARB_ProgramEnable( DUMMY_VERTEX, PS2_FRAGMENT );
+	ARB_ProgramEnable( DUMMY_VERTEX, PS1_FRAGMENT );	//Postprocess 1: greyscale
 	qglProgramLocalParameter4fARB( GL_FRAGMENT_PROGRAM_ARB, 0, gamma, gamma, gamma, obScale );
 	RenderQuad( w, h );
 	ARB_ProgramDisable();
+
+	ARB_ProgramEnable( DUMMY_VERTEX, PS2_FRAGMENT );	//Postprocess 2: negative
+	qglProgramLocalParameter4fARB( GL_FRAGMENT_PROGRAM_ARB, 0, gamma, gamma, gamma, obScale );
+	RenderQuad( w, h );
+	ARB_ProgramDisable();
+
+	if ( backEnd.screenshotMask == 0 && !windowAdjusted && !minimized ) {
+		return;
+	}
 
 	if ( !minimized ) {
 		FBO_BlitToBackBuffer( 1 );
