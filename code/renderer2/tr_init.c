@@ -55,7 +55,7 @@ cvar_t	*r_skipBackEnd;
 
 cvar_t	*r_anaglyphMode;
 
-cvar_t	*r_ps_greyscale;
+cvar_t	*r_qs_postprocess;
 
 cvar_t	*r_ignorehwgamma;
 cvar_t	*r_measureOverdraw;
@@ -1154,9 +1154,9 @@ static void R_Register( void )
 	ri.Cvar_SetDescription( r_vertexLight, "Set to 1 to use vertex light instead of lightmaps, collapse all multi-stage shaders into single-stage ones, might cause rendering artifacts." );
 	r_subdivisions = ri.Cvar_Get ("r_subdivisions", "1", CVAR_ARCHIVE | CVAR_LATCH);
 	ri.Cvar_SetDescription(r_subdivisions, "Distance to subdivide bezier curved surfaces. Higher values mean less subdivision and less geometric complexity.");
-	r_ps_greyscale = ri.Cvar_Get("r_ps_greyscale", "0", CVAR_ARCHIVE | CVAR_LATCH);
-	ri.Cvar_CheckRange( r_ps_greyscale, "0", "1", CV_FLOAT );
-	ri.Cvar_SetDescription( r_ps_greyscale, "Desaturates rendered frame." );
+	r_qs_postprocess = ri.Cvar_Get("r_qs_postprocess", "0", CVAR_ARCHIVE | CVAR_LATCH);
+	ri.Cvar_CheckRange( r_qs_postprocess, "0", "1", CV_FLOAT );
+	ri.Cvar_SetDescription( r_qs_postprocess, "Desaturates rendered frame." );
 
 	r_externalGLSL = ri.Cvar_Get( "r_externalGLSL", "1", CVAR_LATCH );
 
