@@ -2033,13 +2033,14 @@ void FBO_PostProcess( void )
 	} else {
 		FBO_Bind( GL_FRAMEBUFFER, frameBuffers[ 1 ].fbo ); // destination - secondary buffer
 	}
-	GL_BindTexture( 0, frameBuffers[ fboReadIndex ].color );
 
+	GL_BindTexture( 0, frameBuffers[ fboReadIndex ].color );
 	ARB_ProgramEnable( DUMMY_VERTEX, PS1_FRAGMENT );	//Postprocess 1: greyscale
 	qglProgramLocalParameter4fARB( GL_FRAGMENT_PROGRAM_ARB, 0, gamma, gamma, gamma, obScale );
 	RenderQuad( w, h );
 	ARB_ProgramDisable();
 
+	GL_BindTexture( 0, frameBuffers[ fboReadIndex ].color );
 	ARB_ProgramEnable( DUMMY_VERTEX, PS2_FRAGMENT );	//Postprocess 2: negative
 	qglProgramLocalParameter4fARB( GL_FRAGMENT_PROGRAM_ARB, 0, gamma, gamma, gamma, obScale );
 	RenderQuad( w, h );
