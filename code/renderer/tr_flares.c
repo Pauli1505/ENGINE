@@ -419,7 +419,7 @@ void RB_RenderFlares (void) {
 	}
 #endif
 
-	// RB_AddDlightFlares();
+	RB_AddDlightFlares();
 
 	// perform z buffer readback on each flare in this view
 	draw = qfalse;

@@ -493,7 +493,7 @@ void RB_RenderFlares (void) {
 	backEnd.currentEntity = &tr.worldEntity;
 	backEnd.or = backEnd.viewParms.world;
 
-//	RB_AddDlightFlares();
+	RB_AddDlightFlares();
 
 	// perform z buffer readback on each flare in this view
 	draw = qfalse;

@@ -1209,7 +1209,7 @@ static void R_Register( void )
 	r_baseSpecular = ri.Cvar_Get( "r_baseSpecular", "0.00", CVAR_ARCHIVE | CVAR_LATCH );
 	r_baseGloss = ri.Cvar_Get( "r_baseGloss", "0.00", CVAR_ARCHIVE | CVAR_LATCH );
 	r_glossType = ri.Cvar_Get("r_glossType", "2", CVAR_ARCHIVE | CVAR_LATCH);
-	r_dlightMode = ri.Cvar_Get( "r_dlightMode", "2", CVAR_ARCHIVE | CVAR_LATCH );
+	r_dlightMode = ri.Cvar_Get( "r_dlightMode", "1", CVAR_ARCHIVE | CVAR_LATCH );
 	ri.Cvar_SetDescription( r_dlightMode, "Dynamic light mode:\n 0: VQ3 'fake' dynamic lights\n 1: High-quality per-pixel dynamic lights, slightly faster than VQ3's on modern hardware\n 2: Same as 1 but applies to all MD3 models too" );
 	r_pshadowDist = ri.Cvar_Get( "r_pshadowDist", "128", CVAR_ARCHIVE );
 	r_mergeLightmaps = ri.Cvar_Get( "r_mergeLightmaps", "1", CVAR_ARCHIVE | CVAR_LATCH );
