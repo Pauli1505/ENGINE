@@ -643,24 +643,15 @@ static char *ARB_BuildEffectsProgram( char *buf ) {
     s += sprintf( s, "TEMP base; \n" );
     s += sprintf( s, "TEX base, fragment.texcoord[0], texture[0], 2D; \n" );
 
-	// 0. Chromatic Aberration
-	if ( r_ps_chromaticAberration->value != 0.0 ) {
-    	s += sprintf( s, "PARAM chromaticAberration = { %1.6f, %1.6f, %1.6f, %1.6f }; \n",
-        	          r_ps_chromaticAberration->value, 
-        	          r_ps_chromaticAberration->value, 
-        	          -r_ps_chromaticAberration->value, 
-        	          -r_ps_chromaticAberration->value );
-
-    	s += sprintf( s, "TEMP redCoord, greenCoord, blueCoord; \n" );
-    	s += sprintf( s, "ADD redCoord.x, fragment.texcoord[0].x, chromaticAberration.x; \n" );
-    	s += sprintf( s, "ADD redCoord.y, fragment.texcoord[0].y, chromaticAberration.y; \n" );
-    	s += sprintf( s, "ADD greenCoord.x, fragment.texcoord[0].x, chromaticAberration.z; \n" );
-    	s += sprintf( s, "ADD greenCoord.y, fragment.texcoord[0].y, chromaticAberration.w; \n" );
-    	s += sprintf( s, "ADD blueCoord.x, fragment.texcoord[0].x, -chromaticAberration.x; \n" );
-    	s += sprintf( s, "ADD blueCoord.y, fragment.texcoord[0].y, -chromaticAberration.y; \n" );
-    	s += sprintf( s, "TEX base.r, redCoord, texture[0], 2D; \n" );
-    	s += sprintf( s, "TEX base.g, greenCoord, texture[0], 2D; \n" );
-    	s += sprintf( s, "TEX base.b, blueCoord, texture[0], 2D; \n" );
+	// 0. Gamma correction
+	if ( r_gamma->value != 0.0 ) {
+    	s += sprintf( s, "POW base.x, base.x, gamma.x; \n" );
+    	s += sprintf( s, "POW base.y, base.x, gamma.y; \n" );
+    	s += sprintf( s, "POW base.z, base.x, gamma.z; \n" );
+    	s += sprintf( s, "MUL base.xyz, base, gamma.w; \n" );
+    	s += sprintf( s, "MOV base.w, 1.0; \n" );
+    	s += sprintf( s, "MOV_SAT result.color, base; \n" );
+    	s += sprintf( s, "END \n" );
 	}
 
     // 1. Greyscale
@@ -732,15 +723,24 @@ static char *ARB_BuildEffectsProgram( char *buf ) {
     	s += sprintf( s, "ADD base.xyz, base, bloom; \n" );
 	}
 
-	// End. Gamma correction
-	if ( r_gamma->value != 0.0 ) {
-    	s += sprintf( s, "POW base.x, base.x, gamma.x; \n" );
-    	s += sprintf( s, "POW base.y, base.x, gamma.y; \n" );
-    	s += sprintf( s, "POW base.z, base.x, gamma.z; \n" );
-    	s += sprintf( s, "MUL base.xyz, base, gamma.w; \n" );
-    	s += sprintf( s, "MOV base.w, 1.0; \n" );
-    	s += sprintf( s, "MOV_SAT result.color, base; \n" );
-    	s += sprintf( s, "END \n" );
+	// 11. Chromatic Aberration
+	if ( r_ps_chromaticAberration->value != 0.0 ) {
+    	s += sprintf( s, "PARAM chromaticAberration = { %1.6f, %1.6f, %1.6f, %1.6f }; \n",
+        	          r_ps_chromaticAberration->value, 
+        	          r_ps_chromaticAberration->value, 
+        	          -r_ps_chromaticAberration->value, 
+        	          -r_ps_chromaticAberration->value );
+
+    	s += sprintf( s, "TEMP redCoord, greenCoord, blueCoord; \n" );
+    	s += sprintf( s, "ADD redCoord.x, fragment.texcoord[0].x, chromaticAberration.x; \n" );
+    	s += sprintf( s, "ADD redCoord.y, fragment.texcoord[0].y, chromaticAberration.y; \n" );
+    	s += sprintf( s, "ADD greenCoord.x, fragment.texcoord[0].x, chromaticAberration.z; \n" );
+    	s += sprintf( s, "ADD greenCoord.y, fragment.texcoord[0].y, chromaticAberration.w; \n" );
+    	s += sprintf( s, "ADD blueCoord.x, fragment.texcoord[0].x, -chromaticAberration.x; \n" );
+    	s += sprintf( s, "ADD blueCoord.y, fragment.texcoord[0].y, -chromaticAberration.y; \n" );
+    	s += sprintf( s, "TEX base.r, redCoord, texture[0], 2D; \n" );
+    	s += sprintf( s, "TEX base.g, greenCoord, texture[0], 2D; \n" );
+    	s += sprintf( s, "TEX base.b, blueCoord, texture[0], 2D; \n" );
 	}
 
     return buf;
