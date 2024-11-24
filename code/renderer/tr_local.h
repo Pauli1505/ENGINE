@@ -1303,6 +1303,17 @@ extern	cvar_t	*r_skipBackEnd;
 extern	cvar_t	*r_anaglyphMode;
 
 extern	cvar_t	*r_ps_greyscale;
+extern	cvar_t	*r_ps_sepia;
+extern	cvar_t	*r_ps_contrast;
+extern	cvar_t	*r_ps_brightness;
+extern	cvar_t	*r_ps_noise;
+extern	cvar_t	*r_ps_invert;
+extern	cvar_t	*r_ps_tint_r;
+extern	cvar_t	*r_ps_tint_g;
+extern	cvar_t	*r_ps_tint_b;
+extern	cvar_t	*r_ps_vignette;
+extern	cvar_t	*r_ps_posterize;
+extern	cvar_t	*r_ps_glow;
 
 extern	cvar_t	*r_ignoreGLErrors;
 
