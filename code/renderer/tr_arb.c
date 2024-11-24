@@ -652,10 +652,12 @@ static char *ARB_BuildEffectsProgram( char *buf ) {
     }
 
 	// 3. Contrast
-	if ( r_ps_contrast->value != 1.0 ) {
-    	s += sprintf( s, "PARAM contrast = { %1.2f, %1.2f, %1.2f, 0.0 }; \n", r_ps_contrast->value, r_ps_contrast->value, r_ps_contrast->value );
-    	s = Q_stradd( s, "MUL contrast.xyz, base.xyz, contrast; \n" );
-    	s = Q_stradd( s, "MAD base.xyz, base.xyz, contrast, -0.5 * (contrast.x - 1.0); \n" );
+	if ( r_ps_contrast->value != 0.0 ) {
+   		float contrast = r_ps_contrast->value;
+    	s += sprintf( s, "PARAM contrast = { %1.2f, %1.2f, %1.2f, 1.0 }; \n", contrast, contrast, contrast );
+    	s = Q_stradd( s, "MUL base.xyz, base, contrast; \n" );       // Увеличиваем контраст
+    	s = Q_stradd( s, "ADD base.xyz, base, -0.5; \n" );            // Центрируем на 0
+    	s = Q_stradd( s, "MUL base.xyz, base, contrast; \n" );       // Применяем контраст
 	}
 
     // 4. Brightness
@@ -663,12 +665,9 @@ static char *ARB_BuildEffectsProgram( char *buf ) {
         s += sprintf( s, "ADD base.xyz, base, %1.2f; \n", r_ps_brightness->value );
     }
 
-    // 5. Noise
-    if ( r_ps_noise->value != 0.0 ) {
-        s = Q_stradd( s, "TEMP noise; \n" );
-        s = Q_stradd( s, "RAND noise, fragment.position.xy; \n" );
-        s += sprintf( s, "MUL noise.xyz, noise, %1.2f; \n", r_ps_noise->value );
-        s = Q_stradd( s, "ADD base.xyz, base, noise; \n" );
+    // 5. Blur
+    if ( r_ps_blur->value != 0.0 ) {
+		s = ARB_BuildBlurProgram( s, r_ps_blur->value );
     }
 
     // 6. Invert
@@ -682,16 +681,7 @@ static char *ARB_BuildEffectsProgram( char *buf ) {
         s = Q_stradd( s, "MUL base.xyz, base, tint; \n" );
     }
 
-    // 8. Vignette
-	if (r_ps_vignette->value != 0.0) {
-    	s = Q_stradd(s, "TEMP vignette; \n");
-    	s = Q_stradd(s, "DP2 vignette, fragment.texcoord[0], fragment.texcoord[0]; \n");
-    	s += sprintf(s, "MUL vignette, vignette, %1.2f; \n", -r_ps_vignette->value);
-    	s = Q_stradd(s, "EXP vignette, vignette; \n");
-    	s = Q_stradd(s, "MUL base.xyz, base, vignette; \n");
-	}
-
-	// 9. Posterize
+	// 8. Posterize
 	if ( r_ps_posterize->value != 0.0 ) {
     	float levels = r_ps_posterize->value;
     	s += sprintf( s, "PARAM levels = { %1.2f, %1.2f, %1.2f, 1.0 }; \n", levels, levels, levels );
@@ -700,7 +690,7 @@ static char *ARB_BuildEffectsProgram( char *buf ) {
 	    s = Q_stradd( s, "SUB base.xyz, base, 0.5; \n" );
 	}
 
-    // 10. Glow
+    // 9. Glow
     if ( r_ps_glow->value != 0.0 ) {
         s = Q_stradd( s, "TEMP glow; \n" );
         s += sprintf( s, "MUL glow.xyz, base, %1.2f; \n", 1.0 + r_ps_glow->value );
@@ -720,7 +710,7 @@ static const char *gammaFP = {
 	"POW base.y, base.y, gamma.y; \n"
 	"POW base.z, base.z, gamma.z; \n"
 	"MUL base.xyz, base, gamma.w; \n"
-	"%s" // for greyscale shader if needed
+	"%s" // for effects
 	"MOV base.w, 1.0; \n"
 	"MOV_SAT result.color, base; \n"
 	"END \n"

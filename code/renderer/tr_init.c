@@ -60,12 +60,11 @@ cvar_t	*r_ps_greyscale;
 cvar_t	*r_ps_sepia;
 cvar_t	*r_ps_contrast;
 cvar_t	*r_ps_brightness;
-cvar_t	*r_ps_noise;
+cvar_t	*r_ps_blur;
 cvar_t	*r_ps_invert;
 cvar_t	*r_ps_tint_r;
 cvar_t	*r_ps_tint_g;
 cvar_t	*r_ps_tint_b;
-cvar_t	*r_ps_vignette;
 cvar_t	*r_ps_posterize;
 cvar_t	*r_ps_glow;
 
@@ -1676,29 +1675,25 @@ static void R_Register( void )
 	ri.Cvar_SetDescription( r_ps_brightness, "Postprocess effect, requires \\r_fbo 1." );
 	ri.Cvar_SetGroup( r_ps_brightness, CVG_RENDERER );
 
-	r_ps_noise = ri.Cvar_Get( "r_ps_noise", "0.0", CVAR_ARCHIVE_ND );
-	ri.Cvar_SetDescription( r_ps_noise, "Postprocess effect, requires \\r_fbo 1." );
-	ri.Cvar_SetGroup( r_ps_noise, CVG_RENDERER );
+	r_ps_blur = ri.Cvar_Get( "r_ps_blur", "0.0", CVAR_ARCHIVE_ND );
+	ri.Cvar_SetDescription( r_ps_blur, "Postprocess effect, requires \\r_fbo 1." );
+	ri.Cvar_SetGroup( r_ps_blur, CVG_RENDERER );
 
 	r_ps_invert = ri.Cvar_Get( "r_ps_invert", "0.0", CVAR_ARCHIVE_ND );
 	ri.Cvar_SetDescription( r_ps_invert, "Postprocess effect, requires \\r_fbo 1." );
 	ri.Cvar_SetGroup( r_ps_invert, CVG_RENDERER );
 
-	r_ps_tint_r = ri.Cvar_Get( "r_ps_tint_r", "0.0", CVAR_ARCHIVE_ND );
+	r_ps_tint_r = ri.Cvar_Get( "r_ps_tint_r", "1.0", CVAR_ARCHIVE_ND );
 	ri.Cvar_SetDescription( r_ps_tint_r, "Postprocess effect, requires \\r_fbo 1." );
 	ri.Cvar_SetGroup( r_ps_tint_r, CVG_RENDERER );
 
-	r_ps_tint_g = ri.Cvar_Get( "r_ps_tint_g", "0.0", CVAR_ARCHIVE_ND );
+	r_ps_tint_g = ri.Cvar_Get( "r_ps_tint_g", "1.0", CVAR_ARCHIVE_ND );
 	ri.Cvar_SetDescription( r_ps_tint_g, "Postprocess effect, requires \\r_fbo 1." );
 	ri.Cvar_SetGroup( r_ps_tint_g, CVG_RENDERER );
 
-	r_ps_tint_b = ri.Cvar_Get( "r_ps_tint_b", "0.0", CVAR_ARCHIVE_ND );
+	r_ps_tint_b = ri.Cvar_Get( "r_ps_tint_b", "1.0", CVAR_ARCHIVE_ND );
 	ri.Cvar_SetDescription( r_ps_tint_b, "Postprocess effect, requires \\r_fbo 1." );
 	ri.Cvar_SetGroup( r_ps_tint_b, CVG_RENDERER );
-
-	r_ps_vignette = ri.Cvar_Get( "r_ps_vignette", "0.0", CVAR_ARCHIVE_ND );
-	ri.Cvar_SetDescription( r_ps_vignette, "Postprocess effect, requires \\r_fbo 1." );
-	ri.Cvar_SetGroup( r_ps_vignette, CVG_RENDERER );
 
 	r_ps_posterize = ri.Cvar_Get( "r_ps_posterize", "0.0", CVAR_ARCHIVE_ND );
 	ri.Cvar_SetDescription( r_ps_posterize, "Postprocess effect, requires \\r_fbo 1." );
