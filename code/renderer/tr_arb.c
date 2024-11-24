@@ -635,13 +635,12 @@ static const char *spriteFP = {
 static char *ARB_BuildEffectsProgram( char *buf ) {
     char *s = buf;
 	int   i;
-
-    s += sprintf( s, "TEMP color; \n" );
-    s += sprintf( s, "TEMP temp; \n" );
+	
     s += sprintf( s, "PARAM sRGB = { 0.2126, 0.7152, 0.0722, 1.0 }; \n" );
 
     // 1. Greyscale
     if ( r_ps_greyscale->value != 0.0 ) {
+    	s += sprintf( s, "TEMP color; \n" );
         s += sprintf( s, "DP3 color.xyz, base, sRGB; \n" );
         s += sprintf( s, "LRP base.xyz, %1.2f, color, base; \n", r_ps_greyscale->value );
     }
