@@ -706,6 +706,28 @@ static char *ARB_BuildEffectsProgram( char *buf ) {
     	s += sprintf( s, "MUL bloom.xyz, base, %1.2f; \n", r_ps_bloom->value );
     	s += sprintf( s, "ADD base.xyz, base, bloom; \n" );
 	}
+	
+	// 11. Chromatic Aberration
+	if ( r_ps_chromaticAberration->value != 0.0 ) {
+    	s += sprintf( s, "PARAM chromaticAberration = { %1.2f, %1.2f, %1.2f, %1.2f }; \n",
+        	          1 * r_ps_chromaticAberration->value, 
+        	          -1 * r_ps_chromaticAberration->value, 
+        	          1 * r_ps_chromaticAberration->value, 
+        	          -1 * r_ps_chromaticAberration->value );
+
+    	s += sprintf( s, "TEMP redCoord, greenCoord, blueCoord; \n" );
+    	s += sprintf( s, "ADD redCoord.x, fragment.texcoord.x, chromaticAberration.x; \n" );
+    	s += sprintf( s, "ADD redCoord.y, fragment.texcoord.y, chromaticAberration.y; \n" );
+    	s += sprintf( s, "ADD greenCoord.x, fragment.texcoord.x, chromaticAberration.z; \n" );
+    	s += sprintf( s, "ADD greenCoord.y, fragment.texcoord.y, chromaticAberration.w; \n" );
+    	s += sprintf( s, "ADD blueCoord.x, fragment.texcoord.x, -chromaticAberration.x; \n" );
+    	s += sprintf( s, "ADD blueCoord.y, fragment.texcoord.y, -chromaticAberration.y; \n" );
+    	s += sprintf( s, "TEMP color; \n" );
+    	s += sprintf( s, "TEX color.r, redCoord, texture[0], 2D; \n" );
+    	s += sprintf( s, "TEX color.g, greenCoord, texture[0], 2D; \n" );
+    	s += sprintf( s, "TEX color.b, blueCoord, texture[0], 2D; \n" );
+    	s += sprintf( s, "MOV result.color, color; \n" );
+	}
 
     return buf;
 }
