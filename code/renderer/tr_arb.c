@@ -636,16 +636,6 @@ static char *ARB_BuildEffectsProgram( char *buf ) {
     char *s = buf;
 	int   i;
 
-    s = Q_stradd( s, "!!ARBfp1.0 \n" );
-	s = Q_stradd( s, "OPTION ARB_precision_hint_fastest; \n" );
-	s = Q_stradd( s, "PARAM gamma = program.local[0]; \n" );
-    s = Q_stradd( s, "TEMP base; \n" );
-    s = Q_stradd( s, "TEX base, fragment.texcoord[0], texture[0], 2D; \n" );
-    s = Q_stradd( s, "POW base.x, base.x, gamma.x; \n" );
-    s = Q_stradd( s, "POW base.y, base.y, gamma.y; \n" );
-    s = Q_stradd( s, "POW base.z, base.z, gamma.z; \n" );
-    s = Q_stradd( s, "MUL base.xyz, base, gamma.w; \n" );
-
     s = Q_stradd( s, "TEMP color; \n" );
     s = Q_stradd( s, "TEMP temp; \n" );
     s = Q_stradd( s, "PARAM sRGB = { 0.2126, 0.7152, 0.0722, 1.0 }; \n" );
@@ -703,12 +693,24 @@ static char *ARB_BuildEffectsProgram( char *buf ) {
         s += sprintf( s, "LRP base.xyz, %1.2f, glow, base; \n", 0.5 * r_ps_glow->value );
     }
 
-	s = Q_stradd( s, "MOV base.w, 1.0; \n" );
-	s = Q_stradd( s, "MOV_SAT result.color, base; \n" );
-	s = Q_stradd( s, "END \n" );
-
     return buf;
 }
+
+static const char *gammaFP = {
+	"!!ARBfp1.0 \n"
+	"OPTION ARB_precision_hint_fastest; \n"
+	"PARAM gamma = program.local[0]; \n"
+	"TEMP base; \n"
+	"TEX base, fragment.texcoord[0], texture[0], 2D; \n"
+	"POW base.x, base.x, gamma.x; \n"
+	"POW base.y, base.y, gamma.y; \n"
+	"POW base.z, base.z, gamma.z; \n"
+	"MUL base.xyz, base, gamma.w; \n"
+	"%s" // for effects
+	"MOV base.w, 1.0; \n"
+	"MOV_SAT result.color, base; \n"
+	"END \n"
+};
 
 static char *ARB_BuildBloomProgram( char *buf ) {
 	qboolean intensityCalculated;
@@ -1079,7 +1081,7 @@ qboolean ARB_UpdatePrograms( void )
 		return qfalse;
 
 #ifdef USE_FBO
-	if ( !ARB_CompileProgram( Fragment, ARB_BuildEffectsProgram( buf ), programs[ PS1_FRAGMENT ] ) )
+	if ( !ARB_CompileProgram( Fragment, va( gammaFP, ARB_BuildEffectsProgram( buf ) ), programs[ PS1_FRAGMENT ] ) )
 		return qfalse;
 
 	if ( !ARB_CompileProgram( Fragment, ARB_BuildBloomProgram( buf ), programs[ BLOOM_EXTRACT_FRAGMENT ] ) )
