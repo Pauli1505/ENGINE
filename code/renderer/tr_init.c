@@ -66,8 +66,12 @@ cvar_t	*r_ps_tint_g;
 cvar_t	*r_ps_tint_b;
 cvar_t	*r_ps_posterize;
 cvar_t	*r_ps_glow;
-cvar_t	*r_ps_hue_shift;
-cvar_t	*r_ps_blend_color;
+cvar_t	*r_ps_filmic;
+cvar_t	*r_ps_vignette;
+cvar_t	*r_ps_chromaticAberration;
+cvar_t	*r_ps_bloom;
+cvar_t	*r_ps_halftone;
+cvar_t	*r_ps_pixelate;
 
 static cvar_t *r_ignorehwgamma;
 
@@ -1684,17 +1688,29 @@ static void R_Register( void )
 	r_ps_tint_b = ri.Cvar_Get( "r_ps_tint_b", "1.0", CVAR_ARCHIVE_ND );
 	ri.Cvar_SetGroup( r_ps_tint_b, CVG_RENDERER );
 
-	r_ps_posterize = ri.Cvar_Get( "r_ps_posterize", "1.0", CVAR_ARCHIVE_ND );
+	r_ps_posterize = ri.Cvar_Get( "r_ps_posterize", "0.0", CVAR_ARCHIVE_ND );
 	ri.Cvar_SetGroup( r_ps_posterize, CVG_RENDERER );
 
 	r_ps_glow = ri.Cvar_Get( "r_ps_glow", "0.0", CVAR_ARCHIVE_ND );
 	ri.Cvar_SetGroup( r_ps_glow, CVG_RENDERER );
 
-	r_ps_hue_shift = ri.Cvar_Get( "r_ps_hue_shift", "0.0", CVAR_ARCHIVE_ND );
-	ri.Cvar_SetGroup( r_ps_hue_shift, CVG_RENDERER );
+	r_ps_filmic = ri.Cvar_Get( "r_ps_filmic", "0.0", CVAR_ARCHIVE_ND );
+	ri.Cvar_SetGroup( r_ps_filmic, CVG_RENDERER );
 
-	r_ps_blend_color = ri.Cvar_Get( "r_ps_blend_color", "0.0", CVAR_ARCHIVE_ND );
-	ri.Cvar_SetGroup( r_ps_blend_color, CVG_RENDERER );
+	r_ps_vignette = ri.Cvar_Get( "r_ps_vignette", "0.0", CVAR_ARCHIVE_ND );
+	ri.Cvar_SetGroup( r_ps_vignette, CVG_RENDERER );
+
+	r_ps_chromaticAberration = ri.Cvar_Get( "r_ps_chromaticAberration", "0.0", CVAR_ARCHIVE_ND );
+	ri.Cvar_SetGroup( r_ps_chromaticAberration, CVG_RENDERER );
+
+	r_ps_bloom = ri.Cvar_Get( "r_ps_bloom", "0.0", CVAR_ARCHIVE_ND );
+	ri.Cvar_SetGroup( r_ps_bloom, CVG_RENDERER );
+
+	r_ps_halftone = ri.Cvar_Get( "r_ps_halftone", "0.0", CVAR_ARCHIVE_ND );
+	ri.Cvar_SetGroup( r_ps_halftone, CVG_RENDERER );
+
+	r_ps_pixelate = ri.Cvar_Get( "r_ps_pixelate", "0.0", CVAR_ARCHIVE_ND );
+	ri.Cvar_SetGroup( r_ps_pixelate, CVG_RENDERER );
 
 	//
 	// temporary variables that can change at any time
