@@ -66,6 +66,8 @@ cvar_t	*r_ps_tint_g;
 cvar_t	*r_ps_tint_b;
 cvar_t	*r_ps_posterize;
 cvar_t	*r_ps_glow;
+cvar_t	*r_ps_hue_shift;
+cvar_t	*r_ps_blend_color;
 
 static cvar_t *r_ignorehwgamma;
 
@@ -1687,6 +1689,12 @@ static void R_Register( void )
 
 	r_ps_glow = ri.Cvar_Get( "r_ps_glow", "0.0", CVAR_ARCHIVE_ND );
 	ri.Cvar_SetGroup( r_ps_glow, CVG_RENDERER );
+
+	r_ps_hue_shift = ri.Cvar_Get( "r_ps_hue_shift", "0.0", CVAR_ARCHIVE_ND );
+	ri.Cvar_SetGroup( r_ps_hue_shift, CVG_RENDERER );
+
+	r_ps_blend_color = ri.Cvar_Get( "r_ps_blend_color", "0.0", CVAR_ARCHIVE_ND );
+	ri.Cvar_SetGroup( r_ps_blend_color, CVG_RENDERER );
 
 	//
 	// temporary variables that can change at any time
