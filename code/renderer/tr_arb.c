@@ -656,9 +656,9 @@ static char *ARB_BuildEffectsProgram( char *buf ) {
 	if ( r_ps_contrast->value != 0.0 ) {
    		float contrast = r_ps_contrast->value;
     	s += sprintf( s, "PARAM contrast = { %1.2f, %1.2f, %1.2f, 1.0 }; \n", contrast, contrast, contrast );
-    	s = Q_stradd( s, "MUL base.xyz, base, contrast; \n" );       // Увеличиваем контраст
-    	s = Q_stradd( s, "ADD base.xyz, base, -0.5; \n" );            // Центрируем на 0
-    	s = Q_stradd( s, "MUL base.xyz, base, contrast; \n" );       // Применяем контраст
+    	s = Q_stradd( s, "MUL base.xyz, base, contrast; \n" );
+    	s = Q_stradd( s, "ADD base.xyz, base, -0.5; \n" );
+    	s = Q_stradd( s, "MUL base.xyz, base, contrast; \n" );
 	}
 
     // 4. Brightness
