@@ -66,34 +66,6 @@ cvar_t	*r_ps_tint_g;
 cvar_t	*r_ps_tint_b;
 cvar_t	*r_ps_posterize;
 cvar_t	*r_ps_glow;
-cvar_t	*r_ps_vignette;
-cvar_t	*r_ps_bloom;
-cvar_t	*r_ps_edge_detect;
-cvar_t	*r_ps_sharpen;
-cvar_t	*r_ps_poster_color;
-cvar_t	*r_ps_poster_color_r;
-cvar_t	*r_ps_poster_color_g;
-cvar_t	*r_ps_poster_color_b;
-cvar_t	*r_ps_grunge;
-cvar_t	*r_ps_sepia_noise;
-cvar_t	*r_ps_thermal;
-cvar_t	*r_ps_thermal_r;
-cvar_t	*r_ps_thermal_g;
-cvar_t	*r_ps_thermal_b;
-cvar_t	*r_ps_flicker;
-cvar_t	*r_ps_blur;
-cvar_t	*r_ps_blur_size;
-cvar_t	*r_ps_blur_direction;
-cvar_t	*r_ps_rgb_shift;
-cvar_t	*r_ps_rgb_shift_r;
-cvar_t	*r_ps_rgb_shift_g;
-cvar_t	*r_ps_rgb_shift_b;
-cvar_t	*r_ps_pixelate;
-cvar_t	*r_ps_chroma_key;
-cvar_t	*r_ps_negative;
-cvar_t	*r_ps_bloom_hdr;
-cvar_t	*r_ps_solarize;
-cvar_t	*r_ps_negative_glow;
 
 static cvar_t *r_ignorehwgamma;
 
@@ -1712,94 +1684,6 @@ static void R_Register( void )
 
 	r_ps_glow = ri.Cvar_Get( "r_ps_glow", "0.0", CVAR_ARCHIVE_ND );
 	ri.Cvar_SetGroup( r_ps_glow, CVG_RENDERER );
-
-	r_ps_posterize = ri.Cvar_Get( "r_ps_posterize", "0.0", CVAR_ARCHIVE_ND );
-	ri.Cvar_SetGroup( r_ps_posterize, CVG_RENDERER );
-
-	r_ps_vignette = ri.Cvar_Get( "r_ps_vignette", "0.0", CVAR_ARCHIVE_ND );
-	ri.Cvar_SetGroup( r_ps_vignette, CVG_RENDERER );
-
-	r_ps_bloom = ri.Cvar_Get( "r_ps_bloom", "0.0", CVAR_ARCHIVE_ND );
-	ri.Cvar_SetGroup( r_ps_bloom, CVG_RENDERER );
-
-	r_ps_edge_detect = ri.Cvar_Get( "r_ps_edge_detect", "0.0", CVAR_ARCHIVE_ND );
-	ri.Cvar_SetGroup( r_ps_edge_detect, CVG_RENDERER );
-
-	r_ps_sharpen = ri.Cvar_Get( "r_ps_sharpen", "0.0", CVAR_ARCHIVE_ND );
-	ri.Cvar_SetGroup( r_ps_sharpen, CVG_RENDERER );
-
-	r_ps_poster_color = ri.Cvar_Get( "r_ps_poster_color", "0.0", CVAR_ARCHIVE_ND );
-	ri.Cvar_SetGroup( r_ps_poster_color, CVG_RENDERER );
-
-	r_ps_poster_color_r = ri.Cvar_Get( "r_ps_poster_color_r", "1.0", CVAR_ARCHIVE_ND );
-	ri.Cvar_SetGroup( r_ps_poster_color_r, CVG_RENDERER );
-
-	r_ps_poster_color_g = ri.Cvar_Get( "r_ps_poster_color_g", "1.0", CVAR_ARCHIVE_ND );
-	ri.Cvar_SetGroup( r_ps_poster_color_g, CVG_RENDERER );
-
-	r_ps_poster_color_b = ri.Cvar_Get( "r_ps_poster_color_b", "1.0", CVAR_ARCHIVE_ND );
-	ri.Cvar_SetGroup( r_ps_poster_color_b, CVG_RENDERER );
-
-	r_ps_grunge = ri.Cvar_Get( "r_ps_grunge", "0.0", CVAR_ARCHIVE_ND );
-	ri.Cvar_SetGroup( r_ps_grunge, CVG_RENDERER );
-
-	r_ps_sepia_noise = ri.Cvar_Get( "r_ps_sepia_noise", "0.0", CVAR_ARCHIVE_ND );
-	ri.Cvar_SetGroup( r_ps_sepia_noise, CVG_RENDERER );
-
-	r_ps_thermal = ri.Cvar_Get( "r_ps_thermal", "0.0", CVAR_ARCHIVE_ND );
-	ri.Cvar_SetGroup( r_ps_thermal, CVG_RENDERER );
-
-	r_ps_thermal_r = ri.Cvar_Get( "r_ps_thermal_r", "0.0", CVAR_ARCHIVE_ND );
-	ri.Cvar_SetGroup( r_ps_thermal_r, CVG_RENDERER );
-
-	r_ps_thermal_g = ri.Cvar_Get( "r_ps_thermal_g", "0.0", CVAR_ARCHIVE_ND );
-	ri.Cvar_SetGroup( r_ps_thermal_g, CVG_RENDERER );
-
-	r_ps_thermal_b = ri.Cvar_Get( "r_ps_thermal_b", "0.0", CVAR_ARCHIVE_ND );
-	ri.Cvar_SetGroup( r_ps_thermal_b, CVG_RENDERER );
-
-	r_ps_flicker = ri.Cvar_Get( "r_ps_flicker", "0.0", CVAR_ARCHIVE_ND );
-	ri.Cvar_SetGroup( r_ps_flicker, CVG_RENDERER );
-
-	r_ps_blur = ri.Cvar_Get( "r_ps_blur", "0.0", CVAR_ARCHIVE_ND );
-	ri.Cvar_SetGroup( r_ps_blur, CVG_RENDERER );
-
-	r_ps_blur_size = ri.Cvar_Get( "r_ps_blur_size", "0.0", CVAR_ARCHIVE_ND );
-	ri.Cvar_SetGroup( r_ps_blur_size, CVG_RENDERER );
-
-	r_ps_blur_direction = ri.Cvar_Get( "r_ps_blur_direction", "0.0", CVAR_ARCHIVE_ND );
-	ri.Cvar_SetGroup( r_ps_blur_direction, CVG_RENDERER );
-
-	r_ps_rgb_shift = ri.Cvar_Get( "r_ps_rgb_shift", "0.0", CVAR_ARCHIVE_ND );
-	ri.Cvar_SetGroup( r_ps_rgb_shift, CVG_RENDERER );
-
-	r_ps_rgb_shift_r = ri.Cvar_Get( "r_ps_rgb_shift_r", "0.0", CVAR_ARCHIVE_ND );
-	ri.Cvar_SetGroup( r_ps_rgb_shift_r, CVG_RENDERER );
-
-	r_ps_rgb_shift_g = ri.Cvar_Get( "r_ps_rgb_shift_g", "0.0", CVAR_ARCHIVE_ND );
-	ri.Cvar_SetGroup( r_ps_rgb_shift_g, CVG_RENDERER );
-
-	r_ps_rgb_shift_b = ri.Cvar_Get( "r_ps_rgb_shift_b", "0.0", CVAR_ARCHIVE_ND );
-	ri.Cvar_SetGroup( r_ps_rgb_shift_b, CVG_RENDERER );
-
-	r_ps_pixelate = ri.Cvar_Get( "r_ps_pixelate", "0.0", CVAR_ARCHIVE_ND );
-	ri.Cvar_SetGroup( r_ps_pixelate, CVG_RENDERER );
-
-	r_ps_chroma_key = ri.Cvar_Get( "r_ps_chroma_key", "0.0", CVAR_ARCHIVE_ND );
-	ri.Cvar_SetGroup( r_ps_chroma_key, CVG_RENDERER );
-
-	r_ps_negative = ri.Cvar_Get( "r_ps_negative", "0.0", CVAR_ARCHIVE_ND );
-	ri.Cvar_SetGroup( r_ps_negative, CVG_RENDERER );
-
-	r_ps_bloom_hdr = ri.Cvar_Get( "r_ps_bloom_hdr", "0.0", CVAR_ARCHIVE_ND );
-	ri.Cvar_SetGroup( r_ps_bloom_hdr, CVG_RENDERER );
-
-	r_ps_solarize = ri.Cvar_Get( "r_ps_solarize", "0.0", CVAR_ARCHIVE_ND );
-	ri.Cvar_SetGroup( r_ps_solarize, CVG_RENDERER );
-
-	r_ps_negative_glow = ri.Cvar_Get( "r_ps_negative_glow", "0.0", CVAR_ARCHIVE_ND );
-	ri.Cvar_SetGroup( r_ps_negative_glow, CVG_RENDERER );
-
 
 	//
 	// temporary variables that can change at any time
