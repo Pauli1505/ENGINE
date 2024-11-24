@@ -1313,11 +1313,7 @@ extern	cvar_t	*r_ps_tint_b;
 extern	cvar_t	*r_ps_posterize;
 extern	cvar_t	*r_ps_glow;
 extern	cvar_t	*r_ps_filmic;
-extern	cvar_t	*r_ps_vignette;
-extern	cvar_t	*r_ps_chromaticAberration;
 extern	cvar_t	*r_ps_bloom;
-extern	cvar_t	*r_ps_halftone;
-extern	cvar_t	*r_ps_pixelate;
 
 extern	cvar_t	*r_ignoreGLErrors;
 
