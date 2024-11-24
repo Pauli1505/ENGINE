@@ -656,9 +656,9 @@ static char *ARB_BuildEffectsProgram( char *buf ) {
 	if ( r_ps_contrast->value != 0.0 ) {
    		float contrast = r_ps_contrast->value;
     	s += sprintf( s, "PARAM contrast = { %1.2f, %1.2f, %1.2f, 1.0 }; \n", contrast, contrast, contrast );
-    	s = Q_stradd( s, "MUL base.xyz, base, contrast; \n" );       // Увеличиваем контраст
-    	s = Q_stradd( s, "ADD base.xyz, base, -0.5; \n" );            // Центрируем на 0
-    	s = Q_stradd( s, "MUL base.xyz, base, contrast; \n" );       // Применяем контраст
+    	s = Q_stradd( s, "MUL base.xyz, base, contrast; \n" );
+    	s = Q_stradd( s, "ADD base.xyz, base, -0.5; \n" );
+    	s = Q_stradd( s, "MUL base.xyz, base, contrast; \n" );
 	}
 
     // 4. Brightness
@@ -672,7 +672,7 @@ static char *ARB_BuildEffectsProgram( char *buf ) {
     }
 
     // 6. Color Tint
-    if ( r_ps_tint_r->value != 0.0 || r_ps_tint_g->value != 0.0 || r_ps_tint_b->value != 0.0 ) {
+    if ( r_ps_tint_r->value != 1.0 || r_ps_tint_g->value != 1.0 || r_ps_tint_b->value != 1.0 ) {
         s += sprintf( s, "PARAM tint = { %1.2f, %1.2f, %1.2f, 1.0 }; \n", r_ps_tint_r->value, r_ps_tint_g->value, r_ps_tint_b->value );
         s = Q_stradd( s, "MUL base.xyz, base, tint; \n" );
     }
@@ -691,6 +691,134 @@ static char *ARB_BuildEffectsProgram( char *buf ) {
         s = Q_stradd( s, "TEMP glow; \n" );
         s += sprintf( s, "MUL glow.xyz, base, %1.2f; \n", 1.0 + r_ps_glow->value );
         s += sprintf( s, "LRP base.xyz, %1.2f, glow, base; \n", 0.5 * r_ps_glow->value );
+    }
+
+	// 9. Vignette
+	if ( r_ps_vignette->value != 0.0 ) {
+    	s = Q_stradd( s, "PARAM vignetteCenter = { 0.5, 0.5, 0.5, 1.0 }; \n" );
+    	s += sprintf( s, "PARAM vignetteRadius = { %1.2f, %1.2f, %1.2f, 1.0 }; \n", r_ps_vignette->value, r_ps_vignette->value, r_ps_vignette->value );
+    	s = Q_stradd( s, "TEMP vignetteEffect; \n" );
+    	s = Q_stradd( s, "SUB vignetteEffect.xyz, base.xyz, vignetteCenter.xyz; \n" );
+    	s = Q_stradd( s, "DP3 temp, vignetteEffect.xyz, vignetteEffect.xyz; \n" );
+    	s = Q_stradd( s, "SQRT temp, temp; \n" );
+    	s = Q_stradd( s, "DIV temp, temp, vignetteRadius.xyz; \n" );
+    	s = Q_stradd( s, "CLAMP temp, temp, 0.0, 1.0; \n" );
+    	s = Q_stradd( s, "MUL base.xyz, base.xyz, temp; \n" );
+	}
+
+	// 10. Bloom
+	if ( r_ps_bloom->value != 0.0 ) {
+    	s = Q_stradd( s, "TEMP bloom; \n" );
+    	s += sprintf( s, "MUL bloom.xyz, base, %1.2f; \n", r_ps_bloom->value );
+    	s += sprintf( s, "LRP base.xyz, %1.2f, bloom, base; \n", 0.5 * r_ps_bloom->value );
+	}
+
+	// 11. Edge Detection
+	if ( r_ps_edge_detect->value != 0.0 ) {
+    	s = Q_stradd( s, "TEMP edge; \n" );
+    	s = Q_stradd( s, "DP3 edge, base.xyz, sRGB; \n" );
+    	s = Q_stradd( s, "SINCOS edge, temp, edge; \n" );
+    	s = Q_stradd( s, "MUL base.xyz, base.xyz, edge; \n" );
+	}
+
+	// 12. Sharpen
+	if ( r_ps_sharpen->value != 0.0 ) {
+    	s = Q_stradd( s, "TEMP sharpen; \n" );
+    	s += sprintf( s, "MUL sharpen.xyz, base.xyz, %1.2f; \n", r_ps_sharpen->value );
+    	s = Q_stradd( s, "SUB base.xyz, sharpen.xyz, base.xyz; \n" );
+	}
+
+	// 13. Posterize Color
+	if ( r_ps_poster_color->value != 0.0 ) {
+    	s += sprintf( s, "PARAM posterize = { %1.2f, %1.2f, %1.2f, 1.0 }; \n", r_ps_poster_color_r->value, r_ps_poster_color_g->value, r_ps_poster_color_b->value );
+    	s = Q_stradd( s, "MUL base.xyz, base.xyz, posterize; \n" );
+    	s = Q_stradd( s, "FRC base.xyz, base.xyz; \n" );
+	}
+
+	// 14. Grunge Texture Overlay
+	if ( r_ps_grunge->value != 0.0 ) {
+    	s = Q_stradd( s, "TEMP grunge; \n" );
+    	s += sprintf( s, "TEX grunge, base, texture[%s]; \n", r_ps_grunge->value );
+    	s = Q_stradd( s, "MUL base.xyz, base.xyz, grunge.xyz; \n" );
+	}
+
+	// 15. Sepia Tint with Noise
+	if ( r_ps_sepia_noise->value != 0.0 ) {
+    	s = Q_stradd( s, "TEMP noise; \n" );
+    	s += sprintf( s, "TEX noise, base, texture[%s]; \n", r_ps_sepia_noise->value );
+    	s = Q_stradd( s, "MUL base.xyz, base.xyz, noise.xyz; \n" );
+	}
+
+	// 16. Thermal Vision
+	if ( r_ps_thermal->value != 0.0 ) {
+    	s += sprintf( s, "PARAM thermal = { %1.2f, %1.2f, %1.2f, 1.0 }; \n", r_ps_thermal_r->value, r_ps_thermal_g->value, r_ps_thermal_b->value );
+    	s = Q_stradd( s, "MUL base.xyz, base.xyz, thermal; \n" );
+	}
+
+	// 17. Flicker
+	if ( r_ps_flicker->value != 0.0 ) {
+    	s = Q_stradd( s, "TEMP flicker; \n" );
+    	s = Q_stradd( s, "SIN flicker, time; \n" );
+    	s = Q_stradd( s, "ADD base.xyz, base.xyz, flicker; \n" );
+	}
+
+	// 18. Radial Blur
+	if ( r_ps_blur->value != 0.0 ) {
+ 	   s += sprintf( s, "PARAM blurAmount = { %1.2f, %1.2f, %1.2f, 1.0 }; \n", r_ps_blur->value, r_ps_blur_size->value, r_ps_blur_direction->value );
+ 	   s = Q_stradd( s, "TEMP blur; \n" );
+ 	   s = Q_stradd( s, "SUB blur.xyz, base.xyz, blurAmount.xyz; \n" );
+	    s = Q_stradd( s, "MUL base.xyz, base.xyz, blur.xyz; \n" );
+	}
+
+	// 19. RGB Shift
+	if ( r_ps_rgb_shift->value != 0.0 ) {
+ 	   s = Q_stradd( s, "TEMP rgbShift; \n" );
+ 	   s += sprintf( s, "DP3 rgbShift.xyz, base, { %1.2f, %1.2f, %1.2f }; \n", r_ps_rgb_shift_r->value, r_ps_rgb_shift_g->value, r_ps_rgb_shift_b->value );
+	    s = Q_stradd( s, "MUL base.xyz, base.xyz, rgbShift.xyz; \n" );
+	}
+
+	// 20. Pixelate
+	if ( r_ps_pixelate->value != 0.0 ) {
+ 	   s = Q_stradd( s, "TEMP pixelate; \n" );
+	    s = Q_stradd( s, "FLOOR pixelate.xyz, base.xyz; \n" );
+	    s += sprintf( s, "MUL base.xyz, pixelate.xyz, %1.2f; \n", r_ps_pixelate->value );
+	}
+
+    // 21. Chroma Key
+    if ( r_ps_chroma_key->value != 0.0 ) {
+        s = Q_stradd( s, "PARAM chromaKeyColor = { 0.0, 1.0, 0.0, 1.0 }; \n" );
+        s = Q_stradd( s, "TEMP chromaKey; \n" );
+        s = Q_stradd( s, "SUB chromaKey.xyz, base.xyz, chromaKeyColor.xyz; \n" );
+        s = Q_stradd( s, "CLAMP chromaKey.xyz, chromaKey.xyz, 0.0, 1.0; \n" );
+        s = Q_stradd( s, "MUL base.xyz, base.xyz, chromaKey.xyz; \n" );
+    }
+
+    // 22. Negative
+    if ( r_ps_negative->value != 0.0 ) {
+        s = Q_stradd( s, "TEMP negative; \n" );
+        s = Q_stradd( s, "SUB negative.xyz, 1.0, base.xyz; \n" );
+        s = Q_stradd( s, "MUL base.xyz, negative.xyz, r_ps_negative->value; \n" );
+    }
+
+    // 23. Bloom HDR
+    if ( r_ps_bloom_hdr->value != 0.0 ) {
+        s = Q_stradd( s, "TEMP hdrBloom; \n" );
+        s = Q_stradd( s, "DP3 hdrBloom.xyz, base.xyz, sRGB; \n" );
+        s = Q_stradd( s, "MUL base.xyz, base.xyz, hdrBloom.xyz; \n" );
+    }
+
+    // 24. Solarize
+    if ( r_ps_solarize->value != 0.0 ) {
+        s = Q_stradd( s, "TEMP solarize; \n" );
+        s = Q_stradd( s, "SUB solarize.xyz, 1.0, base.xyz; \n" );
+        s = Q_stradd( s, "MUL base.xyz, base.xyz, solarize.xyz; \n" );
+    }
+
+    // 25. Negative Glow
+    if ( r_ps_negative_glow->value != 0.0 ) {
+        s = Q_stradd( s, "TEMP glowEffect; \n" );
+        s = Q_stradd( s, "MUL glowEffect.xyz, base.xyz, -1.0; \n" );
+        s = Q_stradd( s, "LRP base.xyz, 0.5, glowEffect, base; \n" );
     }
 
     return buf;
