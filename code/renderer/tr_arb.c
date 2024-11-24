@@ -651,12 +651,12 @@ static char *ARB_BuildEffectsProgram( char *buf ) {
         s += sprintf( s, "LRP base.xyz, %1.2f, base, sepiaTone; \n", r_ps_sepia->value );
     }
 
-    // 3. Contrast
-    if ( r_ps_contrast->value != 1.0 ) {
-        s = Q_stradd( s, "PARAM contrast = { 1.0, 1.0, 1.0, 0.0 }; \n" );
-        s += sprintf( s, "MUL contrast.xyz, contrast, %1.2f; \n", r_ps_contrast->value );
-        s = Q_stradd( s, "MAD base.xyz, base, contrast, -0.5 * (contrast - 1.0); \n" );
-    }
+	// 3. Contrast
+	if ( r_ps_contrast->value != 1.0 ) {
+    	s = Q_stradd( s, "PARAM contrast = { %1.2f, %1.2f, %1.2f, 0.0 }; \n", r_ps_contrast->value, r_ps_contrast->value, r_ps_contrast->value );
+    	s = Q_stradd( s, "MUL contrast.xyz, base.xyz, contrast; \n" );
+    	s = Q_stradd( s, "MAD base.xyz, base.xyz, contrast, -0.5 * (contrast.x - 1.0); \n" );
+	}
 
     // 4. Brightness
     if ( r_ps_brightness->value != 0.0 ) {
@@ -683,21 +683,22 @@ static char *ARB_BuildEffectsProgram( char *buf ) {
     }
 
     // 8. Vignette
-    if ( r_ps_vignette->value != 0.0 ) {
-        s = Q_stradd( s, "TEMP vignette; \n" );
-        s = Q_stradd( s, "DP2 vignette, fragment.texcoord[0], fragment.texcoord[0]; \n" );
-        s += sprintf( s, "MUL vignette, vignette, %1.2f; \n", -r_ps_vignette->value );
-        s = Q_stradd( s, "EXP vignette, vignette; \n" );
-        s = Q_stradd( s, "MUL base.xyz, base, vignette; \n" );
-    }
+	if (r_ps_vignette->value != 0.0) {
+    	s = Q_stradd(s, "TEMP vignette; \n");
+    	s = Q_stradd(s, "DP2 vignette, fragment.texcoord[0], fragment.texcoord[0]; \n");
+    	s += sprintf(s, "MUL vignette, vignette, %1.2f; \n", -r_ps_vignette->value);
+    	s = Q_stradd(s, "EXP vignette, vignette; \n");
+    	s = Q_stradd(s, "MUL base.xyz, base, vignette; \n");
+	}
 
-    // 9. Posterize
-    if ( r_ps_posterize->value != 0.0 ) {
-        s += sprintf( s, "PARAM levels = { %1.2f, %1.2f, %1.2f, 1.0 }; \n", r_ps_posterize->value, r_ps_posterize->value, r_ps_posterize->value );
-        s = Q_stradd( s, "MUL base.xyz, base, levels; \n" );
-        s = Q_stradd( s, "FRC base.xyz, base; \n" );
-        s = Q_stradd( s, "SUB base.xyz, base, 0.5; \n" );
-    }
+	// 9. Posterize
+	if ( r_ps_posterize->value != 0.0 ) {
+    	float levels = r_ps_posterize->value;
+    	s += sprintf( s, "PARAM levels = { %1.2f, %1.2f, %1.2f, 1.0 }; \n", levels, levels, levels );
+    	s = Q_stradd( s, "MUL base.xyz, base, levels; \n" );
+    	s = Q_stradd( s, "FRC base.xyz, base; \n" );
+	    s = Q_stradd( s, "SUB base.xyz, base, 0.5; \n" );
+	}
 
     // 10. Glow
     if ( r_ps_glow->value != 0.0 ) {
