@@ -693,6 +693,20 @@ static char *ARB_BuildEffectsProgram( char *buf ) {
         s += sprintf( s, "LRP base.xyz, %1.2f, glow, base; \n", 0.5 * r_ps_glow->value );
     }
 
+    // 9. Hue Shift (Color Shift)
+    if ( r_ps_hue_shift->value != 0.0 ) {
+        s = Q_stradd( s, "TEMP hueShift; \n" );
+        s += sprintf( s, "PARAM hueRotation = { %1.2f, 0.0, 0.0, 0.0 }; \n", r_ps_hue_shift->value );
+        s = Q_stradd( s, "DP3 hueShift.x, base, hueRotation; \n" );
+        s = Q_stradd( s, "MUL base.xyz, base, hueShift.x; \n" );
+    }
+
+    // 10. Smooth Color Blend (Blend between two colors)
+    if ( r_ps_blend_color->value != 0.0 ) {
+        s = Q_stradd( s, "PARAM blendColor = { 0.5, 0.5, 0.5, 1.0 }; \n" );
+        s += sprintf( s, "LRP base.xyz, %1.2f, base, blendColor; \n", r_ps_blend_color->value );
+    }
+
     return buf;
 }
 
@@ -706,7 +720,7 @@ static const char *gammaFP = {
 	"POW base.y, base.y, gamma.y; \n"
 	"POW base.z, base.z, gamma.z; \n"
 	"MUL base.xyz, base, gamma.w; \n"
-	"%s" // for effects
+	"%s" // for ARB_BuildEffectsProgram
 	"MOV base.w, 1.0; \n"
 	"MOV_SAT result.color, base; \n"
 	"END \n"

@@ -1312,6 +1312,8 @@ extern	cvar_t	*r_ps_tint_g;
 extern	cvar_t	*r_ps_tint_b;
 extern	cvar_t	*r_ps_posterize;
 extern	cvar_t	*r_ps_glow;
+extern	cvar_t	*r_ps_hue_shift;
+extern	cvar_t	*r_ps_blend_color;
 
 extern	cvar_t	*r_ignoreGLErrors;
 
