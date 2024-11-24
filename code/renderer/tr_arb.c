@@ -635,7 +635,7 @@ static const char *spriteFP = {
 static char *ARB_BuildEffectsProgram( char *buf ) {
     char *s = buf;
 	int   i;
-	
+
     s += sprintf( s, "PARAM sRGB = { 0.2126, 0.7152, 0.0722, 1.0 }; \n" );
 
     // 1. Greyscale
@@ -712,10 +712,10 @@ static char *ARB_BuildEffectsProgram( char *buf ) {
     	s += sprintf( s, "TEMP texCoord; \n" );
     	s += sprintf( s, "MOV texCoord, fragment.texcoord[0]; \n" );
     	s += sprintf( s, "PARAM chromaticAberration = { %1.2f, %1.2f, %1.2f, %1.2f }; \n",
-        	          0.02 * r_ps_chromaticAberration->value, 
-        	          0.02 * r_ps_chromaticAberration->value, 
-        	          -0.02 * r_ps_chromaticAberration->value, 
-        	          -0.02 * r_ps_chromaticAberration->value );
+        	          1 * r_ps_chromaticAberration->value, 
+        	          -1 * r_ps_chromaticAberration->value, 
+        	          1 * r_ps_chromaticAberration->value, 
+        	          -1 * r_ps_chromaticAberration->value );
 
     	s += sprintf( s, "TEMP redCoord, greenCoord, blueCoord; \n" );
     	s += sprintf( s, "ADD redCoord.x, texCoord.x, chromaticAberration.x; \n" );
