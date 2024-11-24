@@ -632,27 +632,6 @@ static const char *spriteFP = {
 
 
 #ifdef USE_FBO
-static char *ARB_BuildGreyscaleProgram( char *buf ) {
-	char *s;
-
-	if ( r_ps_greyscale->value == 0 ) {
-		*buf = '\0';
-		return buf;
-	}
-
-	s = Q_stradd( buf, "PARAM sRGB = { 0.2126, 0.7152, 0.0722, 1.0 }; \n" );
-
-	if ( r_ps_greyscale->value == 1.0 ) {
-		Q_stradd( s, "DP3 base.xyz, base, sRGB; \n"  );
-	} else {
-		s = Q_stradd( s, "TEMP luma; \n" );
-		s = Q_stradd( s, "DP3 luma, base, sRGB; \n" );
-		/*s +=*/ sprintf( s, "LRP base.xyz, %1.2f, luma, base; \n", r_ps_greyscale->value );
-	}
-
-	return buf;
-}
-
 static char *ARB_BuildEffectsProgram( char *buf ) {
     char *s;
 
@@ -1115,7 +1094,7 @@ qboolean ARB_UpdatePrograms( void )
 		return qfalse;
 
 #ifdef USE_FBO
-	if ( !ARB_CompileProgram( Fragment, va( gammaFP, ARB_BuildGreyscaleProgram( buf ) ), programs[ PS1_FRAGMENT ] ) )
+	if ( !ARB_CompileProgram( Fragment, va( gammaFP, ARB_BuildEffectsProgram( buf ) ), programs[ PS1_FRAGMENT ] ) )
 		return qfalse;
 
 	if ( !ARB_CompileProgram( Fragment, ARB_BuildBloomProgram( buf ), programs[ BLOOM_EXTRACT_FRAGMENT ] ) )
@@ -1136,7 +1115,7 @@ qboolean ARB_UpdatePrograms( void )
 	if ( !ARB_CompileProgram( Fragment, blend2FP, programs[ BLEND2_FRAGMENT ] ) )
 		return qfalse;
 
-	if ( !ARB_CompileProgram( Fragment, va( blend2gammaFP, ARB_BuildGreyscaleProgram( buf ) ), programs[ BLEND2_GAMMA_FRAGMENT ] ) )
+	if ( !ARB_CompileProgram( Fragment, va( blend2gammaFP, ARB_BuildEffectsProgram( buf ) ), programs[ BLEND2_GAMMA_FRAGMENT ] ) )
 		return qfalse;
 #endif // USE_FBO
 
