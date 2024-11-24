@@ -2025,69 +2025,80 @@ void R_BloomScreen( void )
 }
 
 
-void FBO_PostProcess( void )
-{
-	const float obScale = 1 << tr.overbrightBits;
-	const float gamma = 1.0f / r_gamma->value;
-	const float w = glConfig.vidWidth;
-	const float h = glConfig.vidHeight;
-	qboolean minimized;
+void FBO_PostProcess(void) {
+    const float obScale = 1 << tr.overbrightBits;
+    const float gamma = 1.0f / r_gamma->value;
+    const float w = glConfig.vidWidth;
+    const float h = glConfig.vidHeight;
+    qboolean minimized;
 
-	ARB_ProgramDisable();
+    ARB_ProgramDisable();
 
-	if ( !backEnd.projection2D )
-	{
-		qglViewport( 0, 0, glConfig.vidWidth, glConfig.vidHeight );
-		qglScissor( 0, 0, glConfig.vidWidth, glConfig.vidHeight );
-		qglMatrixMode( GL_PROJECTION );
-		qglLoadMatrixf( GL_Ortho( 0, glConfig.vidWidth, glConfig.vidHeight, 0, 0, 1 ) );
-		qglMatrixMode( GL_MODELVIEW );
-		qglLoadIdentity();
-		backEnd.projection2D = qtrue;
-	}
+    if (!backEnd.projection2D) {
+        qglViewport(0, 0, glConfig.vidWidth, glConfig.vidHeight);
+        qglScissor(0, 0, glConfig.vidWidth, glConfig.vidHeight);
+        qglMatrixMode(GL_PROJECTION);
+        qglLoadMatrixf(GL_Ortho(0, glConfig.vidWidth, glConfig.vidHeight, 0, 0, 1));
+        qglMatrixMode(GL_MODELVIEW);
+        qglLoadIdentity();
+        backEnd.projection2D = qtrue;
+    }
 
-	if ( blitMSfbo )
-	{
-		FBO_BlitMS( qfalse );
-		blitMSfbo = qfalse;
-	}
+    if (blitMSfbo) {
+        FBO_BlitMS(qfalse);
+        blitMSfbo = qfalse;
+    }
 
-	qglColor4f( 1.0f, 1.0f, 1.0f, 1.0f );
-	GL_State( GLS_DEPTHTEST_DISABLE | GLS_SRCBLEND_ONE | GLS_DSTBLEND_ZERO );
-	GL_Cull( CT_TWO_SIDED );
-	if ( r_anaglyphMode->integer )
-		qglColorMask( GL_TRUE, GL_TRUE, GL_TRUE, GL_TRUE );
+    qglColor4f(1.0f, 1.0f, 1.0f, 1.0f);
+    GL_State(GLS_DEPTHTEST_DISABLE | GLS_SRCBLEND_ONE | GLS_DSTBLEND_ZERO);
+    GL_Cull(CT_TWO_SIDED);
+    if (r_anaglyphMode->integer)
+        qglColorMask(GL_TRUE, GL_TRUE, GL_TRUE, GL_TRUE);
 
-	minimized = ri.CL_IsMinimized();
+    minimized = ri.CL_IsMinimized();
 
-	if ( r_bloom->integer && programCompiled && qglActiveTextureARB ) {
-		if ( FBO_Bloom( gamma, obScale, !minimized ) ) {
-			return;
-		}
-	}
+    if (r_bloom->integer && programCompiled && qglActiveTextureARB) {
+        if (FBO_Bloom(gamma, obScale, !minimized)) {
+            return;
+        }
+    }
 
-	// check if we can perform final draw directly into back buffer
-	if ( backEnd.screenshotMask == 0 && !windowAdjusted && !minimized ) {
-		FBO_Bind( GL_FRAMEBUFFER, 0 );
-		GL_BindTexture( 0, frameBuffers[ fboReadIndex ].color );
-		ARB_ProgramEnable( DUMMY_VERTEX, PS1_FRAGMENT );
-		qglProgramLocalParameter4fARB( GL_FRAGMENT_PROGRAM_ARB, 0, gamma, gamma, gamma, obScale );
-		RenderQuad( w, h );
-		ARB_ProgramDisable();
-		return;
-	}
+    const char* fragShaderSource = R"(
+    #version 330 core
+    uniform float gamma;
+    uniform float obScale;
+    out vec4 FragColor;
+    void main() {
+        FragColor = vec4(1.0, 0.0, 0.0, 1.0);
+    })";
 
-	// apply gamma shader
-	FBO_Bind( GL_FRAMEBUFFER, frameBuffers[ 1 ].fbo ); // destination - secondary buffer
-	GL_BindTexture( 0, frameBuffers[ fboReadIndex ].color );  // source - main color buffer
-	ARB_ProgramEnable( DUMMY_VERTEX, PS1_FRAGMENT );
-	qglProgramLocalParameter4fARB( GL_FRAGMENT_PROGRAM_ARB, 0, gamma, gamma, gamma, obScale );
-	RenderQuad( w, h );
-	ARB_ProgramDisable();
+    GLuint fragShader = compileShader(fragShaderSource, GL_FRAGMENT_SHADER);
+    GLuint shaderProgram = glCreateProgram();
+    glAttachShader(shaderProgram, fragShader);
+    glLinkProgram(shaderProgram);
 
-	if ( !minimized ) {
-		FBO_BlitToBackBuffer( 1 );
-	}
+    GLint success;
+    glGetProgramiv(shaderProgram, GL_LINK_STATUS, &success);
+    if (!success) {
+        char infoLog[512];
+        glGetProgramInfoLog(shaderProgram, 512, NULL, infoLog);
+        printf("ERROR::PROGRAM::LINKING_FAILED\n%s\n", infoLog);
+    }
+
+    glDeleteShader(fragShader);
+
+    glUseProgram(shaderProgram);
+
+    GLuint gammaLoc = glGetUniformLocation(shaderProgram, "gamma");
+    GLuint obScaleLoc = glGetUniformLocation(shaderProgram, "obScale");
+    glUniform1f(gammaLoc, gamma);
+    glUniform1f(obScaleLoc, obScale);
+
+    FBO_Bind(GL_FRAMEBUFFER, 0);
+    GL_BindTexture(0, frameBuffers[fboReadIndex].color);
+    RenderQuad(w, h);
+
+    ARB_ProgramDisable();
 }
 
 
