@@ -1717,7 +1717,7 @@ static void R_Register( void )
 	r_ps_rgb_shift_r = ri.Cvar_Get( "r_ps_rgb_shift_r", "0.0", CVAR_ARCHIVE_ND );
 	r_ps_rgb_shift_g = ri.Cvar_Get( "r_ps_rgb_shift_g", "0.0", CVAR_ARCHIVE_ND );
 	r_ps_rgb_shift_b = ri.Cvar_Get( "r_ps_rgb_shift_b", "0.0", CVAR_ARCHIVE_ND );
-	r_ps_pixelate = ri.Cvar_Get( "r_ps_pixelate", "0.0", CVAR_ARCHIVE_ND )
+	r_ps_pixelate = ri.Cvar_Get( "r_ps_pixelate", "0.0", CVAR_ARCHIVE_ND );
 	r_ps_chroma_key = ri.Cvar_Get( "r_ps_chroma_key", "0.0", CVAR_ARCHIVE_ND );
 	r_ps_negative = ri.Cvar_Get( "r_ps_negative", "0.0", CVAR_ARCHIVE_ND );
 	r_ps_bloom_hdr = ri.Cvar_Get( "r_ps_bloom_hdr", "0.0", CVAR_ARCHIVE_ND );
