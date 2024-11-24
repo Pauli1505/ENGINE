@@ -667,19 +667,32 @@ static char *ARB_BuildEffectsProgram( char *buf ) {
 
 	// 5. Blur
 	if ( r_ps_blur->value != 0.0 ) {
-    	s = Q_stradd( s, "TEMP blurColor; \n" );
+    	int taps = (int)r_ps_blur->value;
 
-    	s += sprintf( s, "PARAM blurOffset = { %1.2f, %1.2f, 0.0, 0.0 }; \n", r_ps_blur->value, r_ps_blur->value );
+    	s = Q_stradd( s, "TEMP cc; \n"
+    	                "MOV cc, {0.0, 0.0, 0.0, 1.0};\n" );
 
-   		s = Q_stradd( s, "ADD tc.xy, fragment.texcoord[0], blurOffset.xy; \n" );
-    	s = Q_stradd( s, "TEX blurColor, tc, texture[0], 2D; \n" );
-    	s = Q_stradd( s, "ADD base.xyz, base.xyz, blurColor.xyz; \n" );
+    	for ( i = 0; i < taps; i++ ) {
+    	    float offset = (i - taps / 2) * 0.1;
+    	    s = Q_stradd( s, va( "PARAM p%i = program.local[%i]; \n", i, i ) );
+    	}
 
-    	s = Q_stradd( s, "SUB tc.xy, fragment.texcoord[0], blurOffset.xy; \n" );
-    	s = Q_stradd( s, "TEX blurColor, tc, texture[0], 2D; \n" );
-    	s = Q_stradd( s, "ADD base.xyz, base.xyz, blurColor.xyz; \n" );
+    	for ( i = 0; i < taps; i++ ) {
+    	    s = Q_stradd( s, va( "TEMP c%i, tc%i; \n", i, i ) );
+    	}
 
-    	s = Q_stradd( s, "MUL base.xyz, base.xyz, 0.25; \n" );
+    	for ( i = 0; i < taps; i++ ) {
+    	    s = Q_stradd( s, va( "ADD tc%i.xy, fragment.texcoord[0], p%i.xy; \n", i, i ) );
+    	}
+
+    	for ( i = 0; i < taps; i++ ) {
+    	    s = Q_stradd( s, va( "TEX c%i, tc%i, texture[0], 2D; \n", i, i ) );
+    	    s = Q_stradd( s, va( "MAD cc, c%i, p%i.w, cc; \n", i, i ) );
+    	}
+
+    	s = Q_stradd( s,
+    	              "MOV cc.a, 1.0; \n"
+    	              "MOV_SAT result.color, cc; \n" );
 	}
 
     // 6. Invert
