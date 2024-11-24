@@ -1682,6 +1682,9 @@ static void R_Register( void )
 	r_ps_tint_b = ri.Cvar_Get( "r_ps_tint_b", "1.0", CVAR_ARCHIVE_ND );
 	ri.Cvar_SetGroup( r_ps_tint_b, CVG_RENDERER );
 
+	r_ps_posterize = ri.Cvar_Get( "r_ps_posterize", "1.0", CVAR_ARCHIVE_ND );
+	ri.Cvar_SetGroup( r_ps_posterize, CVG_RENDERER );
+
 	r_ps_glow = ri.Cvar_Get( "r_ps_glow", "0.0", CVAR_ARCHIVE_ND );
 	ri.Cvar_SetGroup( r_ps_glow, CVG_RENDERER );
 
