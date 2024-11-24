@@ -70,10 +70,10 @@ cvar_t	*r_ps_vignette;
 cvar_t	*r_ps_bloom;
 cvar_t	*r_ps_edge_detect;
 cvar_t	*r_ps_sharpen;
-cvar_t	*r_ps_posterize_color;
-cvar_t	*r_ps_posterize_color_r;
-cvar_t	*r_ps_posterize_color_g;
-cvar_t	*r_ps_posterize_color_b;
+cvar_t	*r_ps_poster_color;
+cvar_t	*r_ps_poster_color_r;
+cvar_t	*r_ps_poster_color_g;
+cvar_t	*r_ps_poster_color_b;
 cvar_t	*r_ps_grunge;
 cvar_t	*r_ps_sepia_noise;
 cvar_t	*r_ps_thermal;
@@ -81,9 +81,9 @@ cvar_t	*r_ps_thermal_r;
 cvar_t	*r_ps_thermal_g;
 cvar_t	*r_ps_thermal_b;
 cvar_t	*r_ps_flicker;
-cvar_t	*r_ps_radial_blur;
-cvar_t	*r_ps_radial_blur_size;
-cvar_t	*r_ps_radial_blur_direction;
+cvar_t	*r_ps_blur;
+cvar_t	*r_ps_blur_size;
+cvar_t	*r_ps_blur_direction;
 cvar_t	*r_ps_rgb_shift;
 cvar_t	*r_ps_rgb_shift_r;
 cvar_t	*r_ps_rgb_shift_g;
@@ -1738,21 +1738,21 @@ static void R_Register( void )
 	ri.Cvar_SetDescription(r_ps_sharpen, "Post-processing effect that sharpens the image.");
 	ri.Cvar_SetGroup( r_ps_sharpen, CVG_RENDERER );
 
-	r_ps_posterize_color = ri.Cvar_Get( "r_ps_posterize_color", "0.0", CVAR_ARCHIVE_ND );
-	ri.Cvar_SetDescription(r_ps_posterize_color, "Post-processing effect that reduces color depth for specific colors.");
-	ri.Cvar_SetGroup( r_ps_posterize_color, CVG_RENDERER );
+	r_ps_poster_color = ri.Cvar_Get( "r_ps_poster_color", "0.0", CVAR_ARCHIVE_ND );
+	ri.Cvar_SetDescription(r_ps_poster_color, "Post-processing effect that reduces color depth for specific colors.");
+	ri.Cvar_SetGroup( r_ps_poster_color, CVG_RENDERER );
 
-	r_ps_posterize_color_r = ri.Cvar_Get( "r_ps_posterize_color_r", "1.0", CVAR_ARCHIVE_ND );
-	ri.Cvar_SetDescription(r_ps_posterize_color_r, "Red component for posterize color.");
-	ri.Cvar_SetGroup( r_ps_posterize_color_r, CVG_RENDERER );
+	r_ps_poster_color_r = ri.Cvar_Get( "r_ps_poster_color_r", "1.0", CVAR_ARCHIVE_ND );
+	ri.Cvar_SetDescription(r_ps_poster_color_r, "Red component for posterize color.");
+	ri.Cvar_SetGroup( r_ps_poster_color_r, CVG_RENDERER );
 
-	r_ps_posterize_color_g = ri.Cvar_Get( "r_ps_posterize_color_g", "1.0", CVAR_ARCHIVE_ND );
-	ri.Cvar_SetDescription(r_ps_posterize_color_g, "Green component for posterize color.");
-	ri.Cvar_SetGroup( r_ps_posterize_color_g, CVG_RENDERER );
+	r_ps_poster_color_g = ri.Cvar_Get( "r_ps_poster_color_g", "1.0", CVAR_ARCHIVE_ND );
+	ri.Cvar_SetDescription(r_ps_poster_color_g, "Green component for posterize color.");
+	ri.Cvar_SetGroup( r_ps_poster_color_g, CVG_RENDERER );
 
-	r_ps_posterize_color_b = ri.Cvar_Get( "r_ps_posterize_color_b", "1.0", CVAR_ARCHIVE_ND );
-	ri.Cvar_SetDescription(r_ps_posterize_color_b, "Blue component for posterize color.");
-	ri.Cvar_SetGroup( r_ps_posterize_color_b, CVG_RENDERER );
+	r_ps_poster_color_b = ri.Cvar_Get( "r_ps_poster_color_b", "1.0", CVAR_ARCHIVE_ND );
+	ri.Cvar_SetDescription(r_ps_poster_color_b, "Blue component for posterize color.");
+	ri.Cvar_SetGroup( r_ps_poster_color_b, CVG_RENDERER );
 
 	r_ps_grunge = ri.Cvar_Get( "r_ps_grunge", "0.0", CVAR_ARCHIVE_ND );
 	ri.Cvar_SetDescription(r_ps_grunge, "Post-processing effect that adds a grunge texture.");
@@ -1782,17 +1782,17 @@ static void R_Register( void )
 	ri.Cvar_SetDescription(r_ps_flicker, "Post-processing effect that adds flicker.");
 	ri.Cvar_SetGroup( r_ps_flicker, CVG_RENDERER );
 
-	r_ps_radial_blur = ri.Cvar_Get( "r_ps_radial_blur", "0.0", CVAR_ARCHIVE_ND );
-	ri.Cvar_SetDescription(r_ps_radial_blur, "Post-processing effect that adds radial blur.");
-	ri.Cvar_SetGroup( r_ps_radial_blur, CVG_RENDERER );
+	r_ps_blur = ri.Cvar_Get( "r_ps_blur", "0.0", CVAR_ARCHIVE_ND );
+	ri.Cvar_SetDescription(r_ps_blur, "Post-processing effect that adds radial blur.");
+	ri.Cvar_SetGroup( r_ps_blur, CVG_RENDERER );
 
-	r_ps_radial_blur_size = ri.Cvar_Get( "r_ps_radial_blur_size", "0.0", CVAR_ARCHIVE_ND );
-	ri.Cvar_SetDescription(r_ps_radial_blur_size, "Size of radial blur.");
-	ri.Cvar_SetGroup( r_ps_radial_blur_size, CVG_RENDERER );
+	r_ps_blur_size = ri.Cvar_Get( "r_ps_blur_size", "0.0", CVAR_ARCHIVE_ND );
+	ri.Cvar_SetDescription(r_ps_blur_size, "Size of radial blur.");
+	ri.Cvar_SetGroup( r_ps_rblur_size, CVG_RENDERER );
 
-	r_ps_radial_blur_direction = ri.Cvar_Get( "r_ps_radial_blur_direction", "0.0", CVAR_ARCHIVE_ND );
-	ri.Cvar_SetDescription(r_ps_radial_blur_direction, "Direction of radial blur.");
-	ri.Cvar_SetGroup( r_ps_radial_blur_direction, CVG_RENDERER );
+	r_ps_blur_direction = ri.Cvar_Get( "r_ps_blur_direction", "0.0", CVAR_ARCHIVE_ND );
+	ri.Cvar_SetDescription(r_ps_blur_direction, "Direction of radial blur.");
+	ri.Cvar_SetGroup( r_ps_blur_direction, CVG_RENDERER );
 
 	r_ps_rgb_shift = ri.Cvar_Get( "r_ps_rgb_shift", "0.0", CVAR_ARCHIVE_ND );
 	ri.Cvar_SetDescription(r_ps_rgb_shift, "Post-processing effect. RGB shift.");
