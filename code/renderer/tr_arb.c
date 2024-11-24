@@ -710,38 +710,21 @@ static char *ARB_BuildEffectsProgram( char *buf ) {
 	
 	// 11. Chromatic Aberration
 	if ( r_ps_chromaticAberration->value != 0.0 ) {
-    	s += sprintf( s, "PARAM chromaticAberration = { 0.02, 0.02, 0.0, 0.0 }; \n" );
-    	s += sprintf( s, "TEMP redCoord, greenCoord, blueCoord; \n" );
-    	s += sprintf( s, "ADD redCoord.xy, fragment.texcoord[0], chromaticAberration.xy; \n" );
-    	s += sprintf( s, "ADD greenCoord.xy, fragment.texcoord[0], chromaticAberration.xy; \n" );
-    	s += sprintf( s, "ADD blueCoord.xy, fragment.texcoord[0], chromaticAberration.zw; \n" );
-    	s += sprintf( s, "TEX color.r, redCoord, texture[0], 2D; \n" );
-    	s += sprintf( s, "TEX color.g, greenCoord, texture[0], 2D; \n" );
-    	s += sprintf( s, "TEX color.b, blueCoord, texture[0], 2D; \n" );
-    	s += sprintf( s, "MOV result.color, color; \n" );
-	}
+	s += sprintf( s, "TEMP texCoord; \n" );
+	s += sprintf( s, "MOV texCoord, fragment.texcoord[0]; \n" );
 
-// 11. Chromatic Aberration
-if ( r_ps_halftone->value != 0.0 ) {
-    // Устанавливаем параметры для смещения цветовых каналов
-    s += sprintf( s, "PARAM chromaticAberration = { 0.02, 0.02, 0.0, 0.0 }; \n" );
-    
-    // Временные переменные для координат
-    s += sprintf( s, "TEMP redCoord, greenCoord, blueCoord; \n" );
-    
-    // Смещаем текстурные координаты для каждого канала
-    s += sprintf( s, "ADD redCoord.xy, fragment.texcoord[0], chromaticAberration.xy; \n" );
-    s += sprintf( s, "ADD greenCoord.xy, fragment.texcoord[0], chromaticAberration.xy; \n" );
-    s += sprintf( s, "ADD blueCoord.xy, fragment.texcoord[0], chromaticAberration.zw; \n" );
-    
-    // Выбираем цвет для каждого канала с учетом смещения координат
-    s += sprintf( s, "TEX color.r, redCoord, texture[0], 2D; \n" );
-    s += sprintf( s, "TEX color.g, greenCoord, texture[0], 2D; \n" );
-    s += sprintf( s, "TEX color.b, blueCoord, texture[0], 2D; \n" );
-    
-    // Устанавливаем финальный результат
-    s += sprintf( s, "MOV result.color, color; \n" );
-}
+	s += sprintf( s, "TEMP redCoord, greenCoord, blueCoord; \n" );
+	s += sprintf( s, "ADD redCoord.xy, texCoord.xy, chromaticAberration.xy; \n" );
+	s += sprintf( s, "ADD greenCoord.xy, texCoord.xy, chromaticAberration.zw; \n" );
+	s += sprintf( s, "ADD blueCoord.xy, texCoord.xy, -chromaticAberration.xy; \n" );
+
+	s += sprintf( s, "TEMP color; \n" );
+	s += sprintf( s, "TEX color.r, redCoord, texture[0], 2D; \n" );
+	s += sprintf( s, "TEX color.g, greenCoord, texture[0], 2D; \n" );
+	s += sprintf( s, "TEX color.b, blueCoord, texture[0], 2D; \n" );
+
+	s += sprintf( s, "MOV result.color, color; \n" );
+	}
 
     return buf;
 }
