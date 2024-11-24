@@ -651,7 +651,6 @@ static char *ARB_BuildEffectsProgram( char *buf ) {
     	s += sprintf( s, "MUL base.xyz, base, gamma.w; \n" );
     	s += sprintf( s, "MOV base.w, 1.0; \n" );
     	s += sprintf( s, "MOV_SAT result.color, base; \n" );
-    	s += sprintf( s, "END \n" );
 	}
 
     // 1. Greyscale
@@ -742,6 +741,8 @@ static char *ARB_BuildEffectsProgram( char *buf ) {
     	s += sprintf( s, "TEX base.g, greenCoord, texture[0], 2D; \n" );
     	s += sprintf( s, "TEX base.b, blueCoord, texture[0], 2D; \n" );
 	}
+
+	s += sprintf( s, "END \n" );
 
     return buf;
 }
