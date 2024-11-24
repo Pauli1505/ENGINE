@@ -1314,6 +1314,7 @@ extern	cvar_t	*r_ps_posterize;
 extern	cvar_t	*r_ps_glow;
 extern	cvar_t	*r_ps_filmic;
 extern	cvar_t	*r_ps_bloom;
+extern	cvar_t	*r_ps_chromaticAberration;
 
 extern	cvar_t	*r_ignoreGLErrors;
 

@@ -68,6 +68,7 @@ cvar_t	*r_ps_posterize;
 cvar_t	*r_ps_glow;
 cvar_t	*r_ps_filmic;
 cvar_t	*r_ps_bloom;
+cvar_t	*r_ps_chromaticAberration;
 
 static cvar_t *r_ignorehwgamma;
 
@@ -1695,6 +1696,9 @@ static void R_Register( void )
 
 	r_ps_bloom = ri.Cvar_Get( "r_ps_bloom", "0.0", CVAR_ARCHIVE_ND );
 	ri.Cvar_SetGroup( r_ps_bloom, CVG_RENDERER );
+
+	r_ps_chromaticAberration = ri.Cvar_Get( "r_ps_chromaticAberration", "0.0", CVAR_ARCHIVE_ND );
+	ri.Cvar_SetGroup( r_ps_chromaticAberration, CVG_RENDERER );
 
 	//
 	// temporary variables that can change at any time
