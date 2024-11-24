@@ -1788,7 +1788,7 @@ static void R_Register( void )
 
 	r_ps_blur_size = ri.Cvar_Get( "r_ps_blur_size", "0.0", CVAR_ARCHIVE_ND );
 	ri.Cvar_SetDescription(r_ps_blur_size, "Size of radial blur.");
-	ri.Cvar_SetGroup( r_ps_rblur_size, CVG_RENDERER );
+	ri.Cvar_SetGroup( r_ps_blur_size, CVG_RENDERER );
 
 	r_ps_blur_direction = ri.Cvar_Get( "r_ps_blur_direction", "0.0", CVAR_ARCHIVE_ND );
 	ri.Cvar_SetDescription(r_ps_blur_direction, "Direction of radial blur.");
