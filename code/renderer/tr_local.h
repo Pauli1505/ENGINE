@@ -1315,6 +1315,7 @@ extern	cvar_t	*r_ps_glow;
 extern	cvar_t	*r_ps_filmic;
 extern	cvar_t	*r_ps_bloom;
 extern	cvar_t	*r_ps_chromaticAberration;
+extern	cvar_t	*r_ps_chameleon;
 
 extern	cvar_t	*r_ignoreGLErrors;
 
@@ -1999,7 +2000,7 @@ typedef enum {
 #endif
 	SPRITE_FRAGMENT,
 #ifdef USE_FBO
-	PS1_FRAGMENT,
+	POSTFX_FRAGMENT,
 	BLOOM_EXTRACT_FRAGMENT,
 	BLUR_FRAGMENT,
 	BLUR2_FRAGMENT,
