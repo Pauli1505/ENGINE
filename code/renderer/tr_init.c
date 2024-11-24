@@ -1667,7 +1667,7 @@ static void R_Register( void )
 	ri.Cvar_SetDescription( r_ps_sepia, "Postprocess effect, requires \\r_fbo 1." );
 	ri.Cvar_SetGroup( r_ps_sepia, CVG_RENDERER );
 
-	r_ps_contrast = ri.Cvar_Get( "r_ps_contrast", "1.0", CVAR_ARCHIVE_ND );
+	r_ps_contrast = ri.Cvar_Get( "r_ps_contrast", "0.0", CVAR_ARCHIVE_ND );
 	ri.Cvar_SetDescription( r_ps_contrast, "Postprocess effect, requires \\r_fbo 1." );
 	ri.Cvar_SetGroup( r_ps_contrast, CVG_RENDERER );
 
