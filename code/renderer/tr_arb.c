@@ -636,19 +636,19 @@ static char *ARB_BuildEffectsProgram( char *buf ) {
     char *s = buf;
 	int   i;
 
-    s = Q_stradd( s, "TEMP color; \n" );
-    s = Q_stradd( s, "TEMP temp; \n" );
-    s = Q_stradd( s, "PARAM sRGB = { 0.2126, 0.7152, 0.0722, 1.0 }; \n" );
+    s += sprintf( s, "TEMP color; \n" );
+    s += sprintf( s, "TEMP temp; \n" );
+    s += sprintf( s, "PARAM sRGB = { 0.2126, 0.7152, 0.0722, 1.0 }; \n" );
 
     // 1. Greyscale
     if ( r_ps_greyscale->value != 0.0 ) {
-        s = Q_stradd( s, "DP3 color.xyz, base, sRGB; \n" );
+        s += sprintf( s, "DP3 color.xyz, base, sRGB; \n" );
         s += sprintf( s, "LRP base.xyz, %1.2f, color, base; \n", r_ps_greyscale->value );
     }
 
     // 2. Sepia
     if ( r_ps_sepia->value != 1.0 ) {
-        s = Q_stradd( s, "PARAM sepiaTone = { 1.2, 1.0, 0.8, 1.0 }; \n" );
+        s += sprintf( s, "PARAM sepiaTone = { 1.2, 1.0, 0.8, 1.0 }; \n" );
         s += sprintf( s, "LRP base.xyz, %1.2f, base, sepiaTone; \n", r_ps_sepia->value );
     }
 
@@ -656,9 +656,9 @@ static char *ARB_BuildEffectsProgram( char *buf ) {
 	if ( r_ps_contrast->value != 0.0 ) {
    		float contrast = r_ps_contrast->value;
     	s += sprintf( s, "PARAM contrast = { %1.2f, %1.2f, %1.2f, 1.0 }; \n", contrast, contrast, contrast );
-    	s = Q_stradd( s, "MUL base.xyz, base, contrast; \n" );
-    	s = Q_stradd( s, "ADD base.xyz, base, -0.5; \n" );
-    	s = Q_stradd( s, "MUL base.xyz, base, contrast; \n" );
+    	s += sprintf( s, "MUL base.xyz, base, contrast; \n" );
+    	s += sprintf( s, "ADD base.xyz, base, -0.5; \n" );
+    	s += sprintf( s, "MUL base.xyz, base, contrast; \n" );
 	}
 
     // 4. Brightness
@@ -668,13 +668,13 @@ static char *ARB_BuildEffectsProgram( char *buf ) {
 
     // 5. Invert
     if ( r_ps_invert->value != 0.0 ) {
-        s = Q_stradd( s, "SUB base.xyz, 1.0, base; \n" );
+        s += sprintf( s, "SUB base.xyz, 1.0, base; \n" );
     }
 
     // 6. Color Tint
     if ( r_ps_tint_r->value != 1.0 || r_ps_tint_g->value != 1.0 || r_ps_tint_b->value != 1.0 ) {
         s += sprintf( s, "PARAM tint = { %1.2f, %1.2f, %1.2f, 1.0 }; \n", r_ps_tint_r->value, r_ps_tint_g->value, r_ps_tint_b->value );
-        s = Q_stradd( s, "MUL base.xyz, base, tint; \n" );
+        s += sprintf( s, "MUL base.xyz, base, tint; \n" );
     }
 
 	// 7. Posterize
@@ -682,72 +682,72 @@ static char *ARB_BuildEffectsProgram( char *buf ) {
     	float levels = r_ps_posterize->value;
     	s += sprintf( s, "PARAM levels = { %1.2f, %1.2f, %1.2f, 1.0 }; \n", levels, levels, levels );
     
-   		s = Q_stradd( s, "MUL base.xyz, base, levels; \n" );
-    	s = Q_stradd( s, "FRC base.xyz, base; \n" );
-    	s = Q_stradd( s, "SUB base.xyz, base, 0.5; \n" );
+   		s += sprintf( s, "MUL base.xyz, base, levels; \n" );
+    	s += sprintf( s, "FRC base.xyz, base; \n" );
+    	s += sprintf( s, "SUB base.xyz, base, 0.5; \n" );
 
-    	s = Q_stradd( s, "ADD base.xyz, base, 0.5; \n" );
-    	s = Q_stradd( s, "MUL base.xyz, base, 2.0; \n" );
-    	s = Q_stradd( s, "SAT base.xyz, base; \n" );
+    	s += sprintf( s, "ADD base.xyz, base, 0.5; \n" );
+    	s += sprintf( s, "MUL base.xyz, base, 2.0; \n" );
+    	s += sprintf( s, "SAT base.xyz, base; \n" );
 	}
 
     // 8. Glow
     if ( r_ps_glow->value != 0.0 ) {
-        s = Q_stradd( s, "TEMP glow; \n" );
+        s += sprintf( s, "TEMP glow; \n" );
         s += sprintf( s, "MUL glow.xyz, base, %1.2f; \n", 1.0 + r_ps_glow->value );
         s += sprintf( s, "LRP base.xyz, %1.2f, glow, base; \n", 0.5 * r_ps_glow->value );
     }
 
     // 9. Filmic
     if ( r_ps_filmic->value != 0.0 ) {
-        s = Q_stradd( s, "TEMP hueShift; \n" );
+        s += sprintf( s, "TEMP hueShift; \n" );
         s += sprintf( s, "PARAM hueRotation = { %1.2f, 0.0, 0.0, 0.0 }; \n", r_ps_filmic->value );
-        s = Q_stradd( s, "DP3 hueShift.x, base, hueRotation; \n" );
-        s = Q_stradd( s, "MUL base.xyz, base, hueShift.x; \n" );
+        s += sprintf( s, "DP3 hueShift.x, base, hueRotation; \n" );
+        s += sprintf( s, "MUL base.xyz, base, hueShift.x; \n" );
     }
 
 	// 10. Vignette
 	if ( r_ps_vignette->value != 0.0 ) {
-    	s = Q_stradd( s, "TEMP vignetteFactor; \n" );
+    	s += sprintf( s, "TEMP vignetteFactor; \n" );
     	s += sprintf( s, "DISTANCE vignetteFactor, base.xy, { 0.5, 0.5 }; \n" ); // Вычисляем расстояние от центра
-    	s = Q_stradd( s, "MUL vignetteFactor, vignetteFactor, %1.2f; \n", r_ps_vignette->value ); // Настроить эффект
-    	s = Q_stradd( s, "MUL base.xyz, base, vignetteFactor; \n" ); // Применяем затемнение
+    	s += sprintf( s, "MUL vignetteFactor, vignetteFactor, %1.2f; \n", r_ps_vignette->value ); // Настроить эффект
+    	s += sprintf( s, "MUL base.xyz, base, vignetteFactor; \n" ); // Применяем затемнение
 	}
 
 	// 11. Chromatic Aberration
 	if ( r_ps_chromaticAberration->value != 0.0 ) {
-    	s = Q_stradd( s, "TEMP red, green, blue; \n" );
-    	s = Q_stradd( s, "MOV red.xyz, base.xyz; \n" );
-    	s = Q_stradd( s, "ADD red.xyz, red, { %1.2f, 0.0, 0.0 }; \n", r_ps_chromaticAberration->value ); // Смещение для красного канала
-    	s = Q_stradd( s, "MOV green.xyz, base.xyz; \n" );
-    	s = Q_stradd( s, "ADD green.xyz, green, { 0.0, %1.2f, 0.0 }; \n", r_ps_chromaticAberration->value ); // Смещение для зеленого канала
-    	s = Q_stradd( s, "MOV blue.xyz, base.xyz; \n" );
-    	s = Q_stradd( s, "ADD blue.xyz, blue, { 0.0, 0.0, %1.2f }; \n", r_ps_chromaticAberration->value ); // Смещение для синего канала
-    	s = Q_stradd( s, "ADD base.xyz, red.xyz, green.xyz; \n" );
-    	s = Q_stradd( s, "ADD base.xyz, base, blue.xyz; \n" );
+    	s += sprintf( s, "TEMP red, green, blue; \n" );
+    	s += sprintf( s, "MOV red.xyz, base.xyz; \n" );
+    	s += sprintf( s, "ADD red.xyz, red, { %1.2f, 0.0, 0.0 }; \n", r_ps_chromaticAberration->value ); // Смещение для красного канала
+    	s += sprintf( s, "MOV green.xyz, base.xyz; \n" );
+    	s += sprintf( s, "ADD green.xyz, green, { 0.0, %1.2f, 0.0 }; \n", r_ps_chromaticAberration->value ); // Смещение для зеленого канала
+    	s += sprintf( s, "MOV blue.xyz, base.xyz; \n" );
+    	s += sprintf( s, "ADD blue.xyz, blue, { 0.0, 0.0, %1.2f }; \n", r_ps_chromaticAberration->value ); // Смещение для синего канала
+    	s += sprintf( s, "ADD base.xyz, red.xyz, green.xyz; \n" );
+    	s += sprintf( s, "ADD base.xyz, base, blue.xyz; \n" );
 	}
 
 	// 12. Bloom
 	if ( r_ps_bloom->value != 0.0 ) {
-    	s = Q_stradd( s, "TEMP bloom; \n" );
+    	s += sprintf( s, "TEMP bloom; \n" );
     	s += sprintf( s, "MUL bloom.xyz, base, %1.2f; \n", r_ps_bloom->value ); // Умножаем яркость
-    	s = Q_stradd( s, "ADD base.xyz, base, bloom; \n" ); // Добавляем свечения к исходному изображению
+    	s += sprintf( s, "ADD base.xyz, base, bloom; \n" ); // Добавляем свечения к исходному изображению
 	}
 
 	// 13. Halftone
 	if ( r_ps_halftone->value != 0.0 ) {
-    	s = Q_stradd( s, "TEMP halftone; \n" );
+    	s += sprintf( s, "TEMP halftone; \n" );
     	s += sprintf( s, "MOD halftone.xyz, base, %1.2f; \n", r_ps_halftone->value ); // Применение сетки полутонов
-    	s = Q_stradd( s, "MUL base.xyz, base, halftone; \n" ); // Применяем сетку к изображению
+    	s += sprintf( s, "MUL base.xyz, base, halftone; \n" ); // Применяем сетку к изображению
 	}
 
 	// 14. Pixelate
 	if ( r_ps_pixelate->value != 0.0 ) {
-    	s = Q_stradd( s, "TEMP pixelSize; \n" );
+    	s += sprintf( s, "TEMP pixelSize; \n" );
     	s += sprintf( s, "PARAM pixelSize = { %1.2f, %1.2f, %1.2f, 1.0 }; \n", r_ps_pixelate->value, r_ps_pixelate->value, r_ps_pixelate->value );
-    	s = Q_stradd( s, "MUL base.xy, base.xy, pixelSize.xy; \n" ); // Уменьшаем разрешение по осям X и Y
-    	s = Q_stradd( s, "FLOOR base.xy, base.xy; \n" ); // Округляем к ближайшему пикселю
-    	s = Q_stradd( s, "DIV base.xy, base.xy, pixelSize.xy; \n" ); // Возвращаем обратно в исходный масштаб
+    	s += sprintf( s, "MUL base.xy, base.xy, pixelSize.xy; \n" ); // Уменьшаем разрешение по осям X и Y
+    	s += sprintf( s, "FLOOR base.xy, base.xy; \n" ); // Округляем к ближайшему пикселю
+    	s += sprintf( s, "DIV base.xy, base.xy, pixelSize.xy; \n" ); // Возвращаем обратно в исходный масштаб
 	}
 
     return buf;
