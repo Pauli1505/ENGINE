@@ -1720,7 +1720,7 @@ static void R_Register( void )
 
 	r_ps_posterize = ri.Cvar_Get( "r_ps_posterize", "0.0", CVAR_ARCHIVE_ND );
 	ri.Cvar_SetDescription(r_ps_posterize, "Post-processing effect that reduces color depth.");
-	i.Cvar_SetGroup( r_ps_posterize, CVG_RENDERER );
+	ri.Cvar_SetGroup( r_ps_posterize, CVG_RENDERER );
 
 	r_ps_vignette = ri.Cvar_Get( "r_ps_vignette", "0.0", CVAR_ARCHIVE_ND );
 	ri.Cvar_SetDescription(r_ps_vignette, "Post-processing effect that adds vignette.");
