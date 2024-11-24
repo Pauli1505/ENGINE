@@ -634,6 +634,7 @@ static const char *spriteFP = {
 #ifdef USE_FBO
 static char *ARB_BuildEffectsProgram( char *buf ) {
     char *s = buf;
+	int   i;
 
     s = Q_stradd( s, "TEMP color; \n" );
     s = Q_stradd( s, "TEMP temp; \n" );
