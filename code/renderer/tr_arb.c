@@ -2063,13 +2063,16 @@ void FBO_PostProcess(void) {
         }
     }
 
+    // Добавляем GLSL фрагментный шейдер
+
+    // Шейдер (тестовый фрагментный шейдер)
     const char* fragShaderSource = R"(
     #version 330 core
     uniform float gamma;
     uniform float obScale;
     out vec4 FragColor;
     void main() {
-        FragColor = vec4(1.0, 0.0, 0.0, 1.0);
+        FragColor = vec4(1.0, 0.0, 0.0, 1.0);  // Просто выводим красный цвет
     })";
 
     GLuint fragShader = compileShader(fragShaderSource, GL_FRAGMENT_SHADER);
@@ -2087,18 +2090,19 @@ void FBO_PostProcess(void) {
 
     glDeleteShader(fragShader);
 
+    // Используем GLSL шейдер
     glUseProgram(shaderProgram);
 
-    GLuint gammaLoc = glGetUniformLocation(shaderProgram, "gamma");
-    GLuint obScaleLoc = glGetUniformLocation(shaderProgram, "obScale");
-    glUniform1f(gammaLoc, gamma);
-    glUniform1f(obScaleLoc, obScale);
+    // Передача параметров в шейдер
+    glProgramUniform1f(shaderProgram, glGetUniformLocation(shaderProgram, "gamma"), gamma);
+    glProgramUniform1f(shaderProgram, glGetUniformLocation(shaderProgram, "obScale"), obScale);
 
-    FBO_Bind(GL_FRAMEBUFFER, 0);
-    GL_BindTexture(0, frameBuffers[fboReadIndex].color);
+    // Отрисовка (квад)
+    FBO_Bind(GL_FRAMEBUFFER, 0); // Привязываем фреймбуфер
+    GL_BindTexture(0, frameBuffers[fboReadIndex].color); // Источник - основной цветовой буфер
     RenderQuad(w, h);
 
-    ARB_ProgramDisable();
+    ARB_ProgramDisable(); // Отключаем ARB-программу, чтобы вернуть работу с ARB в конце
 }
 
 
