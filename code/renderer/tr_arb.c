@@ -665,10 +665,22 @@ static char *ARB_BuildEffectsProgram( char *buf ) {
         s += sprintf( s, "ADD base.xyz, base, %1.2f; \n", r_ps_brightness->value );
     }
 
-    // 5. Blur
-    if ( r_ps_blur->value != 0.0 ) {
-		s = ARB_BuildBlurProgram( s, r_ps_blur->value );
-    }
+	// 5. Blur
+	if ( r_ps_blur->value != 0.0 ) {
+    	s = Q_stradd( s, "TEMP blurColor; \n" );
+
+    	s += sprintf( s, "PARAM blurOffset = { %1.2f, %1.2f, 0.0, 0.0 }; \n", r_ps_blur->value, r_ps_blur->value );
+
+   		s = Q_stradd( s, "ADD tc.xy, fragment.texcoord[0], blurOffset.xy; \n" );
+    	s = Q_stradd( s, "TEX blurColor, tc, texture[0], 2D; \n" );
+    	s = Q_stradd( s, "ADD base.xyz, base.xyz, blurColor.xyz; \n" );
+
+    	s = Q_stradd( s, "SUB tc.xy, fragment.texcoord[0], blurOffset.xy; \n" );
+    	s = Q_stradd( s, "TEX blurColor, tc, texture[0], 2D; \n" );
+    	s = Q_stradd( s, "ADD base.xyz, base.xyz, blurColor.xyz; \n" );
+
+    	s = Q_stradd( s, "MUL base.xyz, base.xyz, 0.25; \n" );
+	}
 
     // 6. Invert
     if ( r_ps_invert->value != 0.0 ) {
