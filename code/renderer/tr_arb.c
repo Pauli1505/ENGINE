@@ -726,7 +726,7 @@ static char *ARB_BuildEffectsProgram( char *buf ) {
     	s += sprintf( s, "TEX color.r, redCoord, texture[0], 2D; \n" );
     	s += sprintf( s, "TEX color.g, greenCoord, texture[0], 2D; \n" );
     	s += sprintf( s, "TEX color.b, blueCoord, texture[0], 2D; \n" );
-    	s += sprintf( s, "MOV result.color, color; \n" );
+    	s += sprintf( s, "MOV base, color; \n" );
 	}
 
     return buf;
