@@ -681,14 +681,9 @@ static char *ARB_BuildEffectsProgram( char *buf ) {
 	if ( r_ps_posterize->value != 0.0 ) {
     	float levels = r_ps_posterize->value;
     	s += sprintf( s, "PARAM levels = { %1.2f, %1.2f, %1.2f, 1.0 }; \n", levels, levels, levels );
-    
-   		s += sprintf( s, "MUL base.xyz, base, levels; \n" );
-    	s += sprintf( s, "FRC base.xyz, base; \n" );
-    	s += sprintf( s, "SUB base.xyz, base, 0.5; \n" );
-
-    	s += sprintf( s, "ADD base.xyz, base, 0.5; \n" );
-    	s += sprintf( s, "MUL base.xyz, base, 2.0; \n" );
-    	s += sprintf( s, "SAT base.xyz, base; \n" );
+    	s = Q_stradd( s, "MUL base.xyz, base, levels; \n" );
+    	s = Q_stradd( s, "FRC base.xyz, base; \n" );
+	    s = Q_stradd( s, "SUB base.xyz, base, 0.5; \n" );
 	}
 
     // 8. Glow
@@ -706,46 +701,47 @@ static char *ARB_BuildEffectsProgram( char *buf ) {
         s += sprintf( s, "MUL base.xyz, base, hueShift.x; \n" );
     }
 
-	// 10. Vignette
-	if ( r_ps_vignette->value != 0.0 ) {
-    	s += sprintf( s, "TEMP vignetteFactor; \n" );
-    	s += sprintf( s, "DISTANCE vignetteFactor, base.xy, { 0.5, 0.5 }; \n" );
-    	s += sprintf( s, "MUL vignetteFactor, vignetteFactor, %1.2f; \n", r_ps_vignette->value );
-    	s += sprintf( s, "MUL base.xyz, base, vignetteFactor; \n" );
-	}
-
-	// 11. Chromatic Aberration
-	if ( r_ps_chromaticAberration->value != 0.0 ) {
-    	s += sprintf( s, "TEMP red, green, blue; \n" );
-    	s += sprintf( s, "ADD red.xyz, base.xyz, { %1.2f, 0.0, 0.0 }; \n", r_ps_chromaticAberration->value );
-    	s += sprintf( s, "ADD green.xyz, base.xyz, { 0.0, %1.2f, 0.0 }; \n", r_ps_chromaticAberration->value );
-    	s += sprintf( s, "ADD blue.xyz, base.xyz, { 0.0, 0.0, %1.2f }; \n", r_ps_chromaticAberration->value );
-    	s += sprintf( s, "ADD base.xyz, red.xyz, green.xyz; \n" );
-    	s += sprintf( s, "ADD base.xyz, base.xyz, blue.xyz; \n" );
-	}
-
-	// 12. Bloom
+	// 10. Bloom
 	if ( r_ps_bloom->value != 0.0 ) {
     	s += sprintf( s, "TEMP bloom; \n" );
     	s += sprintf( s, "MUL bloom.xyz, base, %1.2f; \n", r_ps_bloom->value );
     	s += sprintf( s, "ADD base.xyz, base, bloom; \n" );
 	}
-
-	// 13. Halftone
-	if ( r_ps_halftone->value != 0.0 ) {
-    	s += sprintf( s, "TEMP halftone; \n" );
-    	s += sprintf( s, "MOD halftone.xyz, base, { %1.2f, %1.2f, %1.2f }; \n", r_ps_halftone->value, r_ps_halftone->value, r_ps_halftone->value );
-    	s += sprintf( s, "MUL base.xyz, base, halftone; \n" );
+	
+	// 11. Chromatic Aberration
+	if ( r_ps_chromaticAberration->value != 0.0 ) {
+    	s += sprintf( s, "PARAM chromaticAberration = { 0.02, 0.02, 0.0, 0.0 }; \n" );
+    	s += sprintf( s, "TEMP redCoord, greenCoord, blueCoord; \n" );
+    	s += sprintf( s, "ADD redCoord.xy, fragment.texcoord[0], chromaticAberration.xy; \n" );
+    	s += sprintf( s, "ADD greenCoord.xy, fragment.texcoord[0], chromaticAberration.xy; \n" );
+    	s += sprintf( s, "ADD blueCoord.xy, fragment.texcoord[0], chromaticAberration.zw; \n" );
+    	s += sprintf( s, "TEX color.r, redCoord, texture[0], 2D; \n" );
+    	s += sprintf( s, "TEX color.g, greenCoord, texture[0], 2D; \n" );
+    	s += sprintf( s, "TEX color.b, blueCoord, texture[0], 2D; \n" );
+    	s += sprintf( s, "MOV result.color, color; \n" );
 	}
 
-	// 14. Pixelate
-	if ( r_ps_pixelate->value != 0.0 ) {
-    	s += sprintf( s, "TEMP pixelSize; \n" );
-    	s += sprintf( s, "PARAM pixelSize = { %1.2f, %1.2f, %1.2f, 1.0 }; \n", r_ps_pixelate->value, r_ps_pixelate->value, r_ps_pixelate->value );
- 	   s += sprintf( s, "MUL base.xy, base.xy, pixelSize.xy; \n" );
- 	   s += sprintf( s, "FLOOR base.xy, base.xy; \n" );
- 	   s += sprintf( s, "DIV base.xy, base.xy, pixelSize.xy; \n" );
-	}
+// 11. Chromatic Aberration
+if ( r_ps_halftone->value != 0.0 ) {
+    // Устанавливаем параметры для смещения цветовых каналов
+    s += sprintf( s, "PARAM chromaticAberration = { 0.02, 0.02, 0.0, 0.0 }; \n" );
+    
+    // Временные переменные для координат
+    s += sprintf( s, "TEMP redCoord, greenCoord, blueCoord; \n" );
+    
+    // Смещаем текстурные координаты для каждого канала
+    s += sprintf( s, "ADD redCoord.xy, fragment.texcoord[0], chromaticAberration.xy; \n" );
+    s += sprintf( s, "ADD greenCoord.xy, fragment.texcoord[0], chromaticAberration.xy; \n" );
+    s += sprintf( s, "ADD blueCoord.xy, fragment.texcoord[0], chromaticAberration.zw; \n" );
+    
+    // Выбираем цвет для каждого канала с учетом смещения координат
+    s += sprintf( s, "TEX color.r, redCoord, texture[0], 2D; \n" );
+    s += sprintf( s, "TEX color.g, greenCoord, texture[0], 2D; \n" );
+    s += sprintf( s, "TEX color.b, blueCoord, texture[0], 2D; \n" );
+    
+    // Устанавливаем финальный результат
+    s += sprintf( s, "MOV result.color, color; \n" );
+}
 
     return buf;
 }
