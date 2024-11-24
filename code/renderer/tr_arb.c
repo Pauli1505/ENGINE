@@ -722,11 +722,9 @@ static char *ARB_BuildEffectsProgram( char *buf ) {
     	s += sprintf( s, "ADD greenCoord.y, fragment.texcoord[0].y, chromaticAberration.w; \n" );
     	s += sprintf( s, "ADD blueCoord.x, fragment.texcoord[0].x, -chromaticAberration.x; \n" );
     	s += sprintf( s, "ADD blueCoord.y, fragment.texcoord[0].y, -chromaticAberration.y; \n" );
-    	s += sprintf( s, "TEMP color; \n" );
-    	s += sprintf( s, "TEX color.r, redCoord, texture[0], 2D; \n" );
-    	s += sprintf( s, "TEX color.g, greenCoord, texture[0], 2D; \n" );
-    	s += sprintf( s, "TEX color.b, blueCoord, texture[0], 2D; \n" );
-    	s += sprintf( s, "MOV base, color; \n" );
+    	s += sprintf( s, "TEX base.r, redCoord, texture[0], 2D; \n" );
+    	s += sprintf( s, "TEX base.g, greenCoord, texture[0], 2D; \n" );
+    	s += sprintf( s, "TEX base.b, blueCoord, texture[0], 2D; \n" );
 	}
 
     return buf;
