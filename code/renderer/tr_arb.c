@@ -709,7 +709,7 @@ static char *ARB_BuildEffectsProgram( char *buf ) {
 	
 	// 11. Chromatic Aberration
 	if ( r_ps_chromaticAberration->value != 0.0 ) {
-    	s += sprintf( s, "PARAM chromaticAberration = { %1.2f, %1.2f, %1.2f, %1.2f }; \n",
+    	s += sprintf( s, "PARAM chromaticAberration = { %1.6f, %1.6f, %1.6f, %1.6f }; \n",
         	          r_ps_chromaticAberration->value, 
         	          r_ps_chromaticAberration->value, 
         	          -r_ps_chromaticAberration->value, 
