@@ -636,6 +636,11 @@ static char *ARB_BuildEffectsProgram( char *buf ) {
     char *s = buf;
 	int   i;
 
+    s += sprintf( s, "!!ARBfp1.0 \n" );
+    s += sprintf( s, "OPTION ARB_precision_hint_fastest; \n" );
+    s += sprintf( s, "PARAM gamma = program.local[0]; \n" );
+    s += sprintf( s, "TEMP base; \n" );
+    s += sprintf( s, "TEX base, fragment.texcoord[0], texture[0], 2D; \n" );
     s += sprintf( s, "PARAM sRGB = { 0.2126, 0.7152, 0.0722, 1.0 }; \n" );
 
 	// 1 fragment. Chromatic Aberration
