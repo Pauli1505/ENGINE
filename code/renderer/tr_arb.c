@@ -638,7 +638,7 @@ static char *ARB_BuildEffectsProgram( char *buf ) {
 
     s += sprintf( s, "PARAM sRGB = { 0.2126, 0.7152, 0.0722, 1.0 }; \n" );
 
-	// 1f. Chromatic Aberration
+	// 1 fragment. Chromatic Aberration
 	if ( r_ps_chromaticAberration->value != 0.0 ) {
     	s += sprintf( s, "PARAM chromaticAberration = { %1.6f, %1.6f, %1.6f, %1.6f }; \n",
         	          r_ps_chromaticAberration->value, 
@@ -656,11 +656,6 @@ static char *ARB_BuildEffectsProgram( char *buf ) {
     	s += sprintf( s, "TEX base.r, redCoord, texture[0], 2D; \n" );
     	s += sprintf( s, "TEX base.g, greenCoord, texture[0], 2D; \n" );
     	s += sprintf( s, "TEX base.b, blueCoord, texture[0], 2D; \n" );
-
-		s += sprintf( s, "POW base.x, base.x, gamma.x; \n" );
-		s += sprintf( s, "POW base.y, base.y, gamma.y; \n" );
-		s += sprintf( s, "POW base.z, base.z, gamma.z; \n" );
-		s += sprintf( s, "MUL base.xyz, base, gamma.w; \n" );
 	}
 
     // 1. Greyscale
@@ -732,24 +727,20 @@ static char *ARB_BuildEffectsProgram( char *buf ) {
     	s += sprintf( s, "ADD base.xyz, base, bloom; \n" );
 	}
 
+	// End. Gamma correction
+	if ( r_gamma->value != 0.0 ) {
+		s += sprintf( s, "POW base.x, base.x, gamma.x; \n" );
+		s += sprintf( s, "POW base.y, base.y, gamma.y; \n" );
+		s += sprintf( s, "POW base.z, base.z, gamma.z; \n" );
+		s += sprintf( s, "MUL base.xyz, base, gamma.w; \n" );
+		s += sprintf( s, "MOV base.w, 1.0; \n" );
+		s += sprintf( s, "MOV_SAT result.color, base; \n" );
+	}
+
+	s += sprintf( s, "END \n" );
+
     return buf;
 }
-
-static const char *gammaFP = {
-	"!!ARBfp1.0 \n"
-	"OPTION ARB_precision_hint_fastest; \n"
-	"PARAM gamma = program.local[0]; \n"
-	"TEMP base; \n"
-	"TEX base, fragment.texcoord[0], texture[0], 2D; \n"
-	"POW base.x, base.x, gamma.x; \n"
-	"POW base.y, base.y, gamma.y; \n"
-	"POW base.z, base.z, gamma.z; \n"
-	"MUL base.xyz, base, gamma.w; \n"
-	"%s" // for ARB_BuildEffectsProgram
-	"MOV base.w, 1.0; \n"
-	"MOV_SAT result.color, base; \n"
-	"END \n"
-};
 
 static char *ARB_BuildBloomProgram( char *buf ) {
 	qboolean intensityCalculated;
@@ -1120,7 +1111,7 @@ qboolean ARB_UpdatePrograms( void )
 		return qfalse;
 
 #ifdef USE_FBO
-	if ( !ARB_CompileProgram( Fragment, va( gammaFP, ARB_BuildEffectsProgram( buf ) ), programs[ PS1_FRAGMENT ] ) )
+	if ( !ARB_CompileProgram( Fragment, ARB_BuildEffectsProgram( buf ), programs[ PS1_FRAGMENT ] ) )
 		return qfalse;
 
 	if ( !ARB_CompileProgram( Fragment, ARB_BuildBloomProgram( buf ), programs[ BLOOM_EXTRACT_FRAGMENT ] ) )
