@@ -672,7 +672,7 @@ static char *ARB_BuildEffectsProgram( char *buf ) {
     }
 
     // 6. Color Tint
-    if ( r_ps_tint_r->value != 0.0 || r_ps_tint_g->value != 0.0 || r_ps_tint_b->value != 0.0 ) {
+    if ( r_ps_tint_r->value != 1.0 || r_ps_tint_g->value != 1.0 || r_ps_tint_b->value != 1.0 ) {
         s += sprintf( s, "PARAM tint = { %1.2f, %1.2f, %1.2f, 1.0 }; \n", r_ps_tint_r->value, r_ps_tint_g->value, r_ps_tint_b->value );
         s = Q_stradd( s, "MUL base.xyz, base, tint; \n" );
     }
@@ -750,7 +750,7 @@ static char *ARB_BuildEffectsProgram( char *buf ) {
 	}
 
 	// 16. Thermal Vision
-		if ( r_ps_thermal->value != 0.0 ) {
+	if ( r_ps_thermal->value != 0.0 ) {
     	s += sprintf( s, "PARAM thermal = { %1.2f, %1.2f, %1.2f, 1.0 }; \n", r_ps_thermal_r->value, r_ps_thermal_g->value, r_ps_thermal_b->value );
     	s = Q_stradd( s, "MUL base.xyz, base.xyz, thermal; \n" );
 	}
