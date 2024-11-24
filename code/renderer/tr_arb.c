@@ -715,13 +715,14 @@ static char *ARB_BuildEffectsProgram( char *buf ) {
         	          -r_ps_chromaticAberration->value, 
         	          -r_ps_chromaticAberration->value );
 
-    	s += sprintf( s, "TEMP redCoord, greenCoord, blueCoord; \n" );
-    	s += sprintf( s, "ADD redCoord.x, base.r, chromaticAberration.x; \n" );
-    	s += sprintf( s, "ADD redCoord.y, base.b, chromaticAberration.y; \n" );
-    	s += sprintf( s, "ADD greenCoord.x, base.r, chromaticAberration.z; \n" );
-    	s += sprintf( s, "ADD greenCoord.y, base.b, chromaticAberration.w; \n" );
-    	s += sprintf( s, "ADD blueCoord.x, base.r, -chromaticAberration.x; \n" );
-    	s += sprintf( s, "ADD blueCoord.y, base.b, -chromaticAberration.y; \n" );
+    	s += sprintf( s, "TEMP redCoord, greenCoord, blueCoord, tempBase; \n" );
+		s += sprintf( s, "MOV tempBase, base; \n" );  // Take screen from base for apllify effects
+    	s += sprintf( s, "ADD redCoord.x, tempBase.x, chromaticAberration.x; \n" );
+    	s += sprintf( s, "ADD redCoord.y, tempBase.y, chromaticAberration.y; \n" );
+    	s += sprintf( s, "ADD greenCoord.x, tempBase.x, chromaticAberration.z; \n" );
+    	s += sprintf( s, "ADD greenCoord.y, tempBase.y, chromaticAberration.w; \n" );
+    	s += sprintf( s, "ADD blueCoord.x, tempBase.x, -chromaticAberration.x; \n" );
+    	s += sprintf( s, "ADD blueCoord.y, tempBase.y, -chromaticAberration.y; \n" );
     	s += sprintf( s, "TEX base.r, redCoord, texture[0], 2D; \n" );
     	s += sprintf( s, "TEX base.g, greenCoord, texture[0], 2D; \n" );
     	s += sprintf( s, "TEX base.b, blueCoord, texture[0], 2D; \n" );
