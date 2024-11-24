@@ -710,10 +710,10 @@ static char *ARB_BuildEffectsProgram( char *buf ) {
 	// 11. Chromatic Aberration
 	if ( r_ps_chromaticAberration->value != 0.0 ) {
     	s += sprintf( s, "PARAM chromaticAberration = { %1.2f, %1.2f, %1.2f, %1.2f }; \n",
-        	          0.02 * r_ps_chromaticAberration->value, 
-        	          0.02 * r_ps_chromaticAberration->value, 
-        	          -0.02 * r_ps_chromaticAberration->value, 
-        	          -0.02 * r_ps_chromaticAberration->value );
+        	          r_ps_chromaticAberration->value, 
+        	          r_ps_chromaticAberration->value, 
+        	          -r_ps_chromaticAberration->value, 
+        	          -r_ps_chromaticAberration->value );
 
     	s += sprintf( s, "TEMP redCoord, greenCoord, blueCoord; \n" );
     	s += sprintf( s, "ADD redCoord.x, fragment.texcoord[0].x, chromaticAberration.x; \n" );
