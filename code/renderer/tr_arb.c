@@ -653,7 +653,7 @@ static char *ARB_BuildEffectsProgram( char *buf ) {
 
 	// 3. Contrast
 	if ( r_ps_contrast->value != 1.0 ) {
-    	s = Q_stradd( s, "PARAM contrast = { %1.2f, %1.2f, %1.2f, 0.0 }; \n", r_ps_contrast->value, r_ps_contrast->value, r_ps_contrast->value );
+    	s += sprintf( s, "PARAM contrast = { %1.2f, %1.2f, %1.2f, 0.0 }; \n", r_ps_contrast->value, r_ps_contrast->value, r_ps_contrast->value );
     	s = Q_stradd( s, "MUL contrast.xyz, base.xyz, contrast; \n" );
     	s = Q_stradd( s, "MAD base.xyz, base.xyz, contrast, -0.5 * (contrast.x - 1.0); \n" );
 	}
