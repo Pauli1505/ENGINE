@@ -670,8 +670,10 @@ static char *ARB_BuildEffectsProgram( char *buf ) {
 	if ( r_ps_blur->value != 0.0 ) {
     	int taps = (int)r_ps_blur->value;
 
-    	s = Q_stradd( s, "TEMP cc; \n"
-    	                "MOV cc, {0.0, 0.0, 0.0, 1.0};\n" );
+    	s = Q_stradd( s, "ATTRIB tc = fragment.texcoord[0]; \n"
+						"TEMP cc; \n"
+    	                "MOV cc, {0.0, 0.0, 0.0, 1.0}; \n" );
+
 
     	for ( i = 0; i < taps; i++ ) {
     	    float offset = (i - taps / 2) * 0.1;
