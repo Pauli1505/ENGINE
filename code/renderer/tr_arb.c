@@ -681,9 +681,14 @@ static char *ARB_BuildEffectsProgram( char *buf ) {
 	if ( r_ps_posterize->value != 0.0 ) {
     	float levels = r_ps_posterize->value;
     	s += sprintf( s, "PARAM levels = { %1.2f, %1.2f, %1.2f, 1.0 }; \n", levels, levels, levels );
-    	s = Q_stradd( s, "MUL base.xyz, base, levels; \n" );
+    
+   		s = Q_stradd( s, "MUL base.xyz, base, levels; \n" );
     	s = Q_stradd( s, "FRC base.xyz, base; \n" );
-	    s = Q_stradd( s, "SUB base.xyz, base, 0.5; \n" );
+    	s = Q_stradd( s, "SUB base.xyz, base, 0.5; \n" );
+
+    	s = Q_stradd( s, "ADD base.xyz, base, 0.5; \n" );
+    	s = Q_stradd( s, "MUL base.xyz, base, 2.0; \n" );
+    	s = Q_stradd( s, "SAT base.xyz, base; \n" );
 	}
 
     // 8. Glow
@@ -693,19 +698,57 @@ static char *ARB_BuildEffectsProgram( char *buf ) {
         s += sprintf( s, "LRP base.xyz, %1.2f, glow, base; \n", 0.5 * r_ps_glow->value );
     }
 
-    // 9. Hue Shift (Color Shift)
-    if ( r_ps_hue_shift->value != 0.0 ) {
+    // 9. Filmic
+    if ( r_ps_filmic->value != 0.0 ) {
         s = Q_stradd( s, "TEMP hueShift; \n" );
-        s += sprintf( s, "PARAM hueRotation = { %1.2f, 0.0, 0.0, 0.0 }; \n", r_ps_hue_shift->value );
+        s += sprintf( s, "PARAM hueRotation = { %1.2f, 0.0, 0.0, 0.0 }; \n", r_ps_filmic->value );
         s = Q_stradd( s, "DP3 hueShift.x, base, hueRotation; \n" );
         s = Q_stradd( s, "MUL base.xyz, base, hueShift.x; \n" );
     }
 
-    // 10. Smooth Color Blend (Blend between two colors)
-    if ( r_ps_blend_color->value != 0.0 ) {
-        s = Q_stradd( s, "PARAM blendColor = { 0.5, 0.5, 0.5, 1.0 }; \n" );
-        s += sprintf( s, "LRP base.xyz, %1.2f, base, blendColor; \n", r_ps_blend_color->value );
-    }
+	// 10. Vignette
+	if ( r_ps_vignette->value != 0.0 ) {
+    	s = Q_stradd( s, "TEMP vignetteFactor; \n" );
+    	s += sprintf( s, "DISTANCE vignetteFactor, base.xy, { 0.5, 0.5 }; \n" ); // Вычисляем расстояние от центра
+    	s = Q_stradd( s, "MUL vignetteFactor, vignetteFactor, %1.2f; \n", r_ps_vignette->value ); // Настроить эффект
+    	s = Q_stradd( s, "MUL base.xyz, base, vignetteFactor; \n" ); // Применяем затемнение
+	}
+
+	// 11. Chromatic Aberration
+	if ( r_ps_chromaticAberration->value != 0.0 ) {
+    	s = Q_stradd( s, "TEMP red, green, blue; \n" );
+    	s = Q_stradd( s, "MOV red.xyz, base.xyz; \n" );
+    	s = Q_stradd( s, "ADD red.xyz, red, { %1.2f, 0.0, 0.0 }; \n", r_ps_chromaticAberration->value ); // Смещение для красного канала
+    	s = Q_stradd( s, "MOV green.xyz, base.xyz; \n" );
+    	s = Q_stradd( s, "ADD green.xyz, green, { 0.0, %1.2f, 0.0 }; \n", r_ps_chromaticAberration->value ); // Смещение для зеленого канала
+    	s = Q_stradd( s, "MOV blue.xyz, base.xyz; \n" );
+    	s = Q_stradd( s, "ADD blue.xyz, blue, { 0.0, 0.0, %1.2f }; \n", r_ps_chromaticAberration->value ); // Смещение для синего канала
+    	s = Q_stradd( s, "ADD base.xyz, red.xyz, green.xyz; \n" );
+    	s = Q_stradd( s, "ADD base.xyz, base, blue.xyz; \n" );
+	}
+
+	// 12. Bloom
+	if ( r_ps_bloom->value != 0.0 ) {
+    	s = Q_stradd( s, "TEMP bloom; \n" );
+    	s += sprintf( s, "MUL bloom.xyz, base, %1.2f; \n", r_ps_bloom->value ); // Умножаем яркость
+    	s = Q_stradd( s, "ADD base.xyz, base, bloom; \n" ); // Добавляем свечения к исходному изображению
+	}
+
+	// 13. Halftone
+	if ( r_ps_halftone->value != 0.0 ) {
+    	s = Q_stradd( s, "TEMP halftone; \n" );
+    	s += sprintf( s, "MOD halftone.xyz, base, %1.2f; \n", r_ps_halftone->value ); // Применение сетки полутонов
+    	s = Q_stradd( s, "MUL base.xyz, base, halftone; \n" ); // Применяем сетку к изображению
+	}
+
+	// 14. Pixelate
+	if ( r_ps_pixelate->value != 0.0 ) {
+    	s = Q_stradd( s, "TEMP pixelSize; \n" );
+    	s += sprintf( s, "PARAM pixelSize = { %1.2f, %1.2f, %1.2f, 1.0 }; \n", r_ps_pixelate->value, r_ps_pixelate->value, r_ps_pixelate->value );
+    	s = Q_stradd( s, "MUL base.xy, base.xy, pixelSize.xy; \n" ); // Уменьшаем разрешение по осям X и Y
+    	s = Q_stradd( s, "FLOOR base.xy, base.xy; \n" ); // Округляем к ближайшему пикселю
+    	s = Q_stradd( s, "DIV base.xy, base.xy, pixelSize.xy; \n" ); // Возвращаем обратно в исходный масштаб
+	}
 
     return buf;
 }
