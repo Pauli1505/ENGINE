@@ -1137,7 +1137,7 @@ qboolean ARB_UpdatePrograms( void )
 	if ( !ARB_CompileProgram( Fragment, blend2FP, programs[ BLEND2_FRAGMENT ] ) )
 		return qfalse;
 
-	if ( !ARB_CompileProgram( Fragment, va( blend2gammaFP, ARB_BuildEffectsProgram( buf ) ), programs[ BLEND2_GAMMA_FRAGMENT ] ) )
+	if ( !ARB_CompileProgram( Fragment, va( blend2gammaFP, "" ), programs[ BLEND2_GAMMA_FRAGMENT ] ) )
 		return qfalse;
 #endif // USE_FBO
 
