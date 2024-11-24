@@ -709,45 +709,42 @@ static char *ARB_BuildEffectsProgram( char *buf ) {
 	// 10. Vignette
 	if ( r_ps_vignette->value != 0.0 ) {
     	s += sprintf( s, "TEMP vignetteFactor; \n" );
-    	s += sprintf( s, "DISTANCE vignetteFactor, base.xy, { 0.5, 0.5 }; \n" ); // Вычисляем расстояние от центра
-    	s += sprintf( s, "MUL vignetteFactor, vignetteFactor, %1.2f; \n", r_ps_vignette->value ); // Настроить эффект
-    	s += sprintf( s, "MUL base.xyz, base, vignetteFactor; \n" ); // Применяем затемнение
+    	s += sprintf( s, "DISTANCE vignetteFactor, base.xy, { 0.5, 0.5 }; \n" );
+    	s += sprintf( s, "MUL vignetteFactor, vignetteFactor, %1.2f; \n", r_ps_vignette->value );
+    	s += sprintf( s, "MUL base.xyz, base, vignetteFactor; \n" );
 	}
 
 	// 11. Chromatic Aberration
 	if ( r_ps_chromaticAberration->value != 0.0 ) {
     	s += sprintf( s, "TEMP red, green, blue; \n" );
-    	s += sprintf( s, "MOV red.xyz, base.xyz; \n" );
-    	s += sprintf( s, "ADD red.xyz, red, { %1.2f, 0.0, 0.0 }; \n", r_ps_chromaticAberration->value ); // Смещение для красного канала
-    	s += sprintf( s, "MOV green.xyz, base.xyz; \n" );
-    	s += sprintf( s, "ADD green.xyz, green, { 0.0, %1.2f, 0.0 }; \n", r_ps_chromaticAberration->value ); // Смещение для зеленого канала
-    	s += sprintf( s, "MOV blue.xyz, base.xyz; \n" );
-    	s += sprintf( s, "ADD blue.xyz, blue, { 0.0, 0.0, %1.2f }; \n", r_ps_chromaticAberration->value ); // Смещение для синего канала
+    	s += sprintf( s, "ADD red.xyz, base.xyz, { %1.2f, 0.0, 0.0 }; \n", r_ps_chromaticAberration->value );
+    	s += sprintf( s, "ADD green.xyz, base.xyz, { 0.0, %1.2f, 0.0 }; \n", r_ps_chromaticAberration->value );
+    	s += sprintf( s, "ADD blue.xyz, base.xyz, { 0.0, 0.0, %1.2f }; \n", r_ps_chromaticAberration->value );
     	s += sprintf( s, "ADD base.xyz, red.xyz, green.xyz; \n" );
-    	s += sprintf( s, "ADD base.xyz, base, blue.xyz; \n" );
+    	s += sprintf( s, "ADD base.xyz, base.xyz, blue.xyz; \n" );
 	}
 
 	// 12. Bloom
 	if ( r_ps_bloom->value != 0.0 ) {
     	s += sprintf( s, "TEMP bloom; \n" );
-    	s += sprintf( s, "MUL bloom.xyz, base, %1.2f; \n", r_ps_bloom->value ); // Умножаем яркость
-    	s += sprintf( s, "ADD base.xyz, base, bloom; \n" ); // Добавляем свечения к исходному изображению
+    	s += sprintf( s, "MUL bloom.xyz, base, %1.2f; \n", r_ps_bloom->value );
+    	s += sprintf( s, "ADD base.xyz, base, bloom; \n" );
 	}
 
 	// 13. Halftone
 	if ( r_ps_halftone->value != 0.0 ) {
     	s += sprintf( s, "TEMP halftone; \n" );
-    	s += sprintf( s, "MOD halftone.xyz, base, %1.2f; \n", r_ps_halftone->value ); // Применение сетки полутонов
-    	s += sprintf( s, "MUL base.xyz, base, halftone; \n" ); // Применяем сетку к изображению
+    	s += sprintf( s, "MOD halftone.xyz, base, { %1.2f, %1.2f, %1.2f }; \n", r_ps_halftone->value, r_ps_halftone->value, r_ps_halftone->value );
+    	s += sprintf( s, "MUL base.xyz, base, halftone; \n" );
 	}
 
 	// 14. Pixelate
 	if ( r_ps_pixelate->value != 0.0 ) {
     	s += sprintf( s, "TEMP pixelSize; \n" );
     	s += sprintf( s, "PARAM pixelSize = { %1.2f, %1.2f, %1.2f, 1.0 }; \n", r_ps_pixelate->value, r_ps_pixelate->value, r_ps_pixelate->value );
-    	s += sprintf( s, "MUL base.xy, base.xy, pixelSize.xy; \n" ); // Уменьшаем разрешение по осям X и Y
-    	s += sprintf( s, "FLOOR base.xy, base.xy; \n" ); // Округляем к ближайшему пикселю
-    	s += sprintf( s, "DIV base.xy, base.xy, pixelSize.xy; \n" ); // Возвращаем обратно в исходный масштаб
+ 	   s += sprintf( s, "MUL base.xy, base.xy, pixelSize.xy; \n" );
+ 	   s += sprintf( s, "FLOOR base.xy, base.xy; \n" );
+ 	   s += sprintf( s, "DIV base.xy, base.xy, pixelSize.xy; \n" );
 	}
 
     return buf;
