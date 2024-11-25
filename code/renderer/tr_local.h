@@ -1237,16 +1237,6 @@ extern cvar_t	*r_vbo;
 #ifdef USE_FBO
 extern cvar_t	*r_fbo;
 extern cvar_t	*r_hdr;
-extern cvar_t	*r_bloom;
-extern cvar_t	*r_bloom_threshold;
-extern cvar_t	*r_bloom_threshold_mode;
-extern cvar_t	*r_bloom_modulate;
-extern cvar_t	*r_bloom_passes;
-extern cvar_t	*r_bloom_blend_base;
-extern cvar_t	*r_bloom_intensity;
-extern cvar_t	*r_bloom_filter_size;
-extern cvar_t	*r_bloom_reflection;
-
 extern cvar_t	*r_renderWidth;
 extern cvar_t	*r_renderHeight;
 extern cvar_t	*r_renderScale;
@@ -1318,6 +1308,11 @@ extern	cvar_t	*r_fx_posterize;
 extern	cvar_t	*r_fx_glow;
 extern	cvar_t	*r_fx_filmic;
 extern	cvar_t	*r_fx_bloom;
+extern	cvar_t	*r_fx_bloom_passes;
+extern	cvar_t	*r_fx_bloom_blend_base;
+extern	cvar_t	*r_fx_bloom_intensity;
+extern	cvar_t	*r_fx_bloom_filter_size;
+extern	cvar_t	*r_fx_bloom_reflection;
 
 //fragment
 extern	cvar_t	*r_fx_chromaticAberration;
@@ -1638,7 +1633,7 @@ void FBO_BindMain( void );
 void FBO_PostProcess( void );
 void FBO_BlitMS( qboolean depthOnly );
 void FBO_BlitSS( void );
-qboolean FBO_Bloom( const float gamma, const float obScale, qboolean finalPass );
+qboolean FBO_PostFX( const float gamma, const float obScale, qboolean finalPass );
 void FBO_CopyScreen( void );
 GLuint FBO_ScreenTexture( void );
 #endif //  USE_FBO
@@ -2008,7 +2003,6 @@ typedef enum {
 #ifdef USE_FBO
 	GAMMA_FRAGMENT,
 	POSTFX_FRAGMENT,
-	BLOOM_EXTRACT_FRAGMENT,
 	BLUR_FRAGMENT,
 	BLUR2_FRAGMENT,
 	BLENDX_FRAGMENT,
