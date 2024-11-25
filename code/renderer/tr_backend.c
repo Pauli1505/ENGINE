@@ -1498,14 +1498,14 @@ static const void *RB_SwapBuffers( const void *data ) {
 
 	const swapBuffersCommand_t	*cmd;
 
-	// finish any 2D drawing if needed
-	RB_EndSurface();
-
 #ifdef USE_FBO
 	if ( fboEnabled ) {
 		FBO_PostProcess();
 	}
 #endif
+
+	// finish any 2D drawing if needed
+	RB_EndSurface();
 
 #ifdef USE_VBO
 	VBO_UnBind();
