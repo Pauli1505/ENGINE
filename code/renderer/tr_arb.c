@@ -632,7 +632,7 @@ static const char *spriteFP = {
 
 
 #ifdef USE_FBO
-static char *ARB_BuildEffectsProgram( char *buf, int postFX ) {
+static char *ARB_BuildEffectsProgram( char *buf ) {
     char *s = buf;
 	int   i;
 
@@ -643,7 +643,6 @@ static char *ARB_BuildEffectsProgram( char *buf, int postFX ) {
     s += sprintf( s, "TEX base, fragment.texcoord[0], texture[0], 2D; \n" );
     s += sprintf( s, "PARAM sRGB = { 0.2126, 0.7152, 0.0722, 1.0 }; \n" );
 
-	if(postFX){
 	// 1 fragment. Chromatic Aberration
 	if ( r_fx_chromaticAberration->value != 0.0 ) {
     	s += sprintf( s, "PARAM chromaticAberration = { %1.6f, %1.6f, %1.6f, %1.6f }; \n",
@@ -752,8 +751,6 @@ static char *ARB_BuildEffectsProgram( char *buf, int postFX ) {
     	s += sprintf( s, "ADD base.xyz, base, bloom; \n" );
 	}
 
-	} else { //postFX on ^
-
 	// End. Gamma correction
 	if ( r_gamma->value != 0.0 ) {
 		s += sprintf( s, "POW base.x, base.x, gamma.x; \n" );
@@ -761,10 +758,8 @@ static char *ARB_BuildEffectsProgram( char *buf, int postFX ) {
 		s += sprintf( s, "POW base.z, base.z, gamma.z; \n" );
 		s += sprintf( s, "MUL base.xyz, base, gamma.w; \n" );
 		s += sprintf( s, "MOV base.w, 1.0; \n" );
-		s += sprintf( s, "MOV_SAT result.color, base; \n" );
+		s += sprintf( s, "MOV result.color, base; \n" );
 	}
-
-	} //postFX
 
 	s += sprintf( s, "END \n" );
 
@@ -1140,10 +1135,7 @@ qboolean ARB_UpdatePrograms( void )
 		return qfalse;
 
 #ifdef USE_FBO
-	if ( !ARB_CompileProgram( Fragment, ARB_BuildEffectsProgram( buf, 0 ), programs[ GAMMA_FRAGMENT ] ) )
-		return qfalse;
-
-	if ( !ARB_CompileProgram( Fragment, ARB_BuildEffectsProgram( buf, 1 ), programs[ POSTFX_FRAGMENT ] ) )
+	if ( !ARB_CompileProgram( Fragment, ARB_BuildEffectsProgram( buf ), programs[ POSTFX_FRAGMENT ] ) )
 		return qfalse;
 
 	if ( !ARB_CompileProgram( Fragment, ARB_BuildBloomProgram( buf ), programs[ BLOOM_EXTRACT_FRAGMENT ] ) )
@@ -2118,11 +2110,9 @@ void FBO_PostProcess( int postFX )
 	if ( backEnd.screenshotMask == 0 && !windowAdjusted && !minimized ) {
 		FBO_Bind( GL_FRAMEBUFFER, 0 );
 		GL_BindTexture( 0, frameBuffers[ fboReadIndex ].color );
-		if(postFX){
-			ARB_ProgramEnable( DUMMY_VERTEX, POSTFX_FRAGMENT );
-		} else {
-			ARB_ProgramEnable( DUMMY_VERTEX, GAMMA_FRAGMENT );
-		}
+		GL_State( GLS_DEPTHTEST_DISABLE | GLS_SRCBLEND_ONE | GLS_DSTBLEND_ZERO );
+		qglViewport( 0, 0, frameBuffers[ fboReadIndex ].width, frameBuffers[ fboReadIndex ].height );
+		ARB_ProgramEnable( DUMMY_VERTEX, POSTFX_FRAGMENT );
 		qglProgramLocalParameter4fARB( GL_FRAGMENT_PROGRAM_ARB, 0, gamma, gamma, gamma, obScale );
 		RenderQuad( w, h );
 		ARB_ProgramDisable();
@@ -2132,11 +2122,9 @@ void FBO_PostProcess( int postFX )
 	// apply gamma shader
 	FBO_Bind( GL_FRAMEBUFFER, frameBuffers[ 1 ].fbo ); // destination - secondary buffer
 	GL_BindTexture( 0, frameBuffers[ fboReadIndex ].color );  // source - main color buffer
-	if(postFX){
-		ARB_ProgramEnable( DUMMY_VERTEX, POSTFX_FRAGMENT );
-	} else {
-		ARB_ProgramEnable( DUMMY_VERTEX, GAMMA_FRAGMENT );
-	}
+	GL_State( GLS_DEPTHTEST_DISABLE | GLS_SRCBLEND_ONE | GLS_DSTBLEND_ZERO );
+	qglViewport( 0, 0, frameBuffers[ fboReadIndex ].width, frameBuffers[ fboReadIndex ].height );
+	ARB_ProgramEnable( DUMMY_VERTEX, POSTFX_FRAGMENT );
 	qglProgramLocalParameter4fARB( GL_FRAGMENT_PROGRAM_ARB, 0, gamma, gamma, gamma, obScale );
 	RenderQuad( w, h );
 	ARB_ProgramDisable();

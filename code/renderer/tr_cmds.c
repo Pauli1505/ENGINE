@@ -404,12 +404,6 @@ void RE_BeginFrame( stereoFrame_t stereoFrame ) {
 		}
 	}
 
-	#ifdef USE_FBO
-		if ( fboEnabled ) {
-			FBO_PostProcess( 1 );
-		}
-	#endif
-
 	tr.refdef.stereoFrame = stereoFrame;
 }
 
