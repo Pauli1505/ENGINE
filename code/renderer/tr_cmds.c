@@ -386,12 +386,6 @@ void RE_BeginFrame( stereoFrame_t stereoFrame ) {
 		}
 	}
 
-	#ifdef USE_FBO
-		if ( fboEnabled ) {
-			FBO_PostProcess();
-		}
-	#endif
-
 	if ( r_fastsky->integer ) {
 		if ( stereoFrame != STEREO_RIGHT ) {
 			if ( !clrcmd ) {
@@ -409,6 +403,12 @@ void RE_BeginFrame( stereoFrame_t stereoFrame ) {
 			}
 		}
 	}
+
+	#ifdef USE_FBO
+		if ( fboEnabled ) {
+			FBO_PostProcess();
+		}
+	#endif
 
 	tr.refdef.stereoFrame = stereoFrame;
 }
