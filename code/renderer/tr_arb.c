@@ -2139,7 +2139,7 @@ void FBO_PostProcess( void )
 	ARB_ProgramDisable();
 
 	if ( !minimized ) {
-		FBO_BlitToBackBuffer( r_postfx_back );
+		FBO_BlitToBackBuffer( r_postfx_back->integer );
 	}
 }
 
