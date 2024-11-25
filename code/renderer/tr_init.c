@@ -58,6 +58,9 @@ cvar_t	*r_anaglyphMode;
 
 //postFX
 cvar_t	*r_postfx;
+cvar_t	*r_postfx_buffer;
+cvar_t	*r_postfx_dest;
+cvar_t	*r_postfx_push;
 
 //color
 cvar_t	*r_fx_greyscale;
@@ -1672,6 +1675,12 @@ static void R_Register( void )
 	//postFX
 	r_postfx = ri.Cvar_Get( "r_postfx", "1", CVAR_ARCHIVE_ND );
 	ri.Cvar_SetGroup( r_postfx, CVG_RENDERER );
+	r_postfx_buffer = ri.Cvar_Get( "r_postfx_buffer", "1", CVAR_ARCHIVE_ND );
+	ri.Cvar_SetGroup( r_postfx_buffer, CVG_RENDERER );
+	r_postfx_dest = ri.Cvar_Get( "r_postfx_dest", "1", CVAR_ARCHIVE_ND );
+	ri.Cvar_SetGroup( r_postfx_dest, CVG_RENDERER );
+	r_postfx_push = ri.Cvar_Get( "r_postfx_push", "1", CVAR_ARCHIVE_ND );
+	ri.Cvar_SetGroup( r_postfx_push, CVG_RENDERER );
 
 	//colors
 	r_fx_greyscale = ri.Cvar_Get( "r_fx_greyscale", "0.0", CVAR_ARCHIVE_ND );
