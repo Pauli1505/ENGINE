@@ -1303,7 +1303,7 @@ extern	cvar_t	*r_skipBackEnd;
 extern	cvar_t	*r_anaglyphMode;
 
 //postFX
-extern	cvar_t	*r_postprocess;
+extern	cvar_t	*r_postfx;
 
 //color
 extern	cvar_t	*r_fx_greyscale;
