@@ -632,7 +632,7 @@ static const char *spriteFP = {
 
 
 #ifdef USE_FBO
-static char *ARB_BuildEffectsProgram( char *buf ) {
+static char *ARB_BuildGammaProgram( char *buf ) {
     char *s = buf;
 	int   i;
 
@@ -643,114 +643,6 @@ static char *ARB_BuildEffectsProgram( char *buf ) {
     s += sprintf( s, "TEX base, fragment.texcoord[0], texture[0], 2D; \n" );
     s += sprintf( s, "PARAM sRGB = { 0.2126, 0.7152, 0.0722, 1.0 }; \n" );
 
-	// 1 fragment. Chromatic Aberration
-	if ( r_fx_chromaticAberration->value != 0.0 ) {
-    	s += sprintf( s, "PARAM chromaticAberration = { %1.6f, %1.6f, %1.6f, %1.6f }; \n",
-        	          r_fx_chromaticAberration->value, 
-        	          r_fx_chromaticAberration->value, 
-        	          -r_fx_chromaticAberration->value, 
-        	          -r_fx_chromaticAberration->value );
-
-    	s += sprintf( s, "TEMP redCoord, greenCoord, blueCoord; \n" );
-    	s += sprintf( s, "ADD redCoord.x, fragment.texcoord[0].x, chromaticAberration.x; \n" );
-    	s += sprintf( s, "ADD redCoord.y, fragment.texcoord[0].y, chromaticAberration.y; \n" );
-    	s += sprintf( s, "ADD greenCoord.x, fragment.texcoord[0].x, chromaticAberration.z; \n" );
-    	s += sprintf( s, "ADD greenCoord.y, fragment.texcoord[0].y, chromaticAberration.w; \n" );
-    	s += sprintf( s, "ADD blueCoord.x, fragment.texcoord[0].x, -chromaticAberration.x; \n" );
-    	s += sprintf( s, "ADD blueCoord.y, fragment.texcoord[0].y, -chromaticAberration.y; \n" );
-    	s += sprintf( s, "TEX base.r, redCoord, texture[0], 2D; \n" );
-    	s += sprintf( s, "TEX base.g, greenCoord, texture[0], 2D; \n" );
-    	s += sprintf( s, "TEX base.b, blueCoord, texture[0], 2D; \n" );
-	}
-	// 2 fragment. Chameleon
-	if ( r_fx_chameleon->value != 0.0 ) {
-    	s += sprintf( s, "PARAM chromaticAberration = { %1.6f, %1.6f, %1.6f, %1.6f }; \n",
-        	          r_fx_chameleon->value, 
-        	          r_fx_chameleon->value, 
-        	          -r_fx_chameleon->value, 
-        	          -r_fx_chameleon->value );
-
-    	s += sprintf( s, "TEMP redCoord, greenCoord, blueCoord; \n" );
-    	s += sprintf( s, "ADD redCoord.x, base.r, chromaticAberration.x; \n" );
-    	s += sprintf( s, "ADD redCoord.y, base.b, chromaticAberration.y; \n" );
-    	s += sprintf( s, "ADD greenCoord.x, base.r, chromaticAberration.z; \n" );
-    	s += sprintf( s, "ADD greenCoord.y, base.b, chromaticAberration.w; \n" );
-    	s += sprintf( s, "ADD blueCoord.x, base.r, -chromaticAberration.x; \n" );
-    	s += sprintf( s, "ADD blueCoord.y, base.b, -chromaticAberration.y; \n" );
-    	s += sprintf( s, "TEX base.r, redCoord, texture[0], 2D; \n" );
-    	s += sprintf( s, "TEX base.g, greenCoord, texture[0], 2D; \n" );
-    	s += sprintf( s, "TEX base.b, blueCoord, texture[0], 2D; \n" );
-	}
-
-    // 1. Greyscale
-    if ( r_fx_greyscale->value != 0.0 ) {
-    	s += sprintf( s, "TEMP color; \n" );
-        s += sprintf( s, "DP3 color.xyz, base, sRGB; \n" );
-        s += sprintf( s, "LRP base.xyz, %1.2f, color, base; \n", r_fx_greyscale->value );
-    }
-
-    // 2. Sepia
-    if ( r_fx_sepia->value != 1.0 ) {
-        s += sprintf( s, "PARAM sepiaTone = { 1.2, 1.0, 0.8, 1.0 }; \n" );
-        s += sprintf( s, "LRP base.xyz, %1.2f, base, sepiaTone; \n", r_fx_sepia->value );
-    }
-
-	// 3. Contrast
-	if ( r_fx_contrast->value != 0.0 ) {
-   		float contrast = r_fx_contrast->value;
-    	s += sprintf( s, "PARAM contrast = { %1.2f, %1.2f, %1.2f, 1.0 }; \n", contrast, contrast, contrast );
-    	s += sprintf( s, "MUL base.xyz, base, contrast; \n" );
-    	s += sprintf( s, "ADD base.xyz, base, -0.5; \n" );
-    	s += sprintf( s, "MUL base.xyz, base, contrast; \n" );
-	}
-
-    // 4. Brightness
-    if ( r_fx_brightness->value != 0.0 ) {
-        s += sprintf( s, "ADD base.xyz, base, %1.2f; \n", r_fx_brightness->value );
-    }
-
-    // 5. Invert
-    if ( r_fx_invert->value != 0.0 ) {
-        s += sprintf( s, "SUB base.xyz, 1.0, base; \n" );
-    }
-
-    // 6. Color Tint
-    if ( r_fx_tint_r->value != 1.0 || r_fx_tint_g->value != 1.0 || r_fx_tint_b->value != 1.0 ) {
-        s += sprintf( s, "PARAM tint = { %1.2f, %1.2f, %1.2f, 1.0 }; \n", r_fx_tint_r->value, r_fx_tint_g->value, r_fx_tint_b->value );
-        s += sprintf( s, "MUL base.xyz, base, tint; \n" );
-    }
-
-	// 7. Posterize
-	if ( r_fx_posterize->value != 0.0 ) {
-    	float levels = r_fx_posterize->value;
-    	s += sprintf( s, "PARAM levels = { %1.2f, %1.2f, %1.2f, 1.0 }; \n", levels, levels, levels );
-    	s = Q_stradd( s, "MUL base.xyz, base, levels; \n" );
-    	s = Q_stradd( s, "FRC base.xyz, base; \n" );
-	    s = Q_stradd( s, "SUB base.xyz, base, 0.5; \n" );
-	}
-
-    // 8. Glow
-    if ( r_fx_glow->value != 0.0 ) {
-        s += sprintf( s, "TEMP glow; \n" );
-        s += sprintf( s, "MUL glow.xyz, base, %1.2f; \n", 1.0 + r_fx_glow->value );
-        s += sprintf( s, "LRP base.xyz, %1.2f, glow, base; \n", 0.5 * r_fx_glow->value );
-    }
-
-    // 9. Filmic
-    if ( r_fx_filmic->value != 0.0 ) {
-        s += sprintf( s, "TEMP hueShift; \n" );
-        s += sprintf( s, "PARAM hueRotation = { %1.2f, 0.0, 0.0, 0.0 }; \n", r_fx_filmic->value );
-        s += sprintf( s, "DP3 hueShift.x, base, hueRotation; \n" );
-        s += sprintf( s, "MUL base.xyz, base, hueShift.x; \n" );
-    }
-
-	// 10. Bloom
-	if ( r_fx_bloom->value != 0.0 ) {
-    	s += sprintf( s, "TEMP bloom; \n" );
-    	s += sprintf( s, "MUL bloom.xyz, base, %1.2f; \n", r_fx_bloom->value );
-    	s += sprintf( s, "ADD base.xyz, base, bloom; \n" );
-	}
-
 	// End. Gamma correction
 	if ( r_gamma->value != 0.0 ) {
 		s += sprintf( s, "POW base.x, base.x, gamma.x; \n" );
@@ -758,7 +650,7 @@ static char *ARB_BuildEffectsProgram( char *buf ) {
 		s += sprintf( s, "POW base.z, base.z, gamma.z; \n" );
 		s += sprintf( s, "MUL base.xyz, base, gamma.w; \n" );
 		s += sprintf( s, "MOV base.w, 1.0; \n" );
-		s += sprintf( s, "MOV result.color, base; \n" );
+		s += sprintf( s, "MOV_SAT result.color, base; \n" );
 	}
 
 	s += sprintf( s, "END \n" );
@@ -896,6 +788,121 @@ static char *ARB_BuildBlendProgram( char *buf, int count ) {
 	return buf;
 }
 
+static char *ARB_BuildEffectsProgram( char *buf ) {
+    char *s = buf;
+	int   i;
+
+	// 1 fragment. Chromatic Aberration
+	if ( r_fx_chromaticAberration->value != 0.0 ) {
+    	s += sprintf( s, "PARAM chromaticAberration = { %1.6f, %1.6f, %1.6f, %1.6f }; \n",
+        	          r_fx_chromaticAberration->value, 
+        	          r_fx_chromaticAberration->value, 
+        	          -r_fx_chromaticAberration->value, 
+        	          -r_fx_chromaticAberration->value );
+
+    	s += sprintf( s, "TEMP redCoord, greenCoord, blueCoord; \n" );
+    	s += sprintf( s, "ADD redCoord.x, fragment.texcoord[0].x, chromaticAberration.x; \n" );
+    	s += sprintf( s, "ADD redCoord.y, fragment.texcoord[0].y, chromaticAberration.y; \n" );
+    	s += sprintf( s, "ADD greenCoord.x, fragment.texcoord[0].x, chromaticAberration.z; \n" );
+    	s += sprintf( s, "ADD greenCoord.y, fragment.texcoord[0].y, chromaticAberration.w; \n" );
+    	s += sprintf( s, "ADD blueCoord.x, fragment.texcoord[0].x, -chromaticAberration.x; \n" );
+    	s += sprintf( s, "ADD blueCoord.y, fragment.texcoord[0].y, -chromaticAberration.y; \n" );
+    	s += sprintf( s, "TEX base.r, redCoord, texture[0], 2D; \n" );
+    	s += sprintf( s, "TEX base.g, greenCoord, texture[0], 2D; \n" );
+    	s += sprintf( s, "TEX base.b, blueCoord, texture[0], 2D; \n" );
+	}
+	// 2 fragment. Chameleon
+	if ( r_fx_chameleon->value != 0.0 ) {
+    	s += sprintf( s, "PARAM chromaticAberration = { %1.6f, %1.6f, %1.6f, %1.6f }; \n",
+        	          r_fx_chameleon->value, 
+        	          r_fx_chameleon->value, 
+        	          -r_fx_chameleon->value, 
+        	          -r_fx_chameleon->value );
+
+    	s += sprintf( s, "TEMP redCoord, greenCoord, blueCoord; \n" );
+    	s += sprintf( s, "ADD redCoord.x, base.r, chromaticAberration.x; \n" );
+    	s += sprintf( s, "ADD redCoord.y, base.b, chromaticAberration.y; \n" );
+    	s += sprintf( s, "ADD greenCoord.x, base.r, chromaticAberration.z; \n" );
+    	s += sprintf( s, "ADD greenCoord.y, base.b, chromaticAberration.w; \n" );
+    	s += sprintf( s, "ADD blueCoord.x, base.r, -chromaticAberration.x; \n" );
+    	s += sprintf( s, "ADD blueCoord.y, base.b, -chromaticAberration.y; \n" );
+    	s += sprintf( s, "TEX base.r, redCoord, texture[0], 2D; \n" );
+    	s += sprintf( s, "TEX base.g, greenCoord, texture[0], 2D; \n" );
+    	s += sprintf( s, "TEX base.b, blueCoord, texture[0], 2D; \n" );
+	}
+
+    // 1. Greyscale
+    if ( r_fx_greyscale->value != 0.0 ) {
+    	s += sprintf( s, "PARAM sRGB = { 0.2126, 0.7152, 0.0722, 1.0 }; \n" );
+    	s += sprintf( s, "TEMP color; \n" );
+        s += sprintf( s, "DP3 color.xyz, base, sRGB; \n" );
+        s += sprintf( s, "LRP base.xyz, %1.2f, color, base; \n", r_fx_greyscale->value );
+    }
+
+    // 2. Sepia
+    if ( r_fx_sepia->value != 1.0 ) {
+        s += sprintf( s, "PARAM sepiaTone = { 1.2, 1.0, 0.8, 1.0 }; \n" );
+        s += sprintf( s, "LRP base.xyz, %1.2f, base, sepiaTone; \n", r_fx_sepia->value );
+    }
+
+	// 3. Contrast
+	if ( r_fx_contrast->value != 0.0 ) {
+   		float contrast = r_fx_contrast->value;
+    	s += sprintf( s, "PARAM contrast = { %1.2f, %1.2f, %1.2f, 1.0 }; \n", contrast, contrast, contrast );
+    	s += sprintf( s, "MUL base.xyz, base, contrast; \n" );
+    	s += sprintf( s, "ADD base.xyz, base, -0.5; \n" );
+    	s += sprintf( s, "MUL base.xyz, base, contrast; \n" );
+	}
+
+    // 4. Brightness
+    if ( r_fx_brightness->value != 0.0 ) {
+        s += sprintf( s, "ADD base.xyz, base, %1.2f; \n", r_fx_brightness->value );
+    }
+
+    // 5. Invert
+    if ( r_fx_invert->value != 0.0 ) {
+        s += sprintf( s, "SUB base.xyz, 1.0, base; \n" );
+    }
+
+    // 6. Color Tint
+    if ( r_fx_tint_r->value != 1.0 || r_fx_tint_g->value != 1.0 || r_fx_tint_b->value != 1.0 ) {
+        s += sprintf( s, "PARAM tint = { %1.2f, %1.2f, %1.2f, 1.0 }; \n", r_fx_tint_r->value, r_fx_tint_g->value, r_fx_tint_b->value );
+        s += sprintf( s, "MUL base.xyz, base, tint; \n" );
+    }
+
+	// 7. Posterize
+	if ( r_fx_posterize->value != 0.0 ) {
+    	float levels = r_fx_posterize->value;
+    	s += sprintf( s, "PARAM levels = { %1.2f, %1.2f, %1.2f, 1.0 }; \n", levels, levels, levels );
+    	s = Q_stradd( s, "MUL base.xyz, base, levels; \n" );
+    	s = Q_stradd( s, "FRC base.xyz, base; \n" );
+	    s = Q_stradd( s, "SUB base.xyz, base, 0.5; \n" );
+	}
+
+    // 8. Glow
+    if ( r_fx_glow->value != 0.0 ) {
+        s += sprintf( s, "TEMP glow; \n" );
+        s += sprintf( s, "MUL glow.xyz, base, %1.2f; \n", 1.0 + r_fx_glow->value );
+        s += sprintf( s, "LRP base.xyz, %1.2f, glow, base; \n", 0.5 * r_fx_glow->value );
+    }
+
+    // 9. Filmic
+    if ( r_fx_filmic->value != 0.0 ) {
+        s += sprintf( s, "TEMP hueShift; \n" );
+        s += sprintf( s, "PARAM hueRotation = { %1.2f, 0.0, 0.0, 0.0 }; \n", r_fx_filmic->value );
+        s += sprintf( s, "DP3 hueShift.x, base, hueRotation; \n" );
+        s += sprintf( s, "MUL base.xyz, base, hueShift.x; \n" );
+    }
+
+	// 10. Bloom
+	if ( r_fx_bloom->value != 0.0 ) {
+    	s += sprintf( s, "TEMP bloom; \n" );
+    	s += sprintf( s, "MUL bloom.xyz, base, %1.2f; \n", r_fx_bloom->value );
+    	s += sprintf( s, "ADD base.xyz, base, bloom; \n" );
+	}
+
+    return buf;
+}
 
 // blend 2 texture together
 static const char *blend2FP = {
@@ -906,8 +913,8 @@ static const char *blend2FP = {
 	"TEMP post; \n"
 	"TEX base, fragment.texcoord[0], texture[0], 2D; \n"
 	"TEX post, fragment.texcoord[0], texture[1], 2D; \n"
+	"%s" // for postFX
 	"MAD base, post, factor.x, base; \n"
-	//"ADD base, base, post; \n"
 	"MOV base.w, 1.0; \n"
 	"MOV_SAT result.color, base; \n"
 	"END \n"
@@ -923,13 +930,12 @@ static const char *blend2gammaFP = {
 	"TEMP post; \n"
 	"TEX base, fragment.texcoord[0], texture[0], 2D; \n"
 	"TEX post, fragment.texcoord[0], texture[1], 2D; \n"
-	//"ADD base, base, post; \n"
+	"%s" // for postFX
 	"MAD base, post, factor.x, base; \n"
 	"POW base.x, base.x, gamma.x; \n"
 	"POW base.y, base.y, gamma.y; \n"
 	"POW base.z, base.z, gamma.z; \n"
 	"MUL base.xyz, base, gamma.w; \n"
-	"%s" // for greyscale shader if needed
 	"MOV base.w, 1.0; \n"
 	"MOV_SAT result.color, base; \n"
 	"END \n" 
@@ -1135,7 +1141,7 @@ qboolean ARB_UpdatePrograms( void )
 		return qfalse;
 
 #ifdef USE_FBO
-	if ( !ARB_CompileProgram( Fragment, ARB_BuildEffectsProgram( buf ), programs[ POSTFX_FRAGMENT ] ) )
+	if ( !ARB_CompileProgram( Fragment, ARB_BuildGammaProgram( buf ), programs[ GAMMA_FRAGMENT ] ) )
 		return qfalse;
 
 	if ( !ARB_CompileProgram( Fragment, ARB_BuildBloomProgram( buf ), programs[ BLOOM_EXTRACT_FRAGMENT ] ) )
@@ -1153,10 +1159,10 @@ qboolean ARB_UpdatePrograms( void )
 	if ( !ARB_CompileProgram( Fragment, ARB_BuildBlendProgram( buf, r_bloom_passes->integer - fboBloomBlendBase ), programs[ BLENDX_FRAGMENT ] ) )
 		return qfalse;
 
-	if ( !ARB_CompileProgram( Fragment, blend2FP, programs[ BLEND2_FRAGMENT ] ) )
+	if ( !ARB_CompileProgram( Fragment, va( blend2FP, ARB_BuildEffectsProgram() ), programs[ BLEND2_FRAGMENT ] ) )
 		return qfalse;
 
-	if ( !ARB_CompileProgram( Fragment, va( blend2gammaFP, "" ), programs[ BLEND2_GAMMA_FRAGMENT ] ) )
+	if ( !ARB_CompileProgram( Fragment, va( blend2gammaFP, ARB_BuildEffectsProgram() ), programs[ BLEND2_GAMMA_FRAGMENT ] ) )
 		return qfalse;
 #endif // USE_FBO
 
@@ -2110,9 +2116,7 @@ void FBO_PostProcess( void )
 	if ( backEnd.screenshotMask == 0 && !windowAdjusted && !minimized ) {
 		FBO_Bind( GL_FRAMEBUFFER, 0 );
 		GL_BindTexture( 0, frameBuffers[ fboReadIndex ].color );
-		GL_State( GLS_DEPTHTEST_DISABLE | GLS_SRCBLEND_ONE | GLS_DSTBLEND_ZERO );
-		qglViewport( 0, 0, frameBuffers[ fboReadIndex ].width, frameBuffers[ fboReadIndex ].height );
-		ARB_ProgramEnable( DUMMY_VERTEX, POSTFX_FRAGMENT );
+		ARB_ProgramEnable( DUMMY_VERTEX, GAMMA_FRAGMENT );
 		qglProgramLocalParameter4fARB( GL_FRAGMENT_PROGRAM_ARB, 0, gamma, gamma, gamma, obScale );
 		RenderQuad( w, h );
 		ARB_ProgramDisable();
@@ -2122,9 +2126,7 @@ void FBO_PostProcess( void )
 	// apply gamma shader
 	FBO_Bind( GL_FRAMEBUFFER, frameBuffers[ 1 ].fbo ); // destination - secondary buffer
 	GL_BindTexture( 0, frameBuffers[ fboReadIndex ].color );  // source - main color buffer
-	GL_State( GLS_DEPTHTEST_DISABLE | GLS_SRCBLEND_ONE | GLS_DSTBLEND_ZERO );
-	qglViewport( 0, 0, frameBuffers[ fboReadIndex ].width, frameBuffers[ fboReadIndex ].height );
-	ARB_ProgramEnable( DUMMY_VERTEX, POSTFX_FRAGMENT );
+	ARB_ProgramEnable( DUMMY_VERTEX, GAMMA_FRAGMENT );
 	qglProgramLocalParameter4fARB( GL_FRAGMENT_PROGRAM_ARB, 0, gamma, gamma, gamma, obScale );
 	RenderQuad( w, h );
 	ARB_ProgramDisable();
