@@ -1884,159 +1884,6 @@ static void R_Bloom_LensEffect( float alpha )
 	qglDrawArrays( GL_TRIANGLES, 0, ARRAY_LEN( verts ) );
 }
 
-qboolean FBO_PostFX( const float gamma, const float obScale, qboolean finalStage )
-{
-	const int w = glConfig.vidWidth;
-	const int h = glConfig.vidHeight;
-
-	frameBuffer_t *src, *dst;
-	int finalBloomFBO;
-	int i;
-
-	if ( backEnd.doneBloom || !backEnd.doneSurfaces )
-	{
-		return qfalse;
-	}
-
-	backEnd.doneBloom = qtrue;
-
-	if ( blitMSfbo )
-	{
-		FBO_BlitMS( qfalse );
-		blitMSfbo = qfalse;
-	}
-	
-	// extract intensity from main FBO to BLOOM_BASE
-	src = &frameBuffers[ 0 ];
-	dst = &frameBuffers[ BLOOM_BASE ];
-	FBO_Bind( GL_FRAMEBUFFER, dst->fbo );
-	GL_BindTexture( 0, src->color );
-	qglViewport( 0, 0, dst->width, dst->height );
-	ARB_ProgramEnable( DUMMY_VERTEX, POSTFX_FRAGMENT );
-	qglProgramLocalParameter4fARB( GL_FRAGMENT_PROGRAM_ARB, 0, r_bloom_threshold->value, r_bloom_threshold->value,
-		r_bloom_threshold->value, 1.0 );
-	RenderQuad( w, h );
-
-	// downscale and blur
-	src = frameBuffers + BLOOM_BASE;
-	for ( i = 1; i < fboBloomPasses; i++, src+=2 ) {
-		dst = src + 2;
-		// copy image to next level
-#ifdef USE_FBO_BLIT
-		FBO_Bind( GL_READ_FRAMEBUFFER, src->fbo );
-		FBO_Bind( GL_DRAW_FRAMEBUFFER, dst->fbo );
-		qglBlitFramebuffer( 0, 0, src->width, src->height, 0, 0, dst->width, dst->height, GL_COLOR_BUFFER_BIT, GL_LINEAR );
-#else
-		ARB_ProgramDisable();
-		FBO_Bind( GL_FRAMEBUFFER, dst->fbo );
-		GL_BindTexture( 0, src->color );
-		GL_State( GLS_DEPTHTEST_DISABLE | GLS_SRCBLEND_ONE | GLS_DSTBLEND_ZERO );
-		qglViewport( 0, 0, dst->width, dst->height );
-		RenderQuad( w, h );
-#endif
-		FBO_Blur( dst, dst+1, dst );
-	}
-
-	// restore viewport
-	qglViewport( 0, 0, w, h );
-
-	// blend all bloom buffers to BLOOM_BASE+1 texture
-	finalBloomFBO = BLOOM_BASE+1;
-	GL_State( GLS_DEPTHTEST_DISABLE | GLS_SRCBLEND_ONE | GLS_DSTBLEND_ZERO );
-	FBO_Bind( GL_FRAMEBUFFER, frameBuffers[ finalBloomFBO ].fbo );
-	ARB_ProgramEnable( DUMMY_VERTEX, BLENDX_FRAGMENT );
-	// setup all texture units
-	for ( i = 0; i < fboBloomPasses - fboBloomBlendBase; i++ ) {
-		GL_BindTexture( i, frameBuffers[ (i+fboBloomBlendBase)*2 + BLOOM_BASE ].color );
-	}
-	RenderQuad( w, h );
-
-	if ( r_bloom_reflection->value )
-	{
-		ARB_ProgramDisable();
-
-		// copy final bloom image to some downscaled buffer
-		src = &frameBuffers[ finalBloomFBO ];
-		dst = &frameBuffers[ BLOOM_BASE + 2 + 2 ]; // 4x downscale
-		FBO_Bind( GL_DRAW_FRAMEBUFFER, dst->fbo );
-		FBO_Bind( GL_READ_FRAMEBUFFER, src->fbo );
-		qglBlitFramebuffer( 0, 0, src->width, src->height, 0, 0, dst->width, dst->height, GL_COLOR_BUFFER_BIT, GL_LINEAR );
-		
-		// set render target to paired destination buffer and draw reflections
-		FBO_Bind( GL_DRAW_FRAMEBUFFER, (dst+1)->fbo );
-		GL_BindTexture( 0, dst->color );
-		GL_State( GLS_DEPTHTEST_DISABLE | GLS_SRCBLEND_SRC_ALPHA | GLS_DSTBLEND_ONE );
-		qglViewport( 0, 0, dst->width, dst->height );
-		R_Bloom_LensEffect( fabs( r_bloom_reflection->value ) );
-		
-		// restore color and blend mode
-		qglColor4f( 1.0f, 1.0f, 1.0f, 1.0f );
-		GL_State( GLS_DEPTHTEST_DISABLE | GLS_SRCBLEND_ONE | GLS_DSTBLEND_ZERO );
-		
-		// blur lens effect in paired buffer
-		FBO_Blur( dst+1, dst, dst+1 );
-		ARB_ProgramDisable();
-
-		// add lens effect to final bloom buffer
-		FBO_Bind( GL_FRAMEBUFFER, src->fbo );
-		if ( r_bloom_reflection->value > 0 ) {
-			GL_State( GLS_DEPTHTEST_DISABLE | GLS_SRCBLEND_ONE | GLS_DSTBLEND_ONE );
-		} else {
-			// negative reflection values will replace bloom texture with just lens effect
-		}
-		qglViewport( 0, 0, w, h );
-		GL_BindTexture( 0, (dst+1)->color );
-		RenderQuad( w, h );
-
-		// restore blend mode
-		GL_State( GLS_DEPTHTEST_DISABLE | GLS_SRCBLEND_ONE | GLS_DSTBLEND_ZERO );
-	}
-
-	if ( windowAdjusted || backEnd.screenshotMask ) {
-		finalStage = qfalse; // can't blit directly into back buffer in this case
-	}
-
-	// if we don't need to read pixels later - blend directly to back buffer
-	if ( finalStage ) {
-		if ( backEnd.screenshotMask ) {
-			FBO_Bind( GL_FRAMEBUFFER, frameBuffers[ BLOOM_BASE ].fbo );
-		} else {
-			FBO_Bind( GL_FRAMEBUFFER, 0 );
-		}
-	} else {
-		FBO_Bind( GL_FRAMEBUFFER, frameBuffers[ BLOOM_BASE ].fbo );
-	}
-
-	GL_BindTexture( 1, frameBuffers[ finalBloomFBO ].color ); // final bloom texture
-	GL_BindTexture( 0, frameBuffers[ 0 ].color ); // original image
-	if ( finalStage ) {
-		// blend & apply gamma in one pass
-		ARB_ProgramEnable( DUMMY_VERTEX, BLEND2_GAMMA_FRAGMENT );
-		qglProgramLocalParameter4fARB( GL_FRAGMENT_PROGRAM_ARB, 0, gamma, gamma, gamma, obScale );
-		qglProgramLocalParameter4fARB( GL_FRAGMENT_PROGRAM_ARB, 1, r_bloom_intensity->value, 0, 0, 0 );
-	} else {
-		// just blend
-		ARB_ProgramEnable( DUMMY_VERTEX, BLEND2_FRAGMENT );
-		qglProgramLocalParameter4fARB( GL_FRAGMENT_PROGRAM_ARB, 1, r_bloom_intensity->value, 0, 0, 0 );
-	}
-	RenderQuad( w, h );
-	ARB_ProgramDisable();
-
-	if ( finalStage ) {
-		if ( backEnd.screenshotMask ) {
-			FBO_BlitToBackBuffer( BLOOM_BASE ); // so any further qglReadPixels() will read from BLOOM_BASE
-			 // fboReadIndex = 0;
-		} else {
-			//	already in back buffer
-			fboReadIndex = 0;
-		}
-	} else {
-		// we need depth/stencil buffers there
-		fboReadIndex = BLOOM_BASE;
-	}
-
-	return finalStage;
-}
 
 qboolean FBO_Bloom( const float gamma, const float obScale, qboolean finalStage )
 {
@@ -2054,6 +1901,21 @@ qboolean FBO_Bloom( const float gamma, const float obScale, qboolean finalStage 
 
 	backEnd.doneBloom = qtrue;
 
+	if ( !fboBloomInited )
+	{
+		if ( (fboBloomInited = FBO_CreateBloom() ) == qfalse )
+		{
+			ri.Printf( PRINT_WARNING, "...error creating framebuffers for bloom\n" );
+			ri.Cvar_Set( "r_bloom", "0" );
+			FBO_CleanBloom();
+			return qfalse;
+		}
+		else
+		{
+			ri.Printf( PRINT_ALL, "...bloom framebuffers created\n" );
+		}
+	}
+
 	if ( blitMSfbo )
 	{
 		FBO_BlitMS( qfalse );
@@ -2066,7 +1928,7 @@ qboolean FBO_Bloom( const float gamma, const float obScale, qboolean finalStage 
 	FBO_Bind( GL_FRAMEBUFFER, dst->fbo );
 	GL_BindTexture( 0, src->color );
 	qglViewport( 0, 0, dst->width, dst->height );
-	ARB_ProgramEnable( DUMMY_VERTEX, BLOOM_EXTRACT_FRAGMENT );
+	ARB_ProgramEnable( DUMMY_VERTEX, POSTFX_FRAGMENT );
 	qglProgramLocalParameter4fARB( GL_FRAGMENT_PROGRAM_ARB, 0, r_bloom_threshold->value, r_bloom_threshold->value,
 		r_bloom_threshold->value, 1.0 );
 	RenderQuad( w, h );
@@ -2243,9 +2105,14 @@ void FBO_PostProcess( void )
 
 	minimized = ri.CL_IsMinimized();
 
-	if (r_postfx->integer && programCompiled && qglActiveTextureARB ) {
-		FBO_PostFX( gamma, obScale, !minimized );
-	}
+	/*if ( r_postfx->integer && programCompiled && qglActiveTextureARB ) {
+	FBO_Bind( GL_FRAMEBUFFER, frameBuffers[ BLOOM_BASE ].fbo );
+	GL_BindTexture( 0, frameBuffers[ 0 ].color );
+	ARB_ProgramEnable( DUMMY_VERTEX, POSTFX_FRAGMENT );
+	qglProgramLocalParameter4fARB( GL_FRAGMENT_PROGRAM_ARB, 0, gamma, gamma, gamma, obScale );
+	RenderQuad( w, h );
+	ARB_ProgramDisable();
+	}*/
 
 	if ( r_bloom->integer && programCompiled && qglActiveTextureARB ) {
 		if ( FBO_Bloom( gamma, obScale, !minimized ) ) {
