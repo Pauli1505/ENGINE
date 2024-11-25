@@ -632,7 +632,7 @@ static const char *spriteFP = {
 
 
 #ifdef USE_FBO
-static char *ARB_BuildEffectsProgram( char *buf, int postFXon ) {
+static char *ARB_BuildEffectsProgram( char *buf ) {
     char *s = buf;
 	int   i;
 
@@ -643,14 +643,13 @@ static char *ARB_BuildEffectsProgram( char *buf, int postFXon ) {
     s += sprintf( s, "TEX base, fragment.texcoord[0], texture[0], 2D; \n" );
     s += sprintf( s, "PARAM sRGB = { 0.2126, 0.7152, 0.0722, 1.0 }; \n" );
 
-	if ( postFXon ) {
 	// 1 fragment. Chromatic Aberration
-	if ( r_fx_chromaticAberration->value != 0.0 ) {
+	if ( r_ps_chromaticAberration->value != 0.0 ) {
     	s += sprintf( s, "PARAM chromaticAberration = { %1.6f, %1.6f, %1.6f, %1.6f }; \n",
-        	          r_fx_chromaticAberration->value, 
-        	          r_fx_chromaticAberration->value, 
-        	          -r_fx_chromaticAberration->value, 
-        	          -r_fx_chromaticAberration->value );
+        	          r_ps_chromaticAberration->value, 
+        	          r_ps_chromaticAberration->value, 
+        	          -r_ps_chromaticAberration->value, 
+        	          -r_ps_chromaticAberration->value );
 
     	s += sprintf( s, "TEMP redCoord, greenCoord, blueCoord; \n" );
     	s += sprintf( s, "ADD redCoord.x, fragment.texcoord[0].x, chromaticAberration.x; \n" );
@@ -664,12 +663,12 @@ static char *ARB_BuildEffectsProgram( char *buf, int postFXon ) {
     	s += sprintf( s, "TEX base.b, blueCoord, texture[0], 2D; \n" );
 	}
 	// 2 fragment. Chameleon
-	if ( r_fx_chameleon->value != 0.0 ) {
+	if ( r_ps_chameleon->value != 0.0 ) {
     	s += sprintf( s, "PARAM chromaticAberration = { %1.6f, %1.6f, %1.6f, %1.6f }; \n",
-        	          r_fx_chameleon->value, 
-        	          r_fx_chameleon->value, 
-        	          -r_fx_chameleon->value, 
-        	          -r_fx_chameleon->value );
+        	          r_ps_chameleon->value, 
+        	          r_ps_chameleon->value, 
+        	          -r_ps_chameleon->value, 
+        	          -r_ps_chameleon->value );
 
     	s += sprintf( s, "TEMP redCoord, greenCoord, blueCoord; \n" );
     	s += sprintf( s, "ADD redCoord.x, base.r, chromaticAberration.x; \n" );
@@ -684,21 +683,21 @@ static char *ARB_BuildEffectsProgram( char *buf, int postFXon ) {
 	}
 
     // 1. Greyscale
-    if ( r_fx_greyscale->value != 0.0 ) {
+    if ( r_ps_greyscale->value != 0.0 ) {
     	s += sprintf( s, "TEMP color; \n" );
         s += sprintf( s, "DP3 color.xyz, base, sRGB; \n" );
-        s += sprintf( s, "LRP base.xyz, %1.2f, color, base; \n", r_fx_greyscale->value );
+        s += sprintf( s, "LRP base.xyz, %1.2f, color, base; \n", r_ps_greyscale->value );
     }
 
     // 2. Sepia
-    if ( r_fx_sepia->value != 1.0 ) {
+    if ( r_ps_sepia->value != 1.0 ) {
         s += sprintf( s, "PARAM sepiaTone = { 1.2, 1.0, 0.8, 1.0 }; \n" );
-        s += sprintf( s, "LRP base.xyz, %1.2f, base, sepiaTone; \n", r_fx_sepia->value );
+        s += sprintf( s, "LRP base.xyz, %1.2f, base, sepiaTone; \n", r_ps_sepia->value );
     }
 
 	// 3. Contrast
-	if ( r_fx_contrast->value != 0.0 ) {
-   		float contrast = r_fx_contrast->value;
+	if ( r_ps_contrast->value != 0.0 ) {
+   		float contrast = r_ps_contrast->value;
     	s += sprintf( s, "PARAM contrast = { %1.2f, %1.2f, %1.2f, 1.0 }; \n", contrast, contrast, contrast );
     	s += sprintf( s, "MUL base.xyz, base, contrast; \n" );
     	s += sprintf( s, "ADD base.xyz, base, -0.5; \n" );
@@ -706,24 +705,24 @@ static char *ARB_BuildEffectsProgram( char *buf, int postFXon ) {
 	}
 
     // 4. Brightness
-    if ( r_fx_brightness->value != 0.0 ) {
-        s += sprintf( s, "ADD base.xyz, base, %1.2f; \n", r_fx_brightness->value );
+    if ( r_ps_brightness->value != 0.0 ) {
+        s += sprintf( s, "ADD base.xyz, base, %1.2f; \n", r_ps_brightness->value );
     }
 
     // 5. Invert
-    if ( r_fx_invert->value != 0.0 ) {
+    if ( r_ps_invert->value != 0.0 ) {
         s += sprintf( s, "SUB base.xyz, 1.0, base; \n" );
     }
 
     // 6. Color Tint
-    if ( r_fx_tint_r->value != 1.0 || r_fx_tint_g->value != 1.0 || r_fx_tint_b->value != 1.0 ) {
-        s += sprintf( s, "PARAM tint = { %1.2f, %1.2f, %1.2f, 1.0 }; \n", r_fx_tint_r->value, r_fx_tint_g->value, r_fx_tint_b->value );
+    if ( r_ps_tint_r->value != 1.0 || r_ps_tint_g->value != 1.0 || r_ps_tint_b->value != 1.0 ) {
+        s += sprintf( s, "PARAM tint = { %1.2f, %1.2f, %1.2f, 1.0 }; \n", r_ps_tint_r->value, r_ps_tint_g->value, r_ps_tint_b->value );
         s += sprintf( s, "MUL base.xyz, base, tint; \n" );
     }
 
 	// 7. Posterize
-	if ( r_fx_posterize->value != 0.0 ) {
-    	float levels = r_fx_posterize->value;
+	if ( r_ps_posterize->value != 0.0 ) {
+    	float levels = r_ps_posterize->value;
     	s += sprintf( s, "PARAM levels = { %1.2f, %1.2f, %1.2f, 1.0 }; \n", levels, levels, levels );
     	s = Q_stradd( s, "MUL base.xyz, base, levels; \n" );
     	s = Q_stradd( s, "FRC base.xyz, base; \n" );
@@ -731,27 +730,26 @@ static char *ARB_BuildEffectsProgram( char *buf, int postFXon ) {
 	}
 
     // 8. Glow
-    if ( r_fx_glow->value != 0.0 ) {
+    if ( r_ps_glow->value != 0.0 ) {
         s += sprintf( s, "TEMP glow; \n" );
-        s += sprintf( s, "MUL glow.xyz, base, %1.2f; \n", 1.0 + r_fx_glow->value );
-        s += sprintf( s, "LRP base.xyz, %1.2f, glow, base; \n", 0.5 * r_fx_glow->value );
+        s += sprintf( s, "MUL glow.xyz, base, %1.2f; \n", 1.0 + r_ps_glow->value );
+        s += sprintf( s, "LRP base.xyz, %1.2f, glow, base; \n", 0.5 * r_ps_glow->value );
     }
 
     // 9. Filmic
-    if ( r_fx_filmic->value != 0.0 ) {
+    if ( r_ps_filmic->value != 0.0 ) {
         s += sprintf( s, "TEMP hueShift; \n" );
-        s += sprintf( s, "PARAM hueRotation = { %1.2f, 0.0, 0.0, 0.0 }; \n", r_fx_filmic->value );
+        s += sprintf( s, "PARAM hueRotation = { %1.2f, 0.0, 0.0, 0.0 }; \n", r_ps_filmic->value );
         s += sprintf( s, "DP3 hueShift.x, base, hueRotation; \n" );
         s += sprintf( s, "MUL base.xyz, base, hueShift.x; \n" );
     }
 
 	// 10. Bloom
-	if ( r_fx_bloom->value != 0.0 ) {
+	if ( r_ps_bloom->value != 0.0 ) {
     	s += sprintf( s, "TEMP bloom; \n" );
-    	s += sprintf( s, "MUL bloom.xyz, base, %1.2f; \n", r_fx_bloom->value );
+    	s += sprintf( s, "MUL bloom.xyz, base, %1.2f; \n", r_ps_bloom->value );
     	s += sprintf( s, "ADD base.xyz, base, bloom; \n" );
 	}
-	} //end postFXon
 
 	// End. Gamma correction
 	if ( r_gamma->value != 0.0 ) {
@@ -1137,10 +1135,7 @@ qboolean ARB_UpdatePrograms( void )
 		return qfalse;
 
 #ifdef USE_FBO
-	if ( !ARB_CompileProgram( Fragment, ARB_BuildEffectsProgram( buf, 0 ), programs[ GAMMA_FRAGMENT ] ) )
-		return qfalse;
-
-	if ( !ARB_CompileProgram( Fragment, ARB_BuildEffectsProgram( buf, 1 ), programs[ POSTFX_FRAGMENT ] ) )
+	if ( !ARB_CompileProgram( Fragment, ARB_BuildEffectsProgram( buf ), programs[ POSTFX_FRAGMENT ] ) )
 		return qfalse;
 
 	if ( !ARB_CompileProgram( Fragment, ARB_BuildBloomProgram( buf ), programs[ BLOOM_EXTRACT_FRAGMENT ] ) )
@@ -2113,13 +2108,9 @@ void FBO_PostProcess( void )
 
 	// check if we can perform final draw directly into back buffer
 	if ( backEnd.screenshotMask == 0 && !windowAdjusted && !minimized ) {
-		FBO_Bind( GL_FRAMEBUFFER, r_postfx_dest->integer );
-		GL_BindTexture( 0, frameBuffers[ r_postfx_buffer->integer ].color );
-		if ( r_postfx->integer && programCompiled && qglActiveTextureARB ) {
-			ARB_ProgramEnable( DUMMY_VERTEX, POSTFX_FRAGMENT );
-		} else {
-			ARB_ProgramEnable( DUMMY_VERTEX, GAMMA_FRAGMENT );
-		}
+		FBO_Bind( GL_FRAMEBUFFER, 0 );
+		GL_BindTexture( r_postfx_one->integer, frameBuffers[ r_postfx_buffer->integer ].color );
+		ARB_ProgramEnable( DUMMY_VERTEX, POSTFX_FRAGMENT );
 		qglProgramLocalParameter4fARB( GL_FRAGMENT_PROGRAM_ARB, 0, gamma, gamma, gamma, obScale );
 		RenderQuad( w, h );
 		ARB_ProgramDisable();
@@ -2127,19 +2118,15 @@ void FBO_PostProcess( void )
 	}
 
 	// apply gamma shader
-	FBO_Bind( GL_FRAMEBUFFER, frameBuffers[ r_postfx_dest->integer ].fbo ); // destination - secondary buffer
-	GL_BindTexture( 0, frameBuffers[ r_postfx_buffer->integer ].color );  // source - main color buffer
-	if ( r_postfx->integer && programCompiled && qglActiveTextureARB ) {
-		ARB_ProgramEnable( DUMMY_VERTEX, POSTFX_FRAGMENT );
-	} else {
-		ARB_ProgramEnable( DUMMY_VERTEX, GAMMA_FRAGMENT );
-	}
+	FBO_Bind( GL_FRAMEBUFFER, frameBuffers[ 1 ].fbo ); // destination - secondary buffer
+	GL_BindTexture( r_postfx_one->integer, frameBuffers[ r_postfx_buffer->integer ].color );  // source - main color buffer
+	ARB_ProgramEnable( DUMMY_VERTEX, POSTFX_FRAGMENT );
 	qglProgramLocalParameter4fARB( GL_FRAGMENT_PROGRAM_ARB, 0, gamma, gamma, gamma, obScale );
 	RenderQuad( w, h );
 	ARB_ProgramDisable();
 
 	if ( !minimized ) {
-		FBO_BlitToBackBuffer( r_postfx_back->integer );
+		FBO_BlitToBackBuffer( 1 );
 	}
 }
 
