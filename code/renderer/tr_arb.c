@@ -1884,8 +1884,7 @@ static void R_Bloom_LensEffect( float alpha )
 	qglDrawArrays( GL_TRIANGLES, 0, ARRAY_LEN( verts ) );
 }
 
-void FBO_PostFX( void )
-{
+void FBO_PostFX( void ) {
     const int w = glConfig.vidWidth;
     const int h = glConfig.vidHeight;
 
@@ -1957,7 +1956,6 @@ void FBO_PostFX( void )
 	fboReadIndex = BLOOM_BASE;
 
 	return;
-}
 }
 
 qboolean FBO_Bloom( const float gamma, const float obScale, qboolean finalStage )
