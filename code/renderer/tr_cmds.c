@@ -423,6 +423,12 @@ void RE_EndFrame( int *frontEndMsec, int *backEndMsec ) {
 		return;
 	}
 
+	#ifdef USE_FBO
+	if ( fboEnabled ) {
+		FBO_PostProcess();
+	}
+	#endif
+
 	cmd = R_GetCommandBufferReserved( sizeof( *cmd ), 0 );
 	if ( !cmd ) {
 		return;

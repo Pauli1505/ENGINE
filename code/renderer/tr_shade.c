@@ -1052,14 +1052,6 @@ void RB_EndSurface( void ) {
 		return;
 	}
 
-	if(tess.shader->sort >= 1){
-		#ifdef USE_FBO
-		if ( fboEnabled ) {
-			FBO_PostProcess();
-		}
-		#endif
-	}
-
 	//
 	// update performance counters
 	//
