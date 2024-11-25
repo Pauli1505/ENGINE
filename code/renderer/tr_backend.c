@@ -1497,13 +1497,7 @@ static const void *RB_FinishBloom( const void *data )
 static const void *RB_SwapBuffers( const void *data ) {
 
 	const swapBuffersCommand_t	*cmd;
-
-#ifdef USE_FBO
-	if ( fboEnabled ) {
-		FBO_PostProcess();
-	}
-#endif
-
+	
 	// finish any 2D drawing if needed
 	RB_EndSurface();
 
