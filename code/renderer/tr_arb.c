@@ -634,7 +634,6 @@ static const char *spriteFP = {
 #ifdef USE_FBO
 static char *ARB_BuildGammaProgram( char *buf ) {
     char *s = buf;
-	int   i;
 
     s += sprintf( s, "!!ARBfp1.0 \n" );
     s += sprintf( s, "OPTION ARB_precision_hint_fastest; \n" );
@@ -788,9 +787,8 @@ static char *ARB_BuildBlendProgram( char *buf, int count ) {
 	return buf;
 }
 
-static char *ARB_BuildEffectsProgram( char *buf ) {
+static char *ARB_BuildPostFXProgram( char *buf ) {
     char *s = buf;
-	int   i;
 
 	// 1 fragment. Chromatic Aberration
 	if ( r_fx_chromaticAberration->value != 0.0 ) {
@@ -1159,10 +1157,10 @@ qboolean ARB_UpdatePrograms( void )
 	if ( !ARB_CompileProgram( Fragment, ARB_BuildBlendProgram( buf, r_bloom_passes->integer - fboBloomBlendBase ), programs[ BLENDX_FRAGMENT ] ) )
 		return qfalse;
 
-	if ( !ARB_CompileProgram( Fragment, va( blend2FP, ARB_BuildEffectsProgram() ), programs[ BLEND2_FRAGMENT ] ) )
+	if ( !ARB_CompileProgram( Fragment, va( blend2FP, ARB_BuildPostFXProgram( buf ) ), programs[ BLEND2_FRAGMENT ] ) )
 		return qfalse;
 
-	if ( !ARB_CompileProgram( Fragment, va( blend2gammaFP, ARB_BuildEffectsProgram() ), programs[ BLEND2_GAMMA_FRAGMENT ] ) )
+	if ( !ARB_CompileProgram( Fragment, va( blend2gammaFP, ARB_BuildPostFXProgram( buf ) ), programs[ BLEND2_GAMMA_FRAGMENT ] ) )
 		return qfalse;
 #endif // USE_FBO
 
