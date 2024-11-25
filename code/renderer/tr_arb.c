@@ -1887,48 +1887,61 @@ static void R_Bloom_LensEffect( float alpha )
 
 qboolean FBO_Bloom( const float gamma, const float obScale, qboolean finalStage )
 {
-	const int w = glConfig.vidWidth;
-	const int h = glConfig.vidHeight;
+    const int w = glConfig.vidWidth;
+    const int h = glConfig.vidHeight;
 
-	frameBuffer_t *src, *dst;
-	int finalBloomFBO;
-	int i;
+    frameBuffer_t *src, *dst;
+    int finalBloomFBO;
 
-	if ( backEnd.doneBloom || !backEnd.doneSurfaces )
-	{
-		return qfalse;
-	}
+    if ( backEnd.doneBloom || !backEnd.doneSurfaces )
+    {
+        return qfalse;
+    }
 
-	backEnd.doneBloom = qtrue;
+    backEnd.doneBloom = qtrue;
 
-	if ( !fboBloomInited )
-	{
-		if ( (fboBloomInited = FBO_CreateBloom() ) == qfalse )
-		{
-			ri.Printf( PRINT_WARNING, "...error creating framebuffers for bloom\n" );
-			ri.Cvar_Set( "r_bloom", "0" );
-			FBO_CleanBloom();
-			return qfalse;
-		}
-		else
-		{
-			ri.Printf( PRINT_ALL, "...bloom framebuffers created\n" );
-		}
-	}
+    if ( !fboBloomInited )
+    {
+        if ( (fboBloomInited = FBO_CreateBloom() ) == qfalse )
+        {
+            ri.Printf( PRINT_WARNING, "...error creating framebuffers for bloom\n" );
+            ri.Cvar_Set( "r_bloom", "0" );
+            FBO_CleanBloom();
+            return qfalse;
+        }
+        else
+        {
+            ri.Printf( PRINT_ALL, "...bloom framebuffers created\n" );
+        }
+    }
 
-	FBO_Bind( GL_FRAMEBUFFER, frameBuffers[ BLOOM_BASE ].fbo );
+    // Включаем шейдер POSTFX_FRAGMENT
+    src = &frameBuffers[ 0 ];  // Исходная текстура (оригинальный кадр)
+    finalBloomFBO = BLOOM_BASE + 1;  // Место для финального результата
 
-	GL_BindTexture( 1, frameBuffers[ finalBloomFBO ].color ); // final bloom texture
-	GL_BindTexture( 0, frameBuffers[ 0 ].color ); // original image
-	// just blend
-	ARB_ProgramEnable( DUMMY_VERTEX, POSTFX_FRAGMENT );
-	RenderQuad( w, h );
-	ARB_ProgramDisable();
+    FBO_Bind( GL_FRAMEBUFFER, frameBuffers[ finalBloomFBO ].fbo );
+    GL_BindTexture( 0, src->color );  // Привязываем исходную текстуру
+    qglViewport( 0, 0, w, h );  // Устанавливаем viewport для всего экрана
 
-	FBO_BlitToBackBuffer( BLOOM_BASE ); // so any further qglReadPixels() will read from BLOOM_BASE
+    // Включаем шейдер POSTFX_FRAGMENT
+    ARB_ProgramEnable( DUMMY_VERTEX, POSTFX_FRAGMENT );
+    // Если нужно, добавим параметры для шейдера, например, гамму или интенсивность
+    qglProgramLocalParameter4fARB( GL_FRAGMENT_PROGRAM_ARB, 0, gamma, gamma, gamma, obScale );
+    
+    // Рендерим на экран (или в фреймбуфер)
+    RenderQuad( w, h );
+    
+    ARB_ProgramDisable();
 
-	return finalStage;
+    // Если финальная стадия - выводим в back buffer
+    if ( finalStage )
+    {
+        FBO_Bind( GL_FRAMEBUFFER, 0 );  // Возвращаемся к back buffer
+    }
+
+    return finalStage;
 }
+
 
 
 void R_BloomScreen( void )
