@@ -1884,7 +1884,7 @@ static void R_Bloom_LensEffect( float alpha )
 	qglDrawArrays( GL_TRIANGLES, 0, ARRAY_LEN( verts ) );
 }
 
-qboolean FBO_Bloom( const float gamma, const float obScale, qboolean finalStage )
+qboolean FBO_PostFX( const float gamma, const float obScale, qboolean finalStage )
 {
 	const int w = glConfig.vidWidth;
 	const int h = glConfig.vidHeight;
@@ -2244,7 +2244,7 @@ void FBO_PostProcess( void )
 	minimized = ri.CL_IsMinimized();
 
 	if (r_postfx->integer && programCompiled && qglActiveTextureARB ) {
-		FBO_PostFX();
+		FBO_PostFX( gamma, obScale, !minimized );
 	}
 
 	if ( r_bloom->integer && programCompiled && qglActiveTextureARB ) {
