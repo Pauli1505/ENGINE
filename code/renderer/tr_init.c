@@ -57,7 +57,7 @@ cvar_t	*r_skipBackEnd;
 cvar_t	*r_anaglyphMode;
 
 //postFX
-cvar_t	*r_postprocess;
+cvar_t	*r_postfx;
 
 //color
 cvar_t	*r_fx_greyscale;
@@ -1670,8 +1670,9 @@ static void R_Register( void )
 
 
 	//postFX
-	r_postprocess = ri.Cvar_Get( "r_postprocess", "1", CVAR_ARCHIVE_ND );
-	ri.Cvar_SetGroup( r_postprocess, CVG_RENDERER );
+	r_postfx = ri.Cvar_Get( "r_postfx", "1", CVAR_ARCHIVE_ND );
+	ri.Cvar_SetGroup( r_postfx, CVG_RENDERER );
+	ri.Cvar_SetDescription(r_postfx, "Enables post-processing effects r_fx. Requires \\r_fbo 1.");
 
 	//colors
 	r_fx_greyscale = ri.Cvar_Get( "r_fx_greyscale", "0.0", CVAR_ARCHIVE_ND );
