@@ -1884,6 +1884,55 @@ static void R_Bloom_LensEffect( float alpha )
 	qglDrawArrays( GL_TRIANGLES, 0, ARRAY_LEN( verts ) );
 }
 
+void FBO_PostFX( void )
+{
+    const int w = glConfig.vidWidth;
+    const int h = glConfig.vidHeight;
+
+    frameBuffer_t *src, *dst;
+
+	if ( !fboBloomInited )
+	{
+		if ( (fboBloomInited = FBO_CreateBloom() ) == qfalse )
+		{
+			ri.Printf( PRINT_WARNING, "...error creating framebuffers for postFX\n" );
+			ri.Cvar_Set( "r_bloom", "0" );
+			FBO_CleanBloom();
+			return;
+		}
+		else
+		{
+			ri.Printf( PRINT_ALL, "...postFX framebuffers created\n" );
+		}
+	}
+
+    // Source is the main framebuffer, destination is the invert framebuffer
+    src = &frameBuffers[ 0 ];
+    dst = &frameBuffers[ BLOOM_BASE ];
+
+    // Bind the destination FBO
+    FBO_Bind( GL_FRAMEBUFFER, dst->fbo );
+    
+    // Bind the texture from the source framebuffer
+    GL_BindTexture( 0, src->color );
+    
+    // Set viewport to match the destination framebuffer
+    qglViewport( 0, 0, dst->width, dst->height );
+    
+    // Enable the invert fragment shader
+    ARB_ProgramEnable( DUMMY_VERTEX, POSTFX_FRAGMENT );
+    
+    // Render a quad with the source texture to apply the inversion
+    RenderQuad( w, h );
+    
+    // Disable the fragment shader
+    ARB_ProgramDisable();
+
+    // Restore the viewport to the main framebuffer dimensions
+    qglViewport( 0, 0, w, h );
+
+    return;
+}
 
 qboolean FBO_Bloom( const float gamma, const float obScale, qboolean finalStage )
 {
@@ -1900,21 +1949,6 @@ qboolean FBO_Bloom( const float gamma, const float obScale, qboolean finalStage 
 	}
 
 	backEnd.doneBloom = qtrue;
-
-	if ( !fboBloomInited )
-	{
-		if ( (fboBloomInited = FBO_CreateBloom() ) == qfalse )
-		{
-			ri.Printf( PRINT_WARNING, "...error creating framebuffers for bloom\n" );
-			ri.Cvar_Set( "r_bloom", "0" );
-			FBO_CleanBloom();
-			return qfalse;
-		}
-		else
-		{
-			ri.Printf( PRINT_ALL, "...bloom framebuffers created\n" );
-		}
-	}
 
 	if ( blitMSfbo )
 	{
@@ -2105,6 +2139,19 @@ void FBO_PostProcess( void )
 
 	minimized = ri.CL_IsMinimized();
 
+	if ( r_postfx->integer && programCompiled && qglActiveTextureARB ) {
+	FBO_Bind( GL_FRAMEBUFFER, frameBuffers[ BLOOM_BASE ].fbo );
+	GL_BindTexture( 0, frameBuffers[ 0 ].color );
+	ARB_ProgramEnable( DUMMY_VERTEX, POSTFX_FRAGMENT );
+	qglProgramLocalParameter4fARB( GL_FRAGMENT_PROGRAM_ARB, 0, gamma, gamma, gamma, obScale );
+	RenderQuad( w, h );
+	ARB_ProgramDisable();
+	}
+
+	if (r_postfx->integer && programCompiled && qglActiveTextureARB ) {
+		FBO_PostFX();
+	}
+
 	if ( r_bloom->integer && programCompiled && qglActiveTextureARB ) {
 		if ( FBO_Bloom( gamma, obScale, !minimized ) ) {
 			return;
@@ -2115,11 +2162,7 @@ void FBO_PostProcess( void )
 	if ( backEnd.screenshotMask == 0 && !windowAdjusted && !minimized ) {
 		FBO_Bind( GL_FRAMEBUFFER, 0 );
 		GL_BindTexture( 0, frameBuffers[ fboReadIndex ].color );
-		if ( r_postfx->integer && programCompiled && qglActiveTextureARB ) {
-			ARB_ProgramEnable( DUMMY_VERTEX, POSTFX_FRAGMENT );
-		} else {
-			ARB_ProgramEnable( DUMMY_VERTEX, GAMMA_FRAGMENT );
-		}
+		ARB_ProgramEnable( DUMMY_VERTEX, GAMMA_FRAGMENT );
 		qglProgramLocalParameter4fARB( GL_FRAGMENT_PROGRAM_ARB, 0, gamma, gamma, gamma, obScale );
 		RenderQuad( w, h );
 		ARB_ProgramDisable();
@@ -2129,11 +2172,7 @@ void FBO_PostProcess( void )
 	// apply gamma shader
 	FBO_Bind( GL_FRAMEBUFFER, frameBuffers[ BLOOM_BASE ].fbo ); // destination - secondary buffer
 	GL_BindTexture( 0, frameBuffers[ 0 ].color );  // source - main color buffer
-	if ( r_postfx->integer && programCompiled && qglActiveTextureARB ) {
-		ARB_ProgramEnable( DUMMY_VERTEX, POSTFX_FRAGMENT );
-	} else {
-		ARB_ProgramEnable( DUMMY_VERTEX, GAMMA_FRAGMENT );
-	}
+	ARB_ProgramEnable( DUMMY_VERTEX, GAMMA_FRAGMENT );
 	qglProgramLocalParameter4fARB( GL_FRAGMENT_PROGRAM_ARB, 0, gamma, gamma, gamma, obScale );
 	RenderQuad( w, h );
 	ARB_ProgramDisable();
