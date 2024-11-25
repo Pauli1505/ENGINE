@@ -430,12 +430,6 @@ void RE_EndFrame( int *frontEndMsec, int *backEndMsec ) {
 
 	cmd->commandId = RC_SWAP_BUFFERS;
 
-	#ifdef USE_FBO
-	if ( fboEnabled ) {
-		FBO_PostProcess();
-	}
-	#endif
-
 	R_PerformanceCounters();
 
 	R_IssueRenderCommands();
