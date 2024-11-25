@@ -2064,91 +2064,83 @@ void R_BloomScreen( void )
 	}
 }
 
+
 void FBO_PostProcess( void )
 {
-    const float obScale = 1 << tr.overbrightBits;
-    const float gamma = 1.0f / r_gamma->value;
-    const float w = glConfig.vidWidth;
-    const float h = glConfig.vidHeight;
-    qboolean minimized;
+	const float obScale = 1 << tr.overbrightBits;
+	const float gamma = 1.0f / r_gamma->value;
+	const float w = glConfig.vidWidth;
+	const float h = glConfig.vidHeight;
+	qboolean minimized;
 
-    ARB_ProgramDisable();
+	ARB_ProgramDisable();
 
-    // Убедимся, что 2D проекция установлена
-    if ( !backEnd.projection2D )
-    {
-        qglViewport( 0, 0, glConfig.vidWidth, glConfig.vidHeight );
-        qglScissor( 0, 0, glConfig.vidWidth, glConfig.vidHeight );
-        qglMatrixMode( GL_PROJECTION );
-        qglLoadMatrixf( GL_Ortho( 0, glConfig.vidWidth, glConfig.vidHeight, 0, 0, 1 ) );
-        qglMatrixMode( GL_MODELVIEW );
-        qglLoadIdentity();
-        backEnd.projection2D = qtrue;
-    }
+	if ( !backEnd.projection2D )
+	{
+		qglViewport( 0, 0, glConfig.vidWidth, glConfig.vidHeight );
+		qglScissor( 0, 0, glConfig.vidWidth, glConfig.vidHeight );
+		qglMatrixMode( GL_PROJECTION );
+		qglLoadMatrixf( GL_Ortho( 0, glConfig.vidWidth, glConfig.vidHeight, 0, 0, 1 ) );
+		qglMatrixMode( GL_MODELVIEW );
+		qglLoadIdentity();
+		backEnd.projection2D = qtrue;
+	}
 
-    if ( blitMSfbo )
-    {
-        FBO_BlitMS( qfalse );
-        blitMSfbo = qfalse;
-    }
+	if ( blitMSfbo )
+	{
+		FBO_BlitMS( qfalse );
+		blitMSfbo = qfalse;
+	}
 
-    qglColor4f( 1.0f, 1.0f, 1.0f, 1.0f );
-    GL_State( GLS_DEPTHTEST_DISABLE | GLS_SRCBLEND_ONE | GLS_DSTBLEND_ZERO );
-    GL_Cull( CT_TWO_SIDED );
-    if ( r_anaglyphMode->integer )
-        qglColorMask( GL_TRUE, GL_TRUE, GL_TRUE, GL_TRUE );
+	qglColor4f( 1.0f, 1.0f, 1.0f, 1.0f );
+	GL_State( GLS_DEPTHTEST_DISABLE | GLS_SRCBLEND_ONE | GLS_DSTBLEND_ZERO );
+	GL_Cull( CT_TWO_SIDED );
+	if ( r_anaglyphMode->integer )
+		qglColorMask( GL_TRUE, GL_TRUE, GL_TRUE, GL_TRUE );
 
-    minimized = ri.CL_IsMinimized();
+	minimized = ri.CL_IsMinimized();
 
-    if ( r_bloom->integer && programCompiled && qglActiveTextureARB ) {
-        if ( FBO_Bloom( gamma, obScale, !minimized ) ) {
-            return;
-        }
-    }
+	if ( r_bloom->integer && programCompiled && qglActiveTextureARB ) {
+		if ( FBO_Bloom( gamma, obScale, !minimized ) ) {
+			return;
+		}
+	}
 
-    // Проверьте, можно ли отрисовать непосредственно в основной буфер
-    if ( backEnd.screenshotMask == 0 && !windowAdjusted && !minimized ) {
-        FBO_Bind( GL_FRAMEBUFFER, 0 );
-        GL_BindTexture( 0, frameBuffers[ fboReadIndex ].color );
-        ARB_ProgramEnable( DUMMY_VERTEX, POSTFX_FRAGMENT );
-        qglProgramLocalParameter4fARB( GL_FRAGMENT_PROGRAM_ARB, 0, gamma, gamma, gamma, obScale );
-        RenderQuad( w, h );
-        ARB_ProgramDisable();
-        return;
-    }
+	// check if we can perform final draw directly into back buffer
+	if ( backEnd.screenshotMask == 0 && !windowAdjusted && !minimized ) {
+		FBO_Bind( GL_FRAMEBUFFER, 0 );
+		GL_BindTexture( 0, frameBuffers[ fboReadIndex ].color );
+		ARB_ProgramEnable( DUMMY_VERTEX, POSTFX_FRAGMENT );
+		qglProgramLocalParameter4fARB( GL_FRAGMENT_PROGRAM_ARB, 0, gamma, gamma, gamma, obScale );
+		RenderQuad( w, h );
+		ARB_ProgramDisable();
+		return;
+	}
 
-    // Применяем гамма-шейдер
-    FBO_Bind( GL_FRAMEBUFFER, frameBuffers[ 1 ].fbo ); // вторичный буфер
-    GL_BindTexture( 0, frameBuffers[ fboReadIndex ].color );  // основной цветовой буфер
-    ARB_ProgramEnable( DUMMY_VERTEX, POSTFX_FRAGMENT );
-    qglProgramLocalParameter4fARB( GL_FRAGMENT_PROGRAM_ARB, 0, gamma, gamma, gamma, obScale );
-    RenderQuad( w, h );
-    ARB_ProgramDisable();
+	// apply gamma shader
+	FBO_Bind( GL_FRAMEBUFFER, frameBuffers[ 1 ].fbo ); // destination - secondary buffer
+	GL_BindTexture( 0, frameBuffers[ fboReadIndex ].color );  // source - main color buffer
+	ARB_ProgramEnable( DUMMY_VERTEX, POSTFX_FRAGMENT );
+	qglProgramLocalParameter4fARB( GL_FRAGMENT_PROGRAM_ARB, 0, gamma, gamma, gamma, obScale );
+	RenderQuad( w, h );
+	ARB_ProgramDisable();
 
-    // Применяем эффекты и отрисовываем HUD
-    if (!minimized) {
-        // Восстанавливаем 2D проекцию для HUD
-        if (!backEnd.projection2D) {
-            qglViewport(0, 0, w, h);
-            qglScissor(0, 0, w, h);
-            qglMatrixMode(GL_PROJECTION);
-            qglLoadMatrixf(GL_Ortho(0, w, h, 0, 0, 1));
-            qglMatrixMode(GL_MODELVIEW);
-            qglLoadIdentity();
-            backEnd.projection2D = qtrue;
-        }
+	if ( !backEnd.projection2D )
+	{
+		qglViewport( 0, 0, glConfig.vidWidth, glConfig.vidHeight );
+		qglScissor( 0, 0, glConfig.vidWidth, glConfig.vidHeight );
+		qglMatrixMode( GL_PROJECTION );
+		qglLoadMatrixf( GL_Ortho( 0, glConfig.vidWidth, glConfig.vidHeight, 0, 0, 1 ) );
+		qglMatrixMode( GL_MODELVIEW );
+		qglLoadIdentity();
+		backEnd.projection2D = qtrue;
+	}
 
-        // Включаем необходимые состояния для рендеринга HUD
-        qglColorMask(GL_TRUE, GL_TRUE, GL_TRUE, GL_TRUE);  // Включаем запись в цветовую маску
-        GL_State(GLS_DEPTHTEST_ENABLE | GLS_SRCBLEND_SRC_ALPHA | GLS_DSTBLEND_ONE_MINUS_SRC_ALPHA);  // Правильное состояние для прозрачности
-
-        // Рендерим HUD
-        RenderHUD();
-
-        // После этого выводим финальный результат на экран
-        FBO_BlitToBackBuffer(1);
-    }
+	if ( !minimized ) {
+		FBO_BlitToBackBuffer( 1 );
+	}
 }
+
 
 void QGL_SetRenderScale( qboolean verbose )
 {
