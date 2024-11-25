@@ -2065,7 +2065,7 @@ void R_BloomScreen( void )
 }
 
 
-void FBO_PostProcess( int postFX )
+void FBO_PostProcess( void )
 {
 	const float obScale = 1 << tr.overbrightBits;
 	const float gamma = 1.0f / r_gamma->value;
