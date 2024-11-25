@@ -2105,23 +2105,22 @@ void FBO_PostProcess( void )
 
 	minimized = ri.CL_IsMinimized();
 
+	if ( r_bloom->integer && programCompiled && qglActiveTextureARB ) {
+		if ( FBO_Bloom( gamma, obScale, !minimized ) ) {
+			//return;
+		}
+	}
+
 	if ( r_postfx->integer && programCompiled && qglActiveTextureARB ) {
 	FBO_Bind( GL_FRAMEBUFFER, frameBuffers[ r_postfx_buffer->integer ].fbo );
 	GL_BindTexture( 0, frameBuffers[ r_postfx_dest->integer ].color );
 	ARB_ProgramEnable( DUMMY_VERTEX, POSTFX_FRAGMENT );
-	qglProgramLocalParameter4fARB( GL_FRAGMENT_PROGRAM_ARB, 0, gamma, gamma, gamma, obScale );
 	RenderQuad( w, h );
 	ARB_ProgramDisable();
 
-	if ( !minimized && r_postfx_push->integer ) {
-		FBO_BlitToBackBuffer( r_postfx_buffer->integer );
+	if ( !minimized && r_postfx_push->integer != -1) {
+		FBO_BlitToBackBuffer( r_postfx_back->integer );
 	}
-	}
-
-	if ( r_bloom->integer && programCompiled && qglActiveTextureARB ) {
-		if ( FBO_Bloom( gamma, obScale, !minimized ) ) {
-			return;
-		}
 	}
 
 	// check if we can perform final draw directly into back buffer
