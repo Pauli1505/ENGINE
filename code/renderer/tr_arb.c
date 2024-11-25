@@ -1928,7 +1928,7 @@ qboolean FBO_Bloom( const float gamma, const float obScale, qboolean finalStage 
 	FBO_Bind( GL_FRAMEBUFFER, dst->fbo );
 	GL_BindTexture( 0, src->color );
 	qglViewport( 0, 0, dst->width, dst->height );
-	ARB_ProgramEnable( DUMMY_VERTEX, POSTFX_FRAGMENT );
+	ARB_ProgramEnable( DUMMY_VERTEX, BLOOM_EXTRACT_FRAGMENT );
 	qglProgramLocalParameter4fARB( GL_FRAGMENT_PROGRAM_ARB, 0, r_bloom_threshold->value, r_bloom_threshold->value,
 		r_bloom_threshold->value, 1.0 );
 	RenderQuad( w, h );
@@ -2027,12 +2027,12 @@ qboolean FBO_Bloom( const float gamma, const float obScale, qboolean finalStage 
 	GL_BindTexture( 0, frameBuffers[ 0 ].color ); // original image
 	if ( finalStage ) {
 		// blend & apply gamma in one pass
-		ARB_ProgramEnable( DUMMY_VERTEX, BLEND2_GAMMA_FRAGMENT );
+		ARB_ProgramEnable( DUMMY_VERTEX, POSTFX_FRAGMENT );
 		qglProgramLocalParameter4fARB( GL_FRAGMENT_PROGRAM_ARB, 0, gamma, gamma, gamma, obScale );
 		qglProgramLocalParameter4fARB( GL_FRAGMENT_PROGRAM_ARB, 1, r_bloom_intensity->value, 0, 0, 0 );
 	} else {
 		// just blend
-		ARB_ProgramEnable( DUMMY_VERTEX, BLEND2_FRAGMENT );
+		ARB_ProgramEnable( DUMMY_VERTEX, POSTFX_FRAGMENT );
 		qglProgramLocalParameter4fARB( GL_FRAGMENT_PROGRAM_ARB, 1, r_bloom_intensity->value, 0, 0, 0 );
 	}
 	RenderQuad( w, h );
