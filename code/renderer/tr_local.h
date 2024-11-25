@@ -1306,7 +1306,7 @@ extern	cvar_t	*r_anaglyphMode;
 extern	cvar_t	*r_postfx;
 extern	cvar_t	*r_postfx_buffer;
 extern	cvar_t	*r_postfx_dest;
-extern	cvar_t	*r_postfx_push;
+extern	cvar_t	*r_postfx_one;
 extern	cvar_t	*r_postfx_back;
 
 //color
