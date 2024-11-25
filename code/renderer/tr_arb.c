@@ -1897,6 +1897,7 @@ void FBO_PostFX( void )
 		{
 			ri.Printf( PRINT_WARNING, "...error creating framebuffers for postFX\n" );
 			ri.Cvar_Set( "r_bloom", "0" );
+			ri.Cvar_Set( "r_postfx", "0" );
 			FBO_CleanBloom();
 			return;
 		}
@@ -1906,32 +1907,57 @@ void FBO_PostFX( void )
 		}
 	}
 
-    // Source is the main framebuffer, destination is the invert framebuffer
-    src = &frameBuffers[ 0 ];
-    dst = &frameBuffers[ BLOOM_BASE ];
+	if ( backEnd.doneBloom || !backEnd.doneSurfaces )
+	{
+		return qfalse;
+	}
 
-    // Bind the destination FBO
-    FBO_Bind( GL_FRAMEBUFFER, dst->fbo );
-    
-    // Bind the texture from the source framebuffer
-    GL_BindTexture( 0, src->color );
-    
-    // Set viewport to match the destination framebuffer
-    qglViewport( 0, 0, dst->width, dst->height );
-    
-    // Enable the invert fragment shader
-    ARB_ProgramEnable( DUMMY_VERTEX, POSTFX_FRAGMENT );
-    
-    // Render a quad with the source texture to apply the inversion
-    RenderQuad( w, h );
-    
-    // Disable the fragment shader
-    ARB_ProgramDisable();
+	backEnd.doneBloom = qtrue;
 
-    // Restore the viewport to the main framebuffer dimensions
-    qglViewport( 0, 0, w, h );
+	if ( blitMSfbo )
+	{
+		FBO_BlitMS( qfalse );
+		blitMSfbo = qfalse;
+	}
+	
+	// extract intensity from main FBO to BLOOM_BASE
+	src = &frameBuffers[ 0 ];
+	dst = &frameBuffers[ BLOOM_BASE ];
+	FBO_Bind( GL_FRAMEBUFFER, dst->fbo );
+	GL_BindTexture( 0, src->color );
+	qglViewport( 0, 0, dst->width, dst->height );
+	ARB_ProgramEnable( DUMMY_VERTEX, POSTFX_FRAGMENT );
+	RenderQuad( w, h );
 
-    return;
+	// restore viewport
+	qglViewport( 0, 0, w, h );
+
+	// blend all bloom buffers to BLOOM_BASE+1 texture
+	finalBloomFBO = BLOOM_BASE+1;
+	GL_State( GLS_DEPTHTEST_DISABLE | GLS_SRCBLEND_ONE | GLS_DSTBLEND_ZERO );
+	FBO_Bind( GL_FRAMEBUFFER, frameBuffers[ finalBloomFBO ].fbo );
+	ARB_ProgramEnable( DUMMY_VERTEX, BLENDX_FRAGMENT );
+	GL_BindTexture( i, frameBuffers[ BLOOM_BASE ].color );
+	RenderQuad( w, h );
+
+	if ( windowAdjusted || backEnd.screenshotMask ) {
+		finalStage = qfalse; // can't blit directly into back buffer in this case
+	}
+
+	// if we don't need to read pixels later - blend directly to back buffer
+	FBO_Bind( GL_FRAMEBUFFER, frameBuffers[ BLOOM_BASE ].fbo );
+
+	GL_BindTexture( 1, frameBuffers[ finalBloomFBO ].color ); // final bloom texture
+	GL_BindTexture( 0, frameBuffers[ 0 ].color ); // original image
+	ARB_ProgramEnable( DUMMY_VERTEX, BLEND2_FRAGMENT );
+	qglProgramLocalParameter4fARB( GL_FRAGMENT_PROGRAM_ARB, 1, r_bloom_intensity->value, 0, 0, 0 );
+	RenderQuad( w, h );
+	ARB_ProgramDisable();
+
+	fboReadIndex = BLOOM_BASE;
+
+	return;
+}
 }
 
 qboolean FBO_Bloom( const float gamma, const float obScale, qboolean finalStage )
