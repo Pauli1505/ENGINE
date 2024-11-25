@@ -1501,6 +1501,12 @@ static const void *RB_SwapBuffers( const void *data ) {
 	// finish any 2D drawing if needed
 	RB_EndSurface();
 
+#ifdef USE_FBO
+	if ( fboEnabled ) {
+		FBO_PostProcess();
+	}
+#endif
+
 #ifdef USE_VBO
 	VBO_UnBind();
 #endif
@@ -1515,12 +1521,6 @@ static const void *RB_SwapBuffers( const void *data ) {
 	if ( backEnd.doneSurfaces && !glState.finishCalled ) {
 		qglFinish();
 	}
-
-#ifdef USE_FBO
-	if ( fboEnabled ) {
-		FBO_PostProcess();
-	}
-#endif
 
 	// buffer swap may take undefined time to complete, we can't measure it in a reliable way
 	backEnd.pc.msec = ri.Milliseconds() - backEnd.pc.msec;
