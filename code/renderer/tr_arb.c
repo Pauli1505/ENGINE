@@ -2160,15 +2160,6 @@ void FBO_PostProcess( void )
 
 	minimized = ri.CL_IsMinimized();
 
-	if ( r_postfx->integer && programCompiled && qglActiveTextureARB ) {
-	FBO_Bind( GL_FRAMEBUFFER, frameBuffers[ BLOOM_BASE ].fbo );
-	GL_BindTexture( 0, frameBuffers[ 0 ].color );
-	ARB_ProgramEnable( DUMMY_VERTEX, POSTFX_FRAGMENT );
-	qglProgramLocalParameter4fARB( GL_FRAGMENT_PROGRAM_ARB, 0, gamma, gamma, gamma, obScale );
-	RenderQuad( w, h );
-	ARB_ProgramDisable();
-	}
-
 	if (r_postfx->integer && programCompiled && qglActiveTextureARB ) {
 		FBO_PostFX();
 	}
