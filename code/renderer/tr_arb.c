@@ -2108,7 +2108,7 @@ void FBO_PostProcess( void )
 
 	// check if we can perform final draw directly into back buffer
 	if ( backEnd.screenshotMask == 0 && !windowAdjusted && !minimized ) {
-		FBO_Bind( GL_FRAMEBUFFER, 0 );
+		FBO_Bind( GL_RENDERBUFFER, 0 );
 		GL_BindTexture( 0, frameBuffers[ fboReadIndex ].color );
 		ARB_ProgramEnable( DUMMY_VERTEX, POSTFX_FRAGMENT );
 		qglProgramLocalParameter4fARB( GL_FRAGMENT_PROGRAM_ARB, 0, gamma, gamma, gamma, obScale );
@@ -2118,23 +2118,12 @@ void FBO_PostProcess( void )
 	}
 
 	// apply gamma shader
-	FBO_Bind( GL_FRAMEBUFFER, frameBuffers[ 1 ].fbo ); // destination - secondary buffer
+	FBO_Bind( GL_RENDERBUFFER, frameBuffers[ 1 ].fbo ); // destination - secondary buffer
 	GL_BindTexture( 0, frameBuffers[ fboReadIndex ].color );  // source - main color buffer
 	ARB_ProgramEnable( DUMMY_VERTEX, POSTFX_FRAGMENT );
 	qglProgramLocalParameter4fARB( GL_FRAGMENT_PROGRAM_ARB, 0, gamma, gamma, gamma, obScale );
 	RenderQuad( w, h );
 	ARB_ProgramDisable();
-
-	if ( !backEnd.projection2D )
-	{
-		qglViewport( 0, 0, glConfig.vidWidth, glConfig.vidHeight );
-		qglScissor( 0, 0, glConfig.vidWidth, glConfig.vidHeight );
-		qglMatrixMode( GL_PROJECTION );
-		qglLoadMatrixf( GL_Ortho( 0, glConfig.vidWidth, glConfig.vidHeight, 0, 0, 1 ) );
-		qglMatrixMode( GL_MODELVIEW );
-		qglLoadIdentity();
-		backEnd.projection2D = qtrue;
-	}
 
 	if ( !minimized ) {
 		FBO_BlitToBackBuffer( 1 );
