@@ -428,13 +428,13 @@ void RE_EndFrame( int *frontEndMsec, int *backEndMsec ) {
 		return;
 	}
 
+	cmd->commandId = RC_SWAP_BUFFERS;
+
 	#ifdef USE_FBO
 	if ( fboEnabled ) {
 		FBO_PostProcess();
 	}
 	#endif
-	
-	cmd->commandId = RC_SWAP_BUFFERS;
 
 	R_PerformanceCounters();
 
