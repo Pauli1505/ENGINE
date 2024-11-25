@@ -771,13 +771,6 @@ static char *ARB_BuildPostFXProgram( char *buf ) {
         s += sprintf( s, "MUL base.xyz, base, hueShift.x; \n" );
     }
 
-	// 10. Bloom
-	if ( r_fx_bloom->value != 0.0 ) {
-    	s += sprintf( s, "TEMP bloom; \n" );
-    	s += sprintf( s, "MUL bloom.xyz, base, %1.2f; \n", r_fx_bloom->value );
-    	s += sprintf( s, "ADD base.xyz, base, bloom; \n" );
-	}
-
 	// End. Bloom
 	if ( r_fx_bloom->value != 0.0 ) {
 		// (r|g|b) >= threshold
