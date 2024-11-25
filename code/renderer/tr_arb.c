@@ -634,7 +634,6 @@ static const char *spriteFP = {
 #ifdef USE_FBO
 static char *ARB_BuildEffectsProgram( char *buf, int postFXon ) {
     char *s = buf;
-	int   i;
 
     s += sprintf( s, "!!ARBfp1.0 \n" );
     s += sprintf( s, "OPTION ARB_precision_hint_fastest; \n" );
@@ -1910,7 +1909,7 @@ void FBO_PostFX( void ) {
 
 	if ( backEnd.doneBloom || !backEnd.doneSurfaces )
 	{
-		return qfalse;
+		return;
 	}
 
 	backEnd.doneBloom = qtrue;
