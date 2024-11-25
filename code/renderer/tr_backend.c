@@ -1470,14 +1470,14 @@ static const void *RB_FinishBloom( const void *data )
 			blitMSfbo = qfalse;
 		}
 
-		if ( r_fx_bloom->integer && r_postfx->integer && qglActiveTextureARB )
+		if ( r_bloom->integer && qglActiveTextureARB )
 		{
 			if ( !backEnd.doneBloom && backEnd.doneSurfaces )
 			{
 				if ( !backEnd.projection2D )
 					RB_SetGL2D();
 				qglColor4f( 1, 1, 1, 1 );
-				FBO_Bloom_PostFx( 0, 0, qfalse );
+				FBO_Bloom( 0, 0, qfalse );
 			}
 		}
 	}

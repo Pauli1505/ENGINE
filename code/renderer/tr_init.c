@@ -57,7 +57,7 @@ cvar_t	*r_skipBackEnd;
 cvar_t	*r_anaglyphMode;
 
 //postFX
-cvar_t	*r_postfx;
+cvar_t	*r_postprocess;
 
 //color
 cvar_t	*r_fx_greyscale;
@@ -72,11 +72,6 @@ cvar_t	*r_fx_posterize;
 cvar_t	*r_fx_glow;
 cvar_t	*r_fx_filmic;
 cvar_t	*r_fx_bloom;
-cvar_t	*r_fx_bloom_passes;
-cvar_t	*r_fx_bloom_blend_base;
-cvar_t	*r_fx_bloom_intensity;
-cvar_t	*r_fx_bloom_filter_size;
-cvar_t	*r_fx_bloom_reflection;
 
 //fragment
 cvar_t	*r_fx_chromaticAberration;
@@ -106,6 +101,16 @@ cvar_t	*r_vbo;
 #ifdef USE_FBO
 cvar_t	*r_fbo;
 cvar_t	*r_hdr;
+cvar_t	*r_bloom;
+cvar_t	*r_bloom_threshold;
+cvar_t	*r_bloom_threshold_mode;
+cvar_t	*r_bloom_modulate;
+cvar_t	*r_bloom_passes;
+cvar_t	*r_bloom_blend_base;
+cvar_t	*r_bloom_intensity;
+cvar_t	*r_bloom_filter_size;
+cvar_t	*r_bloom_reflection;
+
 cvar_t	*r_renderWidth;
 cvar_t	*r_renderHeight;
 cvar_t	*r_renderScale;
@@ -1602,6 +1607,36 @@ static void R_Register( void )
 	r_hdr = ri.Cvar_Get( "r_hdr", "1", CVAR_ARCHIVE_ND );
 	ri.Cvar_SetDescription(r_hdr, "Enables high dynamic range frame buffer texture format. Requires \\r_fbo 1.\n -1: 4-bit, for testing purposes, heavy color banding, might not work on all systems\n  0: 8 bit, default, moderate color banding with multi-stage shaders\n  1: 16 bit, enhanced blending precision, no color banding, might decrease performance on AMD / Intel GPUs\n" );
 	ri.Cvar_SetGroup( r_hdr, CVG_RENDERER );
+	// bloom
+	r_bloom = ri.Cvar_Get( "r_bloom", "1", CVAR_ARCHIVE_ND );
+	r_bloom->flags &= ~CVAR_LATCH; // If we were running renderervk before, we need to remove latch
+	ri.Cvar_SetDescription(r_bloom, "Enables bloom post-processing effect. Requires \\r_fbo 1.");
+	r_bloom_threshold = ri.Cvar_Get( "r_bloom_threshold", "0.00", CVAR_ARCHIVE_ND );
+	ri.Cvar_SetDescription(r_bloom_threshold, "Color level to extract to bloom texture, default is 0.6.");
+	ri.Cvar_SetGroup( r_bloom_threshold, CVG_RENDERER );
+	r_bloom_threshold_mode = ri.Cvar_Get( "r_bloom_threshold_mode", "0", CVAR_ARCHIVE_ND );
+	ri.Cvar_SetDescription( r_bloom_threshold_mode, "Color extraction mode:\n 0: (r|g|b) >= threshold\n 1: (r + g + b ) / 3 >= threshold\n 2: luma(r, g, b) >= threshold" );
+	ri.Cvar_SetGroup( r_bloom_threshold_mode, CVG_RENDERER );
+	r_bloom_intensity = ri.Cvar_Get( "r_bloom_intensity", "0.15", CVAR_ARCHIVE_ND );
+	ri.Cvar_SetDescription( r_bloom_intensity, "Final bloom blend factor, default is 0.5." );
+	r_bloom_passes = ri.Cvar_Get( "r_bloom_passes", "6", CVAR_ARCHIVE_ND | CVAR_LATCH );
+	ri.Cvar_CheckRange( r_bloom_passes, "3", XSTRING( MAX_BLUR_PASSES ), CV_INTEGER );
+	ri.Cvar_SetDescription( r_bloom_passes, "Count of downsampled passes (framebuffers) to blend on final bloom image, default is 5." );
+	r_bloom_blend_base = ri.Cvar_Get( "r_bloom_blend_base", "1", CVAR_ARCHIVE_ND );
+	ri.Cvar_CheckRange( r_bloom_blend_base, "0", va("%i", r_bloom_passes->integer-1), CV_INTEGER );
+	ri.Cvar_SetDescription( r_bloom_blend_base, "0-based, topmost downsampled framebuffer to use for final image, high values can be used for stronger haze effect, results in overall weaker intensity." );
+	ri.Cvar_SetGroup( r_bloom_blend_base, CVG_RENDERER );
+	r_bloom_modulate = ri.Cvar_Get( "r_bloom_modulate", "0", CVAR_ARCHIVE_ND );
+	ri.Cvar_SetDescription( r_bloom_modulate, "Modulate extracted color:\n 0: off (color = color, i.e. no changes)\n 1: by itself (color = color * color)\n 2: by intensity (color = color * luma(color))" );
+	ri.Cvar_SetGroup( r_bloom_modulate, CVG_RENDERER );
+	r_bloom_filter_size = ri.Cvar_Get( "r_bloom_filter_size", "5", CVAR_ARCHIVE_ND );
+	ri.Cvar_CheckRange( r_bloom_filter_size, XSTRING( MIN_FILTER_SIZE ), XSTRING( MAX_FILTER_SIZE ), CV_INTEGER );
+	ri.Cvar_SetDescription( r_bloom_filter_size, "Filter size of Gaussian Blur effect for each pass, bigger filter size means stronger and wider blur, lower values are faster, default is 6." );
+	ri.Cvar_SetGroup( r_bloom_filter_size, CVG_RENDERER );
+
+	r_bloom_reflection = ri.Cvar_Get( "r_bloom_reflection", "0.25", CVAR_ARCHIVE_ND );
+	ri.Cvar_CheckRange( r_bloom_reflection, "-4", "4", CV_FLOAT );
+	ri.Cvar_SetDescription( r_bloom_reflection, "Bloom lens reflection effect, value is an intensity factor of the effect, negative value means blend only reflection and skip main bloom texture." );
 #endif // USE_FBO
 
 	r_dlightBacks = ri.Cvar_Get( "r_dlightBacks", "1", CVAR_ARCHIVE_ND );
@@ -1635,9 +1670,8 @@ static void R_Register( void )
 
 
 	//postFX
-	r_postfx = ri.Cvar_Get( "r_postfx", "1", CVAR_ARCHIVE_ND );
-	ri.Cvar_SetGroup( r_postfx, CVG_RENDERER );
-	ri.Cvar_SetDescription(r_postfx, "Enables post-processing effects r_fx. Requires \\r_fbo 1.");
+	r_postprocess = ri.Cvar_Get( "r_postprocess", "1", CVAR_ARCHIVE_ND );
+	ri.Cvar_SetGroup( r_postprocess, CVG_RENDERER );
 
 	//colors
 	r_fx_greyscale = ri.Cvar_Get( "r_fx_greyscale", "0.0", CVAR_ARCHIVE_ND );
@@ -1662,20 +1696,8 @@ static void R_Register( void )
 	ri.Cvar_SetGroup( r_fx_glow, CVG_RENDERER );
 	r_fx_filmic = ri.Cvar_Get( "r_fx_filmic", "0.0", CVAR_ARCHIVE_ND );
 	ri.Cvar_SetGroup( r_fx_filmic, CVG_RENDERER );
-
-	//bloom
-	r_fx_bloom = ri.Cvar_Get( "r_fx_bloom", "1", CVAR_ARCHIVE_ND );
+	r_fx_bloom = ri.Cvar_Get( "r_fx_bloom", "0.0", CVAR_ARCHIVE_ND );
 	ri.Cvar_SetGroup( r_fx_bloom, CVG_RENDERER );
-	r_fx_bloom_intensity = ri.Cvar_Get( "r_fx_bloom_intensity", "0.15", CVAR_ARCHIVE_ND );
-	ri.Cvar_SetGroup( r_fx_bloom_intensity, CVG_RENDERER );
-	r_fx_bloom_passes = ri.Cvar_Get( "r_fx_bloom_passes", "6", CVAR_ARCHIVE_ND | CVAR_LATCH );
-	ri.Cvar_SetGroup( r_fx_bloom_passes, CVG_RENDERER );
-	r_fx_bloom_blend_base = ri.Cvar_Get( "r_fx_bloom_blend_base", "1", CVAR_ARCHIVE_ND );
-	ri.Cvar_SetGroup( r_fx_bloom_blend_base, CVG_RENDERER );
-	r_fx_bloom_filter_size = ri.Cvar_Get( "r_fx_bloom_filter_size", "5", CVAR_ARCHIVE_ND );
-	ri.Cvar_SetGroup( r_fx_bloom_filter_size, CVG_RENDERER );
-	r_fx_bloom_reflection = ri.Cvar_Get( "r_fx_bloom_reflection", "0.25", CVAR_ARCHIVE_ND );
-	ri.Cvar_SetGroup( r_fx_bloom_reflection, CVG_RENDERER );
 
 	//fragment
 	r_fx_chromaticAberration = ri.Cvar_Get( "r_fx_chromaticAberration", "0.0", CVAR_ARCHIVE_ND );
