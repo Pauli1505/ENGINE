@@ -660,7 +660,7 @@ static char *ARB_BuildBaseFXProgram( char *buf ) {
     return buf;
 }
 
-static char *ARB_BuildPostFXProgram( char *buf ) {
+static char *ARB_BuildPostFXProgram( char *buf, int postFX_id ) {
 	char *s = buf;
 
 	//init postFX
@@ -670,6 +670,7 @@ static char *ARB_BuildPostFXProgram( char *buf ) {
     s += sprintf( s, "TEMP base; \n" );
     s += sprintf( s, "TEX base, fragment.texcoord[0], texture[0], 2D; \n" );
 
+	if(postFX_id == 0){
 	// 1 fragment. Chromatic Aberration
 	if ( r_fx_chromaticAberration->value != 0.0 ) {
     	s += sprintf( s, "PARAM chromaticAberration = { %1.6f, %1.6f, %1.6f, %1.6f }; \n",
@@ -770,6 +771,7 @@ static char *ARB_BuildPostFXProgram( char *buf ) {
         s += sprintf( s, "DP3 hueShift.x, base, hueRotation; \n" );
         s += sprintf( s, "MUL base.xyz, base, hueShift.x; \n" );
     }
+	} //end postFX_id
 
 	// End. Bloom
 	if ( r_fx_bloom->value != 0.0 ) {
@@ -1102,7 +1104,10 @@ qboolean ARB_UpdatePrograms( void )
 	if ( !ARB_CompileProgram( Fragment, ARB_BuildBaseFXProgram( buf ), programs[ GAMMA_FRAGMENT ] ) )
 		return qfalse;
 
-	if ( !ARB_CompileProgram( Fragment, ARB_BuildPostFXProgram( buf ), programs[ POSTFX_FRAGMENT ] ) )
+	if ( !ARB_CompileProgram( Fragment, ARB_BuildPostFXProgram( buf, 0 ), programs[ POSTFX_EFFECTS ] ) )
+		return qfalse;
+
+	if ( !ARB_CompileProgram( Fragment, ARB_BuildPostFXProgram( buf, 1 ), programs[ POSTFX_BLOOM ] ) )
 		return qfalse;
 	
 	// only 1, 2, 3, 6, 8, 10, 12, 14, 16, 18 and 20 produces real visual difference
@@ -1844,7 +1849,7 @@ static void R_Bloom_LensEffect( float alpha )
 }
 
 
-qboolean FBO_PostFX( const float gamma, const float obScale, qboolean finalStage )
+qboolean FBO_PostFX( const float gamma, const float obScale, qboolean finalStage, int postFX_id )
 {
 	const int w = glConfig.vidWidth;
 	const int h = glConfig.vidHeight;
@@ -1852,6 +1857,16 @@ qboolean FBO_PostFX( const float gamma, const float obScale, qboolean finalStage
 	frameBuffer_t *src, *dst;
 	int finalBloomFBO;
 	int i;
+
+	if(postFX_id == 0){
+		FBO_Bind( GL_FRAMEBUFFER, frameBuffers[ 0 ].fbo );
+		GL_BindTexture( 0, frameBuffers[ fboReadIndex ].color );
+		ARB_ProgramEnable( DUMMY_VERTEX, POSTFX_EFFECTS );
+		qglProgramLocalParameter4fARB( GL_FRAGMENT_PROGRAM_ARB, 0, gamma, gamma, gamma, obScale );
+		RenderQuad( w, h );
+		ARB_ProgramDisable();
+		return;
+	}
 
 	if ( backEnd.doneBloom || !backEnd.doneSurfaces )
 	{
@@ -1887,7 +1902,7 @@ qboolean FBO_PostFX( const float gamma, const float obScale, qboolean finalStage
 	FBO_Bind( GL_FRAMEBUFFER, dst->fbo );
 	GL_BindTexture( 0, src->color );
 	qglViewport( 0, 0, dst->width, dst->height );
-	ARB_ProgramEnable( DUMMY_VERTEX, POSTFX_FRAGMENT );
+	ARB_ProgramEnable( DUMMY_VERTEX, POSTFX_BLOOM );
 	RenderQuad( w, h );
 
 	// downscale and blur
@@ -2021,7 +2036,7 @@ void R_BloomScreen( void )
 			if ( !backEnd.projection2D )
 				RB_SetGL2D();
 			qglColor4f( 1, 1, 1, 1 );
-			FBO_PostFX( 0, 0, qfalse );
+			FBO_PostFX( 0, 0, qfalse, 1 );
 		}
 	}
 }
@@ -2063,7 +2078,7 @@ void FBO_PostProcess( void )
 	minimized = ri.CL_IsMinimized();
 
 	if ( r_postfx->integer && programCompiled && qglActiveTextureARB ) {
-		if ( FBO_PostFX( gamma, obScale, !minimized ) ) {
+		if ( FBO_PostFX( gamma, obScale, !minimized, 0 ) ) {
 			return;
 		}
 	}

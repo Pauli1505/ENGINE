@@ -1633,7 +1633,7 @@ void FBO_BindMain( void );
 void FBO_PostProcess( void );
 void FBO_BlitMS( qboolean depthOnly );
 void FBO_BlitSS( void );
-qboolean FBO_PostFX( const float gamma, const float obScale, qboolean finalPass );
+qboolean FBO_PostFX( const float gamma, const float obScale, qboolean finalPass, int postFX_id );
 void FBO_CopyScreen( void );
 GLuint FBO_ScreenTexture( void );
 #endif //  USE_FBO
@@ -2002,7 +2002,8 @@ typedef enum {
 	SPRITE_FRAGMENT,
 #ifdef USE_FBO
 	GAMMA_FRAGMENT,
-	POSTFX_FRAGMENT,
+	POSTFX_EFFECTS,
+	POSTFX_BLOOM,
 	BLUR_FRAGMENT,
 	BLUR2_FRAGMENT,
 	BLENDX_FRAGMENT,

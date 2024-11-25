@@ -1477,7 +1477,7 @@ static const void *RB_FinishBloom( const void *data )
 				if ( !backEnd.projection2D )
 					RB_SetGL2D();
 				qglColor4f( 1, 1, 1, 1 );
-				FBO_PostFX( 0, 0, qfalse );
+				FBO_PostFX( 0, 0, qfalse, 1 );
 			}
 		}
 	}
