@@ -632,10 +632,10 @@ static const char *spriteFP = {
 
 
 #ifdef USE_FBO
-static char *ARB_BuildBaseFXProgram( char *buf ) {
+static char *ARB_BuildEffectsProgram( char *buf, int postFXon ) {
     char *s = buf;
+	int   i;
 
-	//init baseFX
     s += sprintf( s, "!!ARBfp1.0 \n" );
     s += sprintf( s, "OPTION ARB_precision_hint_fastest; \n" );
     s += sprintf( s, "PARAM gamma = program.local[0]; \n" );
@@ -643,62 +643,7 @@ static char *ARB_BuildBaseFXProgram( char *buf ) {
     s += sprintf( s, "TEX base, fragment.texcoord[0], texture[0], 2D; \n" );
     s += sprintf( s, "PARAM sRGB = { 0.2126, 0.7152, 0.0722, 1.0 }; \n" );
 
-	// End. Gamma correction
-	if ( r_gamma->value != 0.0 ) {
-		s += sprintf( s, "POW base.x, base.x, gamma.x; \n" );
-		s += sprintf( s, "POW base.y, base.y, gamma.y; \n" );
-		s += sprintf( s, "POW base.z, base.z, gamma.z; \n" );
-		s += sprintf( s, "MUL base.xyz, base, gamma.w; \n" );
-		s += sprintf( s, "MOV base.w, 1.0; \n" );
-		s += sprintf( s, "MOV_SAT result.color, base; \n" );
-	}
-
-	//end baseFX
-	s += sprintf( s, "END \n" );
-
-    return buf;
-}
-
-static char *ARB_BuildBloomPostFXProgram( char *buf ) {
-	char *s = buf;
-
-	//init postFX
-	s += sprintf( s, "!!ARBfp1.0 \n" );
-    s += sprintf( s, "OPTION ARB_precision_hint_fastest; \n" );
-    s += sprintf( s, "TEMP base; \n" );
-    s += sprintf( s, "TEX base, fragment.texcoord[0], texture[0], 2D; \n" );
-
-	// End. Bloom
-	if ( r_fx_bloom->value != 0.0 ) {
-		// (r|g|b) >= threshold
-		s += sprintf( s, "TEMP minv; \n" );
-		s += sprintf( s, "SGE minv, base, 0.0; \n" );
-		s += sprintf( s, "DP3_SAT minv.w, minv, minv; \n" );
-		s += sprintf( s, "MUL base.rgb, base, minv.w; \n" );
-		// modulation
-		s += sprintf( s, "PARAM luma = { 0.2126, 0.7152, 0.0722, 1.0 }; \n" );
-		s += sprintf( s, "TEMP intensity; \n" );
-		s += sprintf( s, "DP3_SAT intensity, base, luma; \n" );
-		s += sprintf( s, "MUL base, base, intensity; \n" );
-	}
-
-	//end postFX
-	s += sprintf( s, "MOV base.w, 1.0; \n" );
-	s += sprintf( s, "MOV result.color, base; \n" );
-	s += sprintf( s, "END \n" );
-
-	return buf;
-}
-
-static char *ARB_BuildPostFXProgram( char *buf ) {
-	char *s = buf;
-
-	//init postFX
-	s += sprintf( s, "!!ARBfp1.0 \n" );
-    s += sprintf( s, "OPTION ARB_precision_hint_fastest; \n" );
-    s += sprintf( s, "TEMP base; \n" );
-    s += sprintf( s, "TEX base, fragment.texcoord[0], texture[0], 2D; \n" );
-
+	if ( postFXon ) {
 	// 1 fragment. Chromatic Aberration
 	if ( r_fx_chromaticAberration->value != 0.0 ) {
     	s += sprintf( s, "PARAM chromaticAberration = { %1.6f, %1.6f, %1.6f, %1.6f }; \n",
@@ -800,13 +745,92 @@ static char *ARB_BuildPostFXProgram( char *buf ) {
         s += sprintf( s, "MUL base.xyz, base, hueShift.x; \n" );
     }
 
-	//end postFX
-	s += sprintf( s, "MOV base.w, 1.0; \n" );
-	s += sprintf( s, "MOV result.color, base; \n" );
+	// 10. Bloom
+	if ( r_fx_bloom->value != 0.0 ) {
+    	s += sprintf( s, "TEMP bloom; \n" );
+    	s += sprintf( s, "MUL bloom.xyz, base, %1.2f; \n", r_fx_bloom->value );
+    	s += sprintf( s, "ADD base.xyz, base, bloom; \n" );
+	}
+	} //end postFXon
+
+	// End. Gamma correction
+	if ( r_gamma->value != 0.0 ) {
+		s += sprintf( s, "POW base.x, base.x, gamma.x; \n" );
+		s += sprintf( s, "POW base.y, base.y, gamma.y; \n" );
+		s += sprintf( s, "POW base.z, base.z, gamma.z; \n" );
+		s += sprintf( s, "MUL base.xyz, base, gamma.w; \n" );
+		s += sprintf( s, "MOV base.w, 1.0; \n" );
+		s += sprintf( s, "MOV_SAT result.color, base; \n" );
+	}
+
 	s += sprintf( s, "END \n" );
+
+    return buf;
+}
+
+static char *ARB_BuildBloomProgram( char *buf ) {
+	qboolean intensityCalculated;
+	char *s = buf;
+
+	intensityCalculated = qfalse;
+	s = Q_stradd( s,
+		"!!ARBfp1.0 \n"
+		"OPTION ARB_precision_hint_fastest; \n"
+		"PARAM thres = program.local[0]; \n"
+		"TEMP base; \n"
+		"TEX base, fragment.texcoord[0], texture[0], 2D; \n" );
+
+	if ( r_bloom_threshold_mode->integer == 0 ) {
+		// (r|g|b) >= threshold
+		s = Q_stradd( s,
+			"TEMP minv; \n"
+			"SGE minv, base, thres; \n"
+			"DP3_SAT minv.w, minv, minv; \n"
+			"MUL base.rgb, base, minv.w; \n" );
+	} else if ( r_bloom_threshold_mode->integer == 1 ) {
+		// (r+g+b)/3 >= threshold
+		s = Q_stradd( s,
+			"PARAM scale = { 0.3333, 0.3334, 0.3333, 1.0 }; \n"
+			"TEMP avg; \n"
+			"DP3_SAT avg, base, scale; \n"
+			"SGE avg.w, avg.x, thres.x; \n"
+			"MUL base.rgb, base, avg.w; \n" );
+	} else {
+		// luma(r,g,b) >= threshold
+		s = Q_stradd( s,
+			"PARAM luma = { 0.2126, 0.7152, 0.0722, 1.0 }; \n"
+			"TEMP intensity; \n"
+			"DP3_SAT intensity, base, luma; \n"
+			"SGE intensity.w, intensity.x, thres.x; \n"
+			"MUL base.rgb, base, intensity.w; \n" );
+		intensityCalculated = qtrue;
+	}
+
+	// modulation
+	if ( r_bloom_modulate->integer ) {
+		if ( r_bloom_modulate->integer == 1 ) {
+			// by itself
+			s = Q_stradd( s, "MUL base, base, base; \n" );
+		} else {
+			// by intensity
+			if ( !intensityCalculated ) {
+				s = Q_stradd( s,
+					"PARAM luma = { 0.2126, 0.7152, 0.0722, 1.0 }; \n"
+					"TEMP intensity; \n"
+					"DP3_SAT intensity, base, luma; \n" );
+			}
+			s = Q_stradd( s, "MUL base, base, intensity; \n" );
+		}
+	}
+
+	/*s = */ Q_stradd( s,
+		"MOV base.w, 1.0; \n"
+		"MOV result.color, base; \n"
+		"END \n" );
 
 	return buf;
 }
+
 
 // Gaussian blur shader
 static char *ARB_BuildBlurProgram( char *buf, int taps ) {
@@ -1113,25 +1137,25 @@ qboolean ARB_UpdatePrograms( void )
 		return qfalse;
 
 #ifdef USE_FBO
-	if ( !ARB_CompileProgram( Fragment, ARB_BuildBaseFXProgram( buf ), programs[ GAMMA_FRAGMENT ] ) )
+	if ( !ARB_CompileProgram( Fragment, ARB_BuildEffectsProgram( buf, 0 ), programs[ GAMMA_FRAGMENT ] ) )
 		return qfalse;
 
-	if ( !ARB_CompileProgram( Fragment, ARB_BuildPostFXProgram( buf ), programs[ POSTFX_EFFECTS ] ) )
+	if ( !ARB_CompileProgram( Fragment, ARB_BuildEffectsProgram( buf, 1 ), programs[ POSTFX_FRAGMENT ] ) )
 		return qfalse;
 
-	if ( !ARB_CompileProgram( Fragment, ARB_BuildBloomPostFXProgram( buf ), programs[ POSTFX_BLOOM ] ) )
+	if ( !ARB_CompileProgram( Fragment, ARB_BuildBloomProgram( buf ), programs[ BLOOM_EXTRACT_FRAGMENT ] ) )
 		return qfalse;
 	
 	// only 1, 2, 3, 6, 8, 10, 12, 14, 16, 18 and 20 produces real visual difference
-	fboBloomFilterSize = r_fx_bloom_filter_size->integer;
+	fboBloomFilterSize = r_bloom_filter_size->integer;
 	if ( !ARB_CompileProgram( Fragment, ARB_BuildBlurProgram( buf, fboBloomFilterSize ), programs[ BLUR_FRAGMENT ] ) )
 		return qfalse;
 
 	if ( !ARB_CompileProgram( Fragment, ARB_BuildBlurProgram( buf, 6 ), programs[ BLUR2_FRAGMENT ] ) )
 		return qfalse;
 
-	fboBloomBlendBase = r_fx_bloom_blend_base->integer;
-	if ( !ARB_CompileProgram( Fragment, ARB_BuildBlendProgram( buf, r_fx_bloom_passes->integer - fboBloomBlendBase ), programs[ BLENDX_FRAGMENT ] ) )
+	fboBloomBlendBase = r_bloom_blend_base->integer;
+	if ( !ARB_CompileProgram( Fragment, ARB_BuildBlendProgram( buf, r_bloom_passes->integer - fboBloomBlendBase ), programs[ BLENDX_FRAGMENT ] ) )
 		return qfalse;
 
 	if ( !ARB_CompileProgram( Fragment, blend2FP, programs[ BLEND2_FRAGMENT ] ) )
@@ -1534,16 +1558,16 @@ static qboolean FBO_CreateBloom( void )
 
 	fboBloomPasses = 0;
 
-	if ( glConfig.numTextureUnits < r_fx_bloom_passes->integer )
+	if ( glConfig.numTextureUnits < r_bloom_passes->integer )
 	{
 		ri.Printf( PRINT_WARNING, "...not enough texture units (%i) for %i-pass bloom\n",
-			glConfig.numTextureUnits, r_fx_bloom_passes->integer );
+			glConfig.numTextureUnits, r_bloom_passes->integer );
 		return qfalse;
 	}
 
-	for ( i = 0; i < r_fx_bloom_passes->integer; i++ )
+	for ( i = 0; i < r_bloom_passes->integer; i++ )
 	{
-		// we may need depth/stencil buffers for first bloom buffer in \r_fx_bloom 2 mode
+		// we may need depth/stencil buffers for first bloom buffer in \r_bloom 2 mode
 		if ( !FBO_Create( &frameBuffers[ i*2 + BLOOM_BASE + 0 ], width, height, i == 0 ? qtrue : qfalse, NULL, NULL ) ||
 			!FBO_Create( &frameBuffers[ i*2 + BLOOM_BASE + 1 ], width, height, qfalse, NULL, NULL ) ) {
 			return qfalse;
@@ -1861,7 +1885,7 @@ static void R_Bloom_LensEffect( float alpha )
 }
 
 
-qboolean FBO_Bloom_PostFx( const float gamma, const float obScale, qboolean finalStage )
+qboolean FBO_Bloom( const float gamma, const float obScale, qboolean finalStage )
 {
 	const int w = glConfig.vidWidth;
 	const int h = glConfig.vidHeight;
@@ -1882,7 +1906,7 @@ qboolean FBO_Bloom_PostFx( const float gamma, const float obScale, qboolean fina
 		if ( (fboBloomInited = FBO_CreateBloom() ) == qfalse )
 		{
 			ri.Printf( PRINT_WARNING, "...error creating framebuffers for bloom\n" );
-			ri.Cvar_Set( "r_fx_bloom", "0" );
+			ri.Cvar_Set( "r_bloom", "0" );
 			FBO_CleanBloom();
 			return qfalse;
 		}
@@ -1904,7 +1928,9 @@ qboolean FBO_Bloom_PostFx( const float gamma, const float obScale, qboolean fina
 	FBO_Bind( GL_FRAMEBUFFER, dst->fbo );
 	GL_BindTexture( 0, src->color );
 	qglViewport( 0, 0, dst->width, dst->height );
-	ARB_ProgramEnable( DUMMY_VERTEX, POSTFX_BLOOM );
+	ARB_ProgramEnable( DUMMY_VERTEX, BLOOM_EXTRACT_FRAGMENT );
+	qglProgramLocalParameter4fARB( GL_FRAGMENT_PROGRAM_ARB, 0, r_bloom_threshold->value, r_bloom_threshold->value,
+		r_bloom_threshold->value, 1.0 );
 	RenderQuad( w, h );
 
 	// downscale and blur
@@ -1941,7 +1967,7 @@ qboolean FBO_Bloom_PostFx( const float gamma, const float obScale, qboolean fina
 	}
 	RenderQuad( w, h );
 
-	if ( r_fx_bloom_reflection->value )
+	if ( r_bloom_reflection->value )
 	{
 		ARB_ProgramDisable();
 
@@ -1957,7 +1983,7 @@ qboolean FBO_Bloom_PostFx( const float gamma, const float obScale, qboolean fina
 		GL_BindTexture( 0, dst->color );
 		GL_State( GLS_DEPTHTEST_DISABLE | GLS_SRCBLEND_SRC_ALPHA | GLS_DSTBLEND_ONE );
 		qglViewport( 0, 0, dst->width, dst->height );
-		R_Bloom_LensEffect( fabs( r_fx_bloom_reflection->value ) );
+		R_Bloom_LensEffect( fabs( r_bloom_reflection->value ) );
 		
 		// restore color and blend mode
 		qglColor4f( 1.0f, 1.0f, 1.0f, 1.0f );
@@ -1969,7 +1995,7 @@ qboolean FBO_Bloom_PostFx( const float gamma, const float obScale, qboolean fina
 
 		// add lens effect to final bloom buffer
 		FBO_Bind( GL_FRAMEBUFFER, src->fbo );
-		if ( r_fx_bloom_reflection->value > 0 ) {
+		if ( r_bloom_reflection->value > 0 ) {
 			GL_State( GLS_DEPTHTEST_DISABLE | GLS_SRCBLEND_ONE | GLS_DSTBLEND_ONE );
 		} else {
 			// negative reflection values will replace bloom texture with just lens effect
@@ -2003,11 +2029,11 @@ qboolean FBO_Bloom_PostFx( const float gamma, const float obScale, qboolean fina
 		// blend & apply gamma in one pass
 		ARB_ProgramEnable( DUMMY_VERTEX, BLEND2_GAMMA_FRAGMENT );
 		qglProgramLocalParameter4fARB( GL_FRAGMENT_PROGRAM_ARB, 0, gamma, gamma, gamma, obScale );
-		qglProgramLocalParameter4fARB( GL_FRAGMENT_PROGRAM_ARB, 1, r_fx_bloom_intensity->value, 0, 0, 0 );
+		qglProgramLocalParameter4fARB( GL_FRAGMENT_PROGRAM_ARB, 1, r_bloom_intensity->value, 0, 0, 0 );
 	} else {
 		// just blend
 		ARB_ProgramEnable( DUMMY_VERTEX, BLEND2_FRAGMENT );
-		qglProgramLocalParameter4fARB( GL_FRAGMENT_PROGRAM_ARB, 1, r_fx_bloom_intensity->value, 0, 0, 0 );
+		qglProgramLocalParameter4fARB( GL_FRAGMENT_PROGRAM_ARB, 1, r_bloom_intensity->value, 0, 0, 0 );
 	}
 	RenderQuad( w, h );
 	ARB_ProgramDisable();
@@ -2031,14 +2057,14 @@ qboolean FBO_Bloom_PostFx( const float gamma, const float obScale, qboolean fina
 
 void R_BloomScreen( void )
 {
-	if ( r_fx_bloom->integer == 1 && r_postfx->integer && fboEnabled && qglActiveTextureARB )
+	if ( r_bloom->integer == 1 && fboEnabled && qglActiveTextureARB )
 	{
 		if ( !backEnd.doneBloom && backEnd.doneSurfaces )
 		{
 			if ( !backEnd.projection2D )
 				RB_SetGL2D();
 			qglColor4f( 1, 1, 1, 1 );
-			FBO_Bloom_PostFx( 0, 0, qfalse );
+			FBO_Bloom( 0, 0, qfalse );
 		}
 	}
 }
@@ -2079,16 +2105,8 @@ void FBO_PostProcess( void )
 
 	minimized = ri.CL_IsMinimized();
 
-	if ( r_postfx->integer && programCompiled && qglActiveTextureARB ) {
-
-		FBO_Bind( GL_FRAMEBUFFER, frameBuffers[0].fbo );
-		GL_BindTexture( 0, frameBuffers[fboReadIndex].color );
-		ARB_ProgramEnable( DUMMY_VERTEX, POSTFX_EFFECTS );
-		qglProgramLocalParameter4fARB( GL_FRAGMENT_PROGRAM_ARB, 0, gamma, gamma, gamma, obScale );
-		RenderQuad( w, h );
-		ARB_ProgramDisable();
-
-		if ( FBO_Bloom_PostFx( gamma, obScale, !minimized ) ) {
+	if ( r_bloom->integer && programCompiled && qglActiveTextureARB ) {
+		if ( FBO_Bloom( gamma, obScale, !minimized ) ) {
 			return;
 		}
 	}
@@ -2097,7 +2115,11 @@ void FBO_PostProcess( void )
 	if ( backEnd.screenshotMask == 0 && !windowAdjusted && !minimized ) {
 		FBO_Bind( GL_FRAMEBUFFER, 0 );
 		GL_BindTexture( 0, frameBuffers[ fboReadIndex ].color );
-		ARB_ProgramEnable( DUMMY_VERTEX, GAMMA_FRAGMENT );
+		if ( r_postprocess->integer && programCompiled && qglActiveTextureARB ) {
+			ARB_ProgramEnable( DUMMY_VERTEX, POSTFX_FRAGMENT );
+		} else {
+			ARB_ProgramEnable( DUMMY_VERTEX, GAMMA_FRAGMENT );
+		}
 		qglProgramLocalParameter4fARB( GL_FRAGMENT_PROGRAM_ARB, 0, gamma, gamma, gamma, obScale );
 		RenderQuad( w, h );
 		ARB_ProgramDisable();
@@ -2107,7 +2129,11 @@ void FBO_PostProcess( void )
 	// apply gamma shader
 	FBO_Bind( GL_FRAMEBUFFER, frameBuffers[ 1 ].fbo ); // destination - secondary buffer
 	GL_BindTexture( 0, frameBuffers[ fboReadIndex ].color );  // source - main color buffer
-	ARB_ProgramEnable( DUMMY_VERTEX, GAMMA_FRAGMENT );
+	if ( r_postprocess->integer && programCompiled && qglActiveTextureARB ) {
+		ARB_ProgramEnable( DUMMY_VERTEX, POSTFX_FRAGMENT );
+	} else {
+		ARB_ProgramEnable( DUMMY_VERTEX, GAMMA_FRAGMENT );
+	}
 	qglProgramLocalParameter4fARB( GL_FRAGMENT_PROGRAM_ARB, 0, gamma, gamma, gamma, obScale );
 	RenderQuad( w, h );
 	ARB_ProgramDisable();
