@@ -634,7 +634,6 @@ static const char *spriteFP = {
 #ifdef USE_FBO
 static char *ARB_BuildBaseFXProgram( char *buf ) {
     char *s = buf;
-	int   i;
 
 	//init baseFX
     s += sprintf( s, "!!ARBfp1.0 \n" );
@@ -1865,7 +1864,7 @@ qboolean FBO_PostFX( const float gamma, const float obScale, qboolean finalStage
 		qglProgramLocalParameter4fARB( GL_FRAGMENT_PROGRAM_ARB, 0, gamma, gamma, gamma, obScale );
 		RenderQuad( w, h );
 		ARB_ProgramDisable();
-		return;
+		return qfalse;
 	}
 
 	if ( backEnd.doneBloom || !backEnd.doneSurfaces )
