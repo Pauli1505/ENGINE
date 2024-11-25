@@ -2027,7 +2027,7 @@ qboolean FBO_Bloom( const float gamma, const float obScale, qboolean finalStage 
 	GL_BindTexture( 0, frameBuffers[ 0 ].color ); // original image
 	if ( finalStage ) {
 		// blend & apply gamma in one pass
-		ARB_ProgramEnable( DUMMY_VERTEX,  );
+		ARB_ProgramEnable( DUMMY_VERTEX, BLEND2_GAMMA_FRAGMENT );
 		qglProgramLocalParameter4fARB( GL_FRAGMENT_PROGRAM_ARB, 0, gamma, gamma, gamma, obScale );
 		qglProgramLocalParameter4fARB( GL_FRAGMENT_PROGRAM_ARB, 1, r_bloom_intensity->value, 0, 0, 0 );
 	} else {
