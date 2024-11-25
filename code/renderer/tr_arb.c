@@ -2115,7 +2115,7 @@ void FBO_PostProcess( void )
 	if ( backEnd.screenshotMask == 0 && !windowAdjusted && !minimized ) {
 		FBO_Bind( GL_FRAMEBUFFER, 0 );
 		GL_BindTexture( 0, frameBuffers[ fboReadIndex ].color );
-		if ( r_postprocess->integer && programCompiled && qglActiveTextureARB ) {
+		if ( r_postfx->integer && programCompiled && qglActiveTextureARB ) {
 			ARB_ProgramEnable( DUMMY_VERTEX, POSTFX_FRAGMENT );
 		} else {
 			ARB_ProgramEnable( DUMMY_VERTEX, GAMMA_FRAGMENT );
@@ -2127,9 +2127,9 @@ void FBO_PostProcess( void )
 	}
 
 	// apply gamma shader
-	FBO_Bind( GL_FRAMEBUFFER, frameBuffers[ 1 ].fbo ); // destination - secondary buffer
+	FBO_Bind( GL_FRAMEBUFFER, frameBuffers[ 0 ].fbo ); // destination - secondary buffer
 	GL_BindTexture( 0, frameBuffers[ fboReadIndex ].color );  // source - main color buffer
-	if ( r_postprocess->integer && programCompiled && qglActiveTextureARB ) {
+	if ( r_postfx->integer && programCompiled && qglActiveTextureARB ) {
 		ARB_ProgramEnable( DUMMY_VERTEX, POSTFX_FRAGMENT );
 	} else {
 		ARB_ProgramEnable( DUMMY_VERTEX, GAMMA_FRAGMENT );
