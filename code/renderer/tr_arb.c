@@ -2112,7 +2112,7 @@ void FBO_PostProcess( void )
 	}
 
 	// check if we can perform final draw directly into back buffer
-	if ( backEnd.screenshotMask == 0 && !windowAdjusted && !minimized ) {
+	/*if ( backEnd.screenshotMask == 0 && !windowAdjusted && !minimized ) {
 		FBO_Bind( GL_FRAMEBUFFER, 0 );
 		GL_BindTexture( 0, frameBuffers[ fboReadIndex ].color );
 		if ( r_postfx->integer && programCompiled && qglActiveTextureARB ) {
@@ -2124,10 +2124,10 @@ void FBO_PostProcess( void )
 		RenderQuad( w, h );
 		ARB_ProgramDisable();
 		return;
-	}
+	}*/
 
 	// apply gamma shader
-	FBO_Bind( GL_FRAMEBUFFER, frameBuffers[ 0 ].fbo ); // destination - secondary buffer
+	FBO_Bind( GL_FRAMEBUFFER, frameBuffers[ 0 ] ); // destination - secondary buffer
 	GL_BindTexture( 0, frameBuffers[ fboReadIndex ].color );  // source - main color buffer
 	if ( r_postfx->integer && programCompiled && qglActiveTextureARB ) {
 		ARB_ProgramEnable( DUMMY_VERTEX, POSTFX_FRAGMENT );
