@@ -1889,6 +1889,8 @@ void FBO_PostFX( void ) {
     const int h = glConfig.vidHeight;
 
     frameBuffer_t *src, *dst;
+	int finalBloomFBO;
+	int i;
 
 	if ( !fboBloomInited )
 	{
@@ -1938,10 +1940,6 @@ void FBO_PostFX( void ) {
 	ARB_ProgramEnable( DUMMY_VERTEX, BLENDX_FRAGMENT );
 	GL_BindTexture( i, frameBuffers[ BLOOM_BASE ].color );
 	RenderQuad( w, h );
-
-	if ( windowAdjusted || backEnd.screenshotMask ) {
-		finalStage = qfalse; // can't blit directly into back buffer in this case
-	}
 
 	// if we don't need to read pixels later - blend directly to back buffer
 	FBO_Bind( GL_FRAMEBUFFER, frameBuffers[ BLOOM_BASE ].fbo );
