@@ -1705,7 +1705,7 @@ static GLenum RawImage_GetFormat(const byte *data, int numPixels, GLenum picForm
 	}
 	else if(lightMap)
 	{
-		if(r_ps_greyscale->integer)
+		if(r_fx_greyscale->integer)
 			internalFormat = GL_LUMINANCE;
 		else
 			internalFormat = GL_RGBA;
@@ -1720,7 +1720,7 @@ static GLenum RawImage_GetFormat(const byte *data, int numPixels, GLenum picForm
 		// select proper internal format
 		if ( samples == 3 )
 		{
-			if(r_ps_greyscale->integer)
+			if(r_fx_greyscale->integer)
 			{
 				if(r_texturebits->integer == 16 || r_texturebits->integer == 32)
 					internalFormat = GL_LUMINANCE8;
@@ -1757,7 +1757,7 @@ static GLenum RawImage_GetFormat(const byte *data, int numPixels, GLenum picForm
 		}
 		else if ( samples == 4 )
 		{
-			if(r_ps_greyscale->integer)
+			if(r_fx_greyscale->integer)
 			{
 				if(r_texturebits->integer == 16 || r_texturebits->integer == 32)
 					internalFormat = GL_LUMINANCE8_ALPHA8;
@@ -2034,7 +2034,7 @@ static void Upload32(byte *data, int x, int y, int width, int height, GLenum pic
 
 		if (type == IMGTYPE_COLORALPHA)
 		{
-			if( r_ps_greyscale->integer )
+			if( r_fx_greyscale->integer )
 			{
 				for ( i = 0; i < c; i++ )
 				{
@@ -2044,14 +2044,14 @@ static void Upload32(byte *data, int x, int y, int width, int height, GLenum pic
 					scan[i*4 + 2] = luma;
 				}
 			}
-			else if( r_ps_greyscale->value )
+			else if( r_fx_greyscale->value )
 			{
 				for ( i = 0; i < c; i++ )
 				{
 					float luma = LUMA(scan[i*4], scan[i*4 + 1], scan[i*4 + 2]);
-					scan[i*4] = LERP(scan[i*4], luma, r_ps_greyscale->value);
-					scan[i*4 + 1] = LERP(scan[i*4 + 1], luma, r_ps_greyscale->value);
-					scan[i*4 + 2] = LERP(scan[i*4 + 2], luma, r_ps_greyscale->value);
+					scan[i*4] = LERP(scan[i*4], luma, r_fx_greyscale->value);
+					scan[i*4 + 1] = LERP(scan[i*4 + 1], luma, r_fx_greyscale->value);
+					scan[i*4 + 2] = LERP(scan[i*4 + 2], luma, r_fx_greyscale->value);
 				}
 			}
 

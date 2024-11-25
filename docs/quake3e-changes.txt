@@ -656,7 +656,7 @@ Fixed non-working rconPassword2 on linux
  Shift+PrintScreen - "\screenshotBMP"
 * Add dedicated \r_nomip cvar instead of negative \r_picmip values to apply picmip only on worldspawn textures
  as negative \r_picmip values is breaking cross-engine config compatibility
-* Fix \r_ps_greyscale validation
+* Fix \r_fx_greyscale validation
 * Add descriptions for some renderer cvars
 * Accept only HTTP(S)/FTP(S) protocols for download redirection
 
@@ -694,8 +694,8 @@ Fixed non-working rconPassword2 on linux
 * Do not issue late cull tests on modern gfx hardware or for linear lights - as CPU may bottleneck in these cases
 * Fix FreeBSD compilation (partially)
 * Fix some errors reported by clang' undefined behavior sanitizer
-* Move \r_ps_greyscale functionality to FBO/ARB shaders so now it requires \r_fbo 1, on other side:
- - you can change \r_ps_greyscale on the fly
+* Move \r_fx_greyscale functionality to FBO/ARB shaders so now it requires \r_fbo 1, on other side:
+ - you can change \r_fx_greyscale on the fly
  - now it applies to everything including cinematics
 * Parse systeminfo as big string on client side, rest of strings - as normal strings
 * Add \systeminfo and \serverinfo commands on client side

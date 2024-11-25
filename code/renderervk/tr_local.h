@@ -1384,7 +1384,7 @@ extern	cvar_t	*r_subdivisions;
 extern	cvar_t	*r_lodCurveError;
 extern	cvar_t	*r_skipBackEnd;
 
-extern	cvar_t	*r_ps_greyscale;
+extern	cvar_t	*r_fx_greyscale;
 extern	cvar_t	*r_dither;
 extern	cvar_t	*r_presentBits;
 

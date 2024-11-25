@@ -1302,20 +1302,26 @@ extern	cvar_t	*r_skipBackEnd;
 
 extern	cvar_t	*r_anaglyphMode;
 
-extern	cvar_t	*r_ps_greyscale;
-extern	cvar_t	*r_ps_sepia;
-extern	cvar_t	*r_ps_contrast;
-extern	cvar_t	*r_ps_brightness;
-extern	cvar_t	*r_ps_invert;
-extern	cvar_t	*r_ps_tint_r;
-extern	cvar_t	*r_ps_tint_g;
-extern	cvar_t	*r_ps_tint_b;
-extern	cvar_t	*r_ps_posterize;
-extern	cvar_t	*r_ps_glow;
-extern	cvar_t	*r_ps_filmic;
-extern	cvar_t	*r_ps_bloom;
-extern	cvar_t	*r_ps_chromaticAberration;
-extern	cvar_t	*r_ps_chameleon;
+//postFX
+extern	cvar_t	*r_postprocess;
+
+//color
+extern	cvar_t	*r_fx_greyscale;
+extern	cvar_t	*r_fx_sepia;
+extern	cvar_t	*r_fx_contrast;
+extern	cvar_t	*r_fx_brightness;
+extern	cvar_t	*r_fx_invert;
+extern	cvar_t	*r_fx_tint_r;
+extern	cvar_t	*r_fx_tint_g;
+extern	cvar_t	*r_fx_tint_b;
+extern	cvar_t	*r_fx_posterize;
+extern	cvar_t	*r_fx_glow;
+extern	cvar_t	*r_fx_filmic;
+extern	cvar_t	*r_fx_bloom;
+
+//fragment
+extern	cvar_t	*r_fx_chromaticAberration;
+extern	cvar_t	*r_fx_chameleon;
 
 extern	cvar_t	*r_ignoreGLErrors;
 
@@ -2000,6 +2006,7 @@ typedef enum {
 #endif
 	SPRITE_FRAGMENT,
 #ifdef USE_FBO
+	GAMMA_FRAGMENT,
 	POSTFX_FRAGMENT,
 	BLOOM_EXTRACT_FRAGMENT,
 	BLUR_FRAGMENT,

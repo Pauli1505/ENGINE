@@ -56,20 +56,26 @@ cvar_t	*r_skipBackEnd;
 
 cvar_t	*r_anaglyphMode;
 
-cvar_t	*r_ps_greyscale;
-cvar_t	*r_ps_sepia;
-cvar_t	*r_ps_contrast;
-cvar_t	*r_ps_brightness;
-cvar_t	*r_ps_invert;
-cvar_t	*r_ps_tint_r;
-cvar_t	*r_ps_tint_g;
-cvar_t	*r_ps_tint_b;
-cvar_t	*r_ps_posterize;
-cvar_t	*r_ps_glow;
-cvar_t	*r_ps_filmic;
-cvar_t	*r_ps_bloom;
-cvar_t	*r_ps_chromaticAberration;
-cvar_t	*r_ps_chameleon;
+//postFX
+cvar_t	*r_postprocess;
+
+//color
+cvar_t	*r_fx_greyscale;
+cvar_t	*r_fx_sepia;
+cvar_t	*r_fx_contrast;
+cvar_t	*r_fx_brightness;
+cvar_t	*r_fx_invert;
+cvar_t	*r_fx_tint_r;
+cvar_t	*r_fx_tint_g;
+cvar_t	*r_fx_tint_b;
+cvar_t	*r_fx_posterize;
+cvar_t	*r_fx_glow;
+cvar_t	*r_fx_filmic;
+cvar_t	*r_fx_bloom;
+
+//fragment
+cvar_t	*r_fx_chromaticAberration;
+cvar_t	*r_fx_chameleon;
 
 static cvar_t *r_ignorehwgamma;
 
@@ -1534,7 +1540,7 @@ static void R_Register( void )
 
 	r_mapGreyScale = ri.Cvar_Get( "r_mapGreyScale", "0", CVAR_ARCHIVE_ND | CVAR_LATCH );
 	ri.Cvar_CheckRange( r_mapGreyScale, "-1", "1", CV_FLOAT );
-	ri.Cvar_SetDescription(r_mapGreyScale, "Desaturate world map textures only, works independently from \\r_ps_greyscale, negative values only desaturate lightmaps.");
+	ri.Cvar_SetDescription(r_mapGreyScale, "Desaturate world map textures only, works independently from \\r_fx_greyscale, negative values only desaturate lightmaps.");
 
 	r_subdivisions = ri.Cvar_Get( "r_subdivisions", "1", CVAR_ARCHIVE_ND | CVAR_LATCH );
 	ri.Cvar_SetDescription(r_subdivisions, "Distance to subdivide bezier curved surfaces. Higher values mean less subdivision and less geometric complexity.");
@@ -1662,47 +1668,42 @@ static void R_Register( void )
 	r_anaglyphMode = ri.Cvar_Get( "r_anaglyphMode", "0", CVAR_ARCHIVE_ND );
 	ri.Cvar_SetDescription( r_anaglyphMode, "Enable rendering of anaglyph images. Valid options for 3D glasses types:\n 0: Disabled\n 1: Red-cyan\n 2: Red-blue\n 3: Red-green\n 4: Green-magenta" );
 
-	r_ps_greyscale = ri.Cvar_Get( "r_ps_greyscale", "0.0", CVAR_ARCHIVE_ND );
-	ri.Cvar_SetGroup( r_ps_greyscale, CVG_RENDERER );
 
-	r_ps_sepia = ri.Cvar_Get( "r_ps_sepia", "1.0", CVAR_ARCHIVE_ND );
-	ri.Cvar_SetGroup( r_ps_sepia, CVG_RENDERER );
+	//postFX
+	r_postprocess = ri.Cvar_Get( "r_postprocess", "1", CVAR_ARCHIVE_ND );
+	ri.Cvar_SetGroup( r_postprocess, CVG_RENDERER );
 
-	r_ps_contrast = ri.Cvar_Get( "r_ps_contrast", "0.0", CVAR_ARCHIVE_ND );
-	ri.Cvar_SetGroup( r_ps_contrast, CVG_RENDERER );
+	//colors
+	r_fx_greyscale = ri.Cvar_Get( "r_fx_greyscale", "0.0", CVAR_ARCHIVE_ND );
+	ri.Cvar_SetGroup( r_fx_greyscale, CVG_RENDERER );
+	r_fx_sepia = ri.Cvar_Get( "r_fx_sepia", "1.0", CVAR_ARCHIVE_ND );
+	ri.Cvar_SetGroup( r_fx_sepia, CVG_RENDERER );
+	r_fx_contrast = ri.Cvar_Get( "r_fx_contrast", "0.0", CVAR_ARCHIVE_ND );
+	ri.Cvar_SetGroup( r_fx_contrast, CVG_RENDERER );
+	r_fx_brightness = ri.Cvar_Get( "r_fx_brightness", "0.0", CVAR_ARCHIVE_ND );
+	ri.Cvar_SetGroup( r_fx_brightness, CVG_RENDERER );
+	r_fx_invert = ri.Cvar_Get( "r_fx_invert", "0.0", CVAR_ARCHIVE_ND );
+	ri.Cvar_SetGroup( r_fx_invert, CVG_RENDERER );
+	r_fx_tint_r = ri.Cvar_Get( "r_fx_tint_r", "1.0", CVAR_ARCHIVE_ND );
+	ri.Cvar_SetGroup( r_fx_tint_r, CVG_RENDERER );
+	r_fx_tint_g = ri.Cvar_Get( "r_fx_tint_g", "1.0", CVAR_ARCHIVE_ND );
+	ri.Cvar_SetGroup( r_fx_tint_g, CVG_RENDERER );
+	r_fx_tint_b = ri.Cvar_Get( "r_fx_tint_b", "1.0", CVAR_ARCHIVE_ND );
+	ri.Cvar_SetGroup( r_fx_tint_b, CVG_RENDERER );
+	r_fx_posterize = ri.Cvar_Get( "r_fx_posterize", "0.0", CVAR_ARCHIVE_ND );
+	ri.Cvar_SetGroup( r_fx_posterize, CVG_RENDERER );
+	r_fx_glow = ri.Cvar_Get( "r_fx_glow", "0.0", CVAR_ARCHIVE_ND );
+	ri.Cvar_SetGroup( r_fx_glow, CVG_RENDERER );
+	r_fx_filmic = ri.Cvar_Get( "r_fx_filmic", "0.0", CVAR_ARCHIVE_ND );
+	ri.Cvar_SetGroup( r_fx_filmic, CVG_RENDERER );
+	r_fx_bloom = ri.Cvar_Get( "r_fx_bloom", "0.0", CVAR_ARCHIVE_ND );
+	ri.Cvar_SetGroup( r_fx_bloom, CVG_RENDERER );
 
-	r_ps_brightness = ri.Cvar_Get( "r_ps_brightness", "0.0", CVAR_ARCHIVE_ND );
-	ri.Cvar_SetGroup( r_ps_brightness, CVG_RENDERER );
-
-	r_ps_invert = ri.Cvar_Get( "r_ps_invert", "0.0", CVAR_ARCHIVE_ND );
-	ri.Cvar_SetGroup( r_ps_invert, CVG_RENDERER );
-
-	r_ps_tint_r = ri.Cvar_Get( "r_ps_tint_r", "1.0", CVAR_ARCHIVE_ND );
-	ri.Cvar_SetGroup( r_ps_tint_r, CVG_RENDERER );
-
-	r_ps_tint_g = ri.Cvar_Get( "r_ps_tint_g", "1.0", CVAR_ARCHIVE_ND );
-	ri.Cvar_SetGroup( r_ps_tint_g, CVG_RENDERER );
-
-	r_ps_tint_b = ri.Cvar_Get( "r_ps_tint_b", "1.0", CVAR_ARCHIVE_ND );
-	ri.Cvar_SetGroup( r_ps_tint_b, CVG_RENDERER );
-
-	r_ps_posterize = ri.Cvar_Get( "r_ps_posterize", "0.0", CVAR_ARCHIVE_ND );
-	ri.Cvar_SetGroup( r_ps_posterize, CVG_RENDERER );
-
-	r_ps_glow = ri.Cvar_Get( "r_ps_glow", "0.0", CVAR_ARCHIVE_ND );
-	ri.Cvar_SetGroup( r_ps_glow, CVG_RENDERER );
-
-	r_ps_filmic = ri.Cvar_Get( "r_ps_filmic", "0.0", CVAR_ARCHIVE_ND );
-	ri.Cvar_SetGroup( r_ps_filmic, CVG_RENDERER );
-
-	r_ps_bloom = ri.Cvar_Get( "r_ps_bloom", "0.0", CVAR_ARCHIVE_ND );
-	ri.Cvar_SetGroup( r_ps_bloom, CVG_RENDERER );
-
-	r_ps_chromaticAberration = ri.Cvar_Get( "r_ps_chromaticAberration", "0.0", CVAR_ARCHIVE_ND );
-	ri.Cvar_SetGroup( r_ps_chromaticAberration, CVG_RENDERER );
-
-	r_ps_chameleon = ri.Cvar_Get( "r_ps_chameleon", "0.0", CVAR_ARCHIVE_ND );
-	ri.Cvar_SetGroup( r_ps_chameleon, CVG_RENDERER );
+	//fragment
+	r_fx_chromaticAberration = ri.Cvar_Get( "r_fx_chromaticAberration", "0.0", CVAR_ARCHIVE_ND );
+	ri.Cvar_SetGroup( r_fx_chromaticAberration, CVG_RENDERER );
+	r_fx_chameleon = ri.Cvar_Get( "r_fx_chameleon", "0.0", CVAR_ARCHIVE_ND );
+	ri.Cvar_SetGroup( r_fx_chameleon, CVG_RENDERER );
 
 	//
 	// temporary variables that can change at any time
