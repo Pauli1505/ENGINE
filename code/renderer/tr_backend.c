@@ -1518,7 +1518,7 @@ static const void *RB_SwapBuffers( const void *data ) {
 
 #ifdef USE_FBO
 	if ( fboEnabled ) {
-		FBO_PostProcess();
+		FBO_PostProcess( 0 );
 	}
 #endif
 
