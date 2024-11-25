@@ -1919,13 +1919,24 @@ qboolean FBO_Bloom( const float gamma, const float obScale, qboolean finalStage 
     src = &frameBuffers[ 0 ];  // Исходная текстура (оригинальный кадр)
     finalBloomFBO = BLOOM_BASE + 1;  // Место для финального результата
 
-    FBO_Bind( GL_FRAMEBUFFER, frameBuffers[ finalBloomFBO ].fbo );
-    GL_BindTexture( 0, src->color );  // Привязываем исходную текстуру
+    // Подготовка для вывода в основной экран
+    if ( finalStage )
+    {
+        FBO_Bind( GL_FRAMEBUFFER, 0 );  // Ожидаем вывод в back buffer
+    }
+    else
+    {
+        // Если не финальная стадия, выводим на временный фреймбуфер
+        FBO_Bind( GL_FRAMEBUFFER, frameBuffers[ finalBloomFBO ].fbo );
+    }
+
+    // Привязываем исходную текстуру
+    GL_BindTexture( 0, src->color );  
     qglViewport( 0, 0, w, h );  // Устанавливаем viewport для всего экрана
 
     // Включаем шейдер POSTFX_FRAGMENT
     ARB_ProgramEnable( DUMMY_VERTEX, POSTFX_FRAGMENT );
-    // Если нужно, добавим параметры для шейдера, например, гамму или интенсивность
+    // Если нужно, добавляем параметры для шейдера, например, гамму или интенсивность
     qglProgramLocalParameter4fARB( GL_FRAGMENT_PROGRAM_ARB, 0, gamma, gamma, gamma, obScale );
     
     // Рендерим на экран (или в фреймбуфер)
@@ -1933,14 +1944,15 @@ qboolean FBO_Bloom( const float gamma, const float obScale, qboolean finalStage 
     
     ARB_ProgramDisable();
 
-    // Если финальная стадия - выводим в back buffer
+    // Если финальная стадия - выводим результат в back buffer
     if ( finalStage )
     {
-        FBO_Bind( GL_FRAMEBUFFER, 0 );  // Возвращаемся к back buffer
+        // Фон уже будет в back buffer, ничего не меняем
     }
 
     return finalStage;
 }
+
 
 
 
