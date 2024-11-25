@@ -2107,27 +2107,19 @@ void FBO_PostProcess( void )
 
 	if ( r_bloom->integer && programCompiled && qglActiveTextureARB ) {
 		if ( FBO_Bloom( gamma, obScale, !minimized ) ) {
-			//return;
+			return;
 		}
-	}
-
-	if ( r_postfx->integer && programCompiled && qglActiveTextureARB ) {
-	FBO_Bind( GL_FRAMEBUFFER, frameBuffers[ r_postfx_buffer->integer ].fbo );
-	GL_BindTexture( 0, frameBuffers[ r_postfx_dest->integer ].color );
-	ARB_ProgramEnable( DUMMY_VERTEX, POSTFX_FRAGMENT );
-	RenderQuad( w, h );
-	ARB_ProgramDisable();
-
-	if ( !minimized && r_postfx_push->integer != -1) {
-		FBO_BlitToBackBuffer( r_postfx_back->integer );
-	}
 	}
 
 	// check if we can perform final draw directly into back buffer
 	if ( backEnd.screenshotMask == 0 && !windowAdjusted && !minimized ) {
-		FBO_Bind( GL_FRAMEBUFFER, 0 );
-		GL_BindTexture( 0, frameBuffers[ fboReadIndex ].color );
-		ARB_ProgramEnable( DUMMY_VERTEX, GAMMA_FRAGMENT );
+		FBO_Bind( GL_FRAMEBUFFER, r_postfx_dest->integer );
+		GL_BindTexture( 0, frameBuffers[ r_postfx_buffer->integer ].color );
+		if ( r_postfx->integer && programCompiled && qglActiveTextureARB ) {
+			ARB_ProgramEnable( DUMMY_VERTEX, POSTFX_FRAGMENT );
+		} else {
+			ARB_ProgramEnable( DUMMY_VERTEX, GAMMA_FRAGMENT );
+		}
 		qglProgramLocalParameter4fARB( GL_FRAGMENT_PROGRAM_ARB, 0, gamma, gamma, gamma, obScale );
 		RenderQuad( w, h );
 		ARB_ProgramDisable();
@@ -2135,15 +2127,19 @@ void FBO_PostProcess( void )
 	}
 
 	// apply gamma shader
-	FBO_Bind( GL_FRAMEBUFFER, frameBuffers[ 1 ].fbo ); // destination - secondary buffer
-	GL_BindTexture( 0, frameBuffers[ 0 ].color );  // source - main color buffer
-	ARB_ProgramEnable( DUMMY_VERTEX, GAMMA_FRAGMENT );
+	FBO_Bind( GL_FRAMEBUFFER, frameBuffers[ r_postfx_dest->integer ].fbo ); // destination - secondary buffer
+	GL_BindTexture( 0, frameBuffers[ r_postfx_buffer->integer ].color );  // source - main color buffer
+	if ( r_postfx->integer && programCompiled && qglActiveTextureARB ) {
+		ARB_ProgramEnable( DUMMY_VERTEX, POSTFX_FRAGMENT );
+	} else {
+		ARB_ProgramEnable( DUMMY_VERTEX, GAMMA_FRAGMENT );
+	}
 	qglProgramLocalParameter4fARB( GL_FRAGMENT_PROGRAM_ARB, 0, gamma, gamma, gamma, obScale );
 	RenderQuad( w, h );
 	ARB_ProgramDisable();
 
 	if ( !minimized ) {
-		FBO_BlitToBackBuffer( 1 );
+		FBO_BlitToBackBuffer( r_postfx_back );
 	}
 }
 
