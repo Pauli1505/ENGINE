@@ -1237,7 +1237,6 @@ extern cvar_t	*r_vbo;
 #ifdef USE_FBO
 extern cvar_t	*r_fbo;
 extern cvar_t	*r_hdr;
-extern cvar_t	*r_bloom;
 extern cvar_t	*r_bloom_threshold;
 extern cvar_t	*r_bloom_threshold_mode;
 extern cvar_t	*r_bloom_modulate;
@@ -1304,10 +1303,6 @@ extern	cvar_t	*r_anaglyphMode;
 
 //postFX
 extern	cvar_t	*r_postfx;
-extern	cvar_t	*r_postfx_buffer;
-extern	cvar_t	*r_postfx_dest;
-extern	cvar_t	*r_postfx_one;
-extern	cvar_t	*r_postfx_back;
 
 //color
 extern	cvar_t	*r_fx_greyscale;
