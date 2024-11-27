@@ -790,6 +790,8 @@ static char *ARB_BuildBlendProgram( char *buf, int count ) {
 static char *ARB_BuildPostFXProgram( char *buf ) {
     char *s = buf;
 
+	s += sprintf( s, " \n" );	//add this for effects off
+
 	// 1 fragment. Chromatic Aberration
 	if ( r_fx_chromaticAberration->value != 0.0 ) {
     	s += sprintf( s, "PARAM chromaticAberration = { %1.6f, %1.6f, %1.6f, %1.6f }; \n",
@@ -2056,7 +2058,7 @@ qboolean FBO_Bloom( const float gamma, const float obScale, qboolean finalStage 
 
 void R_BloomScreen( void )
 {
-	if ( r_bloom->integer == 1 && fboEnabled && qglActiveTextureARB )
+	if ( r_postfx->integer == 1 && fboEnabled && qglActiveTextureARB )
 	{
 		if ( !backEnd.doneBloom && backEnd.doneSurfaces )
 		{
@@ -2104,7 +2106,7 @@ void FBO_PostProcess( void )
 
 	minimized = ri.CL_IsMinimized();
 
-	if ( r_bloom->integer && programCompiled && qglActiveTextureARB ) {
+	if ( r_postfx->integer && programCompiled && qglActiveTextureARB ) {
 		if ( FBO_Bloom( gamma, obScale, !minimized ) ) {
 			return;
 		}

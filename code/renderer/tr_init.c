@@ -58,10 +58,6 @@ cvar_t	*r_anaglyphMode;
 
 //postFX
 cvar_t	*r_postfx;
-cvar_t	*r_postfx_buffer;
-cvar_t	*r_postfx_dest;
-cvar_t	*r_postfx_one;
-cvar_t	*r_postfx_back;
 
 //color
 cvar_t	*r_fx_greyscale;
@@ -105,7 +101,6 @@ cvar_t	*r_vbo;
 #ifdef USE_FBO
 cvar_t	*r_fbo;
 cvar_t	*r_hdr;
-cvar_t	*r_bloom;
 cvar_t	*r_bloom_threshold;
 cvar_t	*r_bloom_threshold_mode;
 cvar_t	*r_bloom_modulate;
@@ -1612,9 +1607,6 @@ static void R_Register( void )
 	ri.Cvar_SetDescription(r_hdr, "Enables high dynamic range frame buffer texture format. Requires \\r_fbo 1.\n -1: 4-bit, for testing purposes, heavy color banding, might not work on all systems\n  0: 8 bit, default, moderate color banding with multi-stage shaders\n  1: 16 bit, enhanced blending precision, no color banding, might decrease performance on AMD / Intel GPUs\n" );
 	ri.Cvar_SetGroup( r_hdr, CVG_RENDERER );
 	// bloom
-	r_bloom = ri.Cvar_Get( "r_bloom", "1", CVAR_ARCHIVE_ND );
-	r_bloom->flags &= ~CVAR_LATCH; // If we were running renderervk before, we need to remove latch
-	ri.Cvar_SetDescription(r_bloom, "Enables bloom post-processing effect. Requires \\r_fbo 1.");
 	r_bloom_threshold = ri.Cvar_Get( "r_bloom_threshold", "0.00", CVAR_ARCHIVE_ND );
 	ri.Cvar_SetDescription(r_bloom_threshold, "Color level to extract to bloom texture, default is 0.6.");
 	ri.Cvar_SetGroup( r_bloom_threshold, CVG_RENDERER );
@@ -1676,14 +1668,6 @@ static void R_Register( void )
 	//postFX
 	r_postfx = ri.Cvar_Get( "r_postfx", "1", CVAR_ARCHIVE_ND );
 	ri.Cvar_SetGroup( r_postfx, CVG_RENDERER );
-	r_postfx_buffer = ri.Cvar_Get( "r_postfx_buffer", "5", CVAR_ARCHIVE_ND );
-	ri.Cvar_SetGroup( r_postfx_buffer, CVG_RENDERER );
-	r_postfx_dest = ri.Cvar_Get( "r_postfx_dest", "1", CVAR_ARCHIVE_ND );
-	ri.Cvar_SetGroup( r_postfx_dest, CVG_RENDERER );
-	r_postfx_one = ri.Cvar_Get( "r_postfx_one", "0", CVAR_ARCHIVE_ND );
-	ri.Cvar_SetGroup( r_postfx_one, CVG_RENDERER );
-	r_postfx_back = ri.Cvar_Get( "r_postfx_back", "1", CVAR_ARCHIVE_ND );
-	ri.Cvar_SetGroup( r_postfx_back, CVG_RENDERER );
 
 	//colors
 	r_fx_greyscale = ri.Cvar_Get( "r_fx_greyscale", "0.0", CVAR_ARCHIVE_ND );
