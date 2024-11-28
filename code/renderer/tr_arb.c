@@ -792,53 +792,56 @@ static char *ARB_BuildPostFXProgram( char *buf ) {
 
 	s += sprintf( s, " \n" );	//add this for effects off
 
-	// 1 fragment. Chromatic Aberration
-	if ( r_fx_chromaticAberration->value != 0.0 ) {
-    	s += sprintf( s, "PARAM chromaticAberration = { %1.6f, %1.6f, %1.6f, %1.6f }; \n",
-        	          r_fx_chromaticAberration->value, 
-        	          r_fx_chromaticAberration->value, 
-        	          -r_fx_chromaticAberration->value, 
-        	          -r_fx_chromaticAberration->value );
+    s += sprintf(s, "TEMP baseTexCoord; \n");
+    s += sprintf(s, "MOV baseTexCoord, fragment.texcoord[0]; \n");
 
-    	s += sprintf( s, "TEMP redCoord, greenCoord, blueCoord; \n" );
-    	s += sprintf( s, "ADD redCoord.x, base.x, chromaticAberration.x; \n" );
-    	s += sprintf( s, "ADD redCoord.y, base.y, chromaticAberration.y; \n" );
-    	s += sprintf( s, "ADD greenCoord.x, base.x, chromaticAberration.z; \n" );
-    	s += sprintf( s, "ADD greenCoord.y, base.y, chromaticAberration.w; \n" );
-    	s += sprintf( s, "ADD blueCoord.x, base.x, -chromaticAberration.x; \n" );
-    	s += sprintf( s, "ADD blueCoord.y, base.y, -chromaticAberration.y; \n" );
-    	s += sprintf( s, "TEX base.r, redCoord, texture[0], 2D; \n" );
-    	s += sprintf( s, "TEX base.g, greenCoord, texture[0], 2D; \n" );
-    	s += sprintf( s, "TEX base.b, blueCoord, texture[0], 2D; \n" );
-	}
+	// 1 fragment. Chromatic Aberration
+    if (r_fx_chromaticAberration->value != 0.0) {
+        s += sprintf(s, "PARAM chromaticAberration = { %1.6f, %1.6f, %1.6f, %1.6f }; \n",
+                     r_fx_chromaticAberration->value,
+                     r_fx_chromaticAberration->value,
+                     -r_fx_chromaticAberration->value,
+                     -r_fx_chromaticAberration->value);
+
+        s += sprintf(s, "TEMP redCoord, greenCoord, blueCoord; \n");
+        s += sprintf(s, "ADD redCoord.x, baseTexCoord.x, chromaticAberration.x; \n");
+        s += sprintf(s, "ADD redCoord.y, baseTexCoord.y, chromaticAberration.y; \n");
+        s += sprintf(s, "ADD greenCoord.x, baseTexCoord.x, chromaticAberration.z; \n");
+        s += sprintf(s, "ADD greenCoord.y, baseTexCoord.y, chromaticAberration.w; \n");
+        s += sprintf(s, "ADD blueCoord.x, baseTexCoord.x, -chromaticAberration.x; \n");
+        s += sprintf(s, "ADD blueCoord.y, baseTexCoord.y, -chromaticAberration.y; \n");
+        s += sprintf(s, "TEX base.r, redCoord, texture[0], 2D; \n");
+        s += sprintf(s, "TEX base.g, greenCoord, texture[0], 2D; \n");
+        s += sprintf(s, "TEX base.b, blueCoord, texture[0], 2D; \n");
+    }
 
 	// 2 fragment. Chameleon
-	if ( r_fx_chameleon->value != 0.0 ) {
-    	s += sprintf( s, "PARAM chromaticAberration = { %1.6f, %1.6f, %1.6f, %1.6f }; \n",
-        	          r_fx_chameleon->value, 
-        	          r_fx_chameleon->value, 
-        	          -r_fx_chameleon->value, 
-        	          -r_fx_chameleon->value );
+    if (r_fx_chameleon->value != 0.0) {
+        s += sprintf(s, "PARAM chromaticAberration = { %1.6f, %1.6f, %1.6f, %1.6f }; \n",
+                     r_fx_chameleon->value,
+                     r_fx_chameleon->value,
+                     -r_fx_chameleon->value,
+                     -r_fx_chameleon->value);
 
-    	s += sprintf( s, "TEMP redCoord, greenCoord, blueCoord; \n" );
-    	s += sprintf( s, "ADD redCoord.x, base.r, chromaticAberration.x; \n" );
-    	s += sprintf( s, "ADD redCoord.y, base.b, chromaticAberration.y; \n" );
-    	s += sprintf( s, "ADD greenCoord.x, base.r, chromaticAberration.z; \n" );
-    	s += sprintf( s, "ADD greenCoord.y, base.b, chromaticAberration.w; \n" );
-    	s += sprintf( s, "ADD blueCoord.x, base.r, -chromaticAberration.x; \n" );
-    	s += sprintf( s, "ADD blueCoord.y, base.b, -chromaticAberration.y; \n" );
-    	s += sprintf( s, "TEX base.r, redCoord, texture[0], 2D; \n" );
-    	s += sprintf( s, "TEX base.g, greenCoord, texture[0], 2D; \n" );
-    	s += sprintf( s, "TEX base.b, blueCoord, texture[0], 2D; \n" );
-	}
+        s += sprintf(s, "TEMP redCoord, greenCoord, blueCoord; \n");
+        s += sprintf(s, "ADD redCoord.x, base.r, chromaticAberration.x; \n");
+        s += sprintf(s, "ADD redCoord.y, base.b, chromaticAberration.y; \n");
+        s += sprintf(s, "ADD greenCoord.x, base.r, chromaticAberration.z; \n");
+        s += sprintf(s, "ADD greenCoord.y, base.b, chromaticAberration.w; \n");
+        s += sprintf(s, "ADD blueCoord.x, base.r, -chromaticAberration.x; \n");
+        s += sprintf(s, "ADD blueCoord.y, base.b, -chromaticAberration.y; \n");
+        s += sprintf(s, "TEX base.r, redCoord, texture[0], 2D; \n");
+        s += sprintf(s, "TEX base.g, greenCoord, texture[0], 2D; \n");
+        s += sprintf(s, "TEX base.b, blueCoord, texture[0], 2D; \n");
+    }
 
 	// 3 fragment. Ambient light
-	if (r_fx_ambientlight->value != 0.0) {
+    if (r_fx_ambientlight->value != 0.0) {
         s += sprintf(s, "TEMP blurTexel, blurredColor; \n");
         s += sprintf(s, "PARAM blurOffsets = { 0.002, 0.0, 0.0, 0.0 }; \n");
-        s += sprintf(s, "ADD blurTexel.xy, base, blurOffsets; \n");
+        s += sprintf(s, "ADD blurTexel.xy, baseTexCoord, blurOffsets; \n");
         s += sprintf(s, "TEX blurTexel.r, blurTexel, texture[0], 2D; \n");
-        s += sprintf(s, "SUB blurTexel.xy, base, blurOffsets; \n");
+        s += sprintf(s, "SUB blurTexel.xy, baseTexCoord, blurOffsets; \n");
         s += sprintf(s, "TEX blurTexel.g, blurTexel, texture[0], 2D; \n");
         s += sprintf(s, "ADD blurredColor.x, blurTexel.x, base.x; \n");
         s += sprintf(s, "ADD blurredColor.y, blurTexel.y, base.y; \n");
@@ -849,30 +852,30 @@ static char *ARB_BuildPostFXProgram( char *buf ) {
     }
 
 	// 4 fragment. Blur
-	if (r_fx_blur->value != 0.0) {
-		int i;
+    if (r_fx_blur->value != 0.0) {
+        int i;
 
-		s += sprintf(s, "ATTRIB tc = base; \n");
+        s += sprintf(s, "ATTRIB tc = baseTexCoord; \n");
 
-		for ( i = 0; i < r_fx_blur->integer; i++ ) {
-			s += sprintf(s, "PARAM p%i = program.local[%i]; \n", i, i ); // tex_offset_x, tex_offset_y, 0.0, weight
-		}
+        for (i = 0; i < r_fx_blur->integer; i++) {
+            s += sprintf(s, "PARAM p%i = program.local[%i]; \n", i, i);
+        }
 
-		s += sprintf(s, "MOV base, {0.0, 0.0, 0.0, 1.0};\n");
+        s += sprintf(s, "MOV base, {0.0, 0.0, 0.0, 1.0};\n");
 
-		for ( i = 0; i < r_fx_blur->integer; i++ ) {
-			s += sprintf(s, "TEMP c%i, tc%i; \n", i, i);
-		}
+        for (i = 0; i < r_fx_blur->integer; i++) {
+            s += sprintf(s, "TEMP c%i, tc%i; \n", i, i);
+        }
 
-		for ( i = 0; i < r_fx_blur->integer; i++ ) {
-			s += sprintf(s, "ADD tc%i.xy, tc, p%i; \n", i, i);
-		}
+        for (i = 0; i < r_fx_blur->integer; i++) {
+            s += sprintf(s, "ADD tc%i.xy, tc, p%i; \n", i, i);
+        }
 
-		for ( i = 0; i < r_fx_blur->integer; i++ ) {
-			s += sprintf(s, "TEX c%i, tc%i, texture[0], 2D; \n", i, i);
-			s += sprintf(s, "MAD base, c%i, p%i.w, base; \n", i, i);
-		}
-	}
+        for (i = 0; i < r_fx_blur->integer; i++) {
+            s += sprintf(s, "TEX c%i, tc%i, texture[0], 2D; \n", i, i);
+            s += sprintf(s, "MAD base, c%i, p%i.w, base; \n", i, i);
+        }
+    }
 
     // 1. Greyscale
     if ( r_fx_greyscale->value != 0.0 ) {
