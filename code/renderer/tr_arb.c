@@ -811,6 +811,7 @@ static char *ARB_BuildPostFXProgram( char *buf ) {
     	s += sprintf( s, "TEX base.g, greenCoord, texture[0], 2D; \n" );
     	s += sprintf( s, "TEX base.b, blueCoord, texture[0], 2D; \n" );
 	}
+
 	// 2 fragment. Chameleon
 	if ( r_fx_chameleon->value != 0.0 ) {
     	s += sprintf( s, "PARAM chromaticAberration = { %1.6f, %1.6f, %1.6f, %1.6f }; \n",
@@ -830,6 +831,18 @@ static char *ARB_BuildPostFXProgram( char *buf ) {
     	s += sprintf( s, "TEX base.g, greenCoord, texture[0], 2D; \n" );
     	s += sprintf( s, "TEX base.b, blueCoord, texture[0], 2D; \n" );
 	}
+
+	// 3 fragment. Blur
+    if (r_fx_blur->value != 0.0) {
+        s += sprintf(s, "TEMP blurTexel, blurredColor; \n");
+
+        s += sprintf(s, "PARAM blurOffsets = { 0.002, 0.0, 0.0, 0.0 }; \n");
+        s += sprintf(s, "TEX blurTexel.r, fragment.texcoord[0] + blurOffsets, texture[0], 2D; \n");
+        s += sprintf(s, "TEX blurTexel.g, fragment.texcoord[0] - blurOffsets, texture[0], 2D; \n");
+
+        s += sprintf(s, "ADD blurredColor.xyz, blurTexel.xyz, base.xyz; \n");
+        s += sprintf(s, "MUL base.xyz, blurredColor.xyz, %1.2f; \n", r_fx_blur->value);
+    }
 
     // 1. Greyscale
     if ( r_fx_greyscale->value != 0.0 ) {
