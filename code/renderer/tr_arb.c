@@ -868,7 +868,8 @@ static char *ARB_BuildPostFXProgram( char *buf ) {
 	    }
 
 	    for (i = 0; i < r_fx_blur->integer; i++) {
-	        s += sprintf(s, "ADD tc%i.xy, baseTexCoord, p%i.xy; \n", i, i);
+	        s += sprintf(s, "ADD tc%i.x, baseTexCoord, p%i.x; \n", i, i);
+	        s += sprintf(s, "ADD tc%i.y, baseTexCoord, p%i.y; \n", i, i);
 	    }
 
 	    for (i = 0; i < r_fx_blur->integer; i++) {
