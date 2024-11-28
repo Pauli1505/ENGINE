@@ -835,11 +835,11 @@ static char *ARB_BuildPostFXProgram( char *buf ) {
 	// 3 fragment. Blur
     if (r_fx_blur->value != 0.0) {
         s += sprintf(s, "TEMP blurTexel, blurredColor; \n");
-
         s += sprintf(s, "PARAM blurOffsets = { 0.002, 0.0, 0.0, 0.0 }; \n");
-        s += sprintf(s, "TEX blurTexel.r, fragment.texcoord[0] + blurOffsets, texture[0], 2D; \n");
-        s += sprintf(s, "TEX blurTexel.g, fragment.texcoord[0] - blurOffsets, texture[0], 2D; \n");
-
+        s += sprintf(s, "ADD blurTexel.xy, fragment.texcoord[0], blurOffsets; \n");
+        s += sprintf(s, "TEX blurTexel.r, blurTexel, texture[0], 2D; \n");
+        s += sprintf(s, "SUB blurTexel.xy, fragment.texcoord[0], blurOffsets; \n");
+        s += sprintf(s, "TEX blurTexel.g, blurTexel, texture[0], 2D; \n");
         s += sprintf(s, "ADD blurredColor.xyz, blurTexel.xyz, base.xyz; \n");
         s += sprintf(s, "MUL base.xyz, blurredColor.xyz, %1.2f; \n", r_fx_blur->value);
     }
