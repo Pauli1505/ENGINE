@@ -76,6 +76,7 @@ cvar_t	*r_fx_bloom;
 //fragment
 cvar_t	*r_fx_chromaticAberration;
 cvar_t	*r_fx_chameleon;
+cvar_t	*r_fx_ambientlight;
 cvar_t	*r_fx_blur;
 
 static cvar_t *r_ignorehwgamma;
@@ -1701,6 +1702,8 @@ static void R_Register( void )
 	ri.Cvar_SetGroup( r_fx_chromaticAberration, CVG_RENDERER );
 	r_fx_chameleon = ri.Cvar_Get( "r_fx_chameleon", "0.0", CVAR_ARCHIVE_ND );
 	ri.Cvar_SetGroup( r_fx_chameleon, CVG_RENDERER );
+	r_fx_ambientlight = ri.Cvar_Get( "r_fx_ambientlight", "0.0", CVAR_ARCHIVE_ND );
+	ri.Cvar_SetGroup( r_fx_ambientlight, CVG_RENDERER );
 	r_fx_blur = ri.Cvar_Get( "r_fx_blur", "0.0", CVAR_ARCHIVE_ND );
 	ri.Cvar_SetGroup( r_fx_blur, CVG_RENDERER );
 
