@@ -850,32 +850,7 @@ static char *ARB_BuildPostFXProgram( char *buf ) {
 
 	// 4 fragment. Blur
 	if (r_fx_blur->value != 0.0) {
-	    s += sprintf(s, "TEMP blurTexel1, blurTexel2, blurredColor; \n");
-	    s += sprintf(s, "PARAM blurOffsets = { 0.002, 0.002, 0.0, 0.0 }; \n");
-	
-	    s += sprintf(s, "ADD blurTexel1.x, fragment.texcoord[0], blurOffsets.x; \n");
-	    s += sprintf(s, "ADD blurTexel1.y, fragment.texcoord[0], blurOffsets.y; \n");
-	    s += sprintf(s, "TEX blurTexel1, blurTexel1, texture[0], 2D; \n");
-	    s += sprintf(s, "SUB blurTexel2.x, fragment.texcoord[0], blurOffsets.x; \n");
-	    s += sprintf(s, "SUB blurTexel2.y, fragment.texcoord[0], blurOffsets.y; \n");
-	    s += sprintf(s, "TEX blurTexel2, blurTexel2, texture[0], 2D; \n");
-	
-	    s += sprintf(s, "ADD blurredColor, blurTexel1, blurTexel2; \n");
-	    s += sprintf(s, "MUL blurredColor, blurredColor, {0.5, 0.5, 0.5, 0.5}; \n");
-
-	    s += sprintf(s, "ADD blurTexel1.y, fragment.texcoord[0], blurOffsets.y; \n");
-	    s += sprintf(s, "ADD blurTexel1.x, fragment.texcoord[0], blurOffsets.x; \n");
-	    s += sprintf(s, "TEX blurTexel1, blurTexel1, texture[0], 2D; \n");
-	    s += sprintf(s, "SUB blurTexel2.y, fragment.texcoord[0], blurOffsets.y; \n");
-	    s += sprintf(s, "SUB blurTexel2.x, fragment.texcoord[0], blurOffsets.x; \n");
-	    s += sprintf(s, "TEX blurTexel2, blurTexel2, texture[0], 2D; \n");
-
-	    s += sprintf(s, "ADD blurTexel1, blurTexel1, blurTexel2; \n");
-	    s += sprintf(s, "MUL blurTexel1, blurTexel1, {0.5, 0.5, 0.5, 0.5}; \n");
-
-	    s += sprintf(s, "ADD blurredColor, blurredColor, blurTexel1; \n");
-	    s += sprintf(s, "MUL blurredColor, blurredColor, {0.5, 0.5, 0.5, 0.5}; \n");
-	    s += sprintf(s, "MUL base, blurredColor, %1.2f; \n", r_fx_blur->value);
+	    s = ARB_BuildBlurProgram(s, r_fx_blur->integer);
 	}
 
     // 1. Greyscale
