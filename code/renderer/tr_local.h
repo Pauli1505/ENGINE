@@ -1321,6 +1321,7 @@ extern	cvar_t	*r_fx_bloom;
 //fragment
 extern	cvar_t	*r_fx_chromaticAberration;
 extern	cvar_t	*r_fx_chameleon;
+extern	cvar_t	*r_fx_blur;
 
 extern	cvar_t	*r_ignoreGLErrors;
 

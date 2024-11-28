@@ -76,6 +76,7 @@ cvar_t	*r_fx_bloom;
 //fragment
 cvar_t	*r_fx_chromaticAberration;
 cvar_t	*r_fx_chameleon;
+cvar_t	*r_fx_blur;
 
 static cvar_t *r_ignorehwgamma;
 
@@ -1670,7 +1671,7 @@ static void R_Register( void )
 	ri.Cvar_SetGroup( r_postfx, CVG_RENDERER );
 
 	//colors
-	r_fx_greyscale = ri.Cvar_Get( "r_fx_greyscale", "0.0", CVAR_ARCHIVE_ND );
+	r_fx_greyscale = ri.Cvar_Get( "r_fx_greyscale", "-0.10", CVAR_ARCHIVE_ND );
 	ri.Cvar_SetGroup( r_fx_greyscale, CVG_RENDERER );
 	r_fx_sepia = ri.Cvar_Get( "r_fx_sepia", "1.0", CVAR_ARCHIVE_ND );
 	ri.Cvar_SetGroup( r_fx_sepia, CVG_RENDERER );
@@ -1700,6 +1701,8 @@ static void R_Register( void )
 	ri.Cvar_SetGroup( r_fx_chromaticAberration, CVG_RENDERER );
 	r_fx_chameleon = ri.Cvar_Get( "r_fx_chameleon", "0.0", CVAR_ARCHIVE_ND );
 	ri.Cvar_SetGroup( r_fx_chameleon, CVG_RENDERER );
+	r_fx_blur = ri.Cvar_Get( "r_fx_blur", "0.0", CVAR_ARCHIVE_ND );
+	ri.Cvar_SetGroup( r_fx_blur, CVG_RENDERER );
 
 	//
 	// temporary variables that can change at any time
