@@ -852,30 +852,30 @@ static char *ARB_BuildPostFXProgram( char *buf ) {
     }
 
 	// 4 fragment. Blur
-    if (r_fx_blur->value != 0.0) {
-        int i;
+	if (r_fx_blur->value != 0.0) {
+	    int i;
 
-        s += sprintf(s, "ATTRIB tc = baseTexCoord; \n");
+	    s += sprintf(s, "MOV baseTexCoord, fragment.texcoord[0]; \n");
 
-        for (i = 0; i < r_fx_blur->integer; i++) {
-            s += sprintf(s, "PARAM p%i = program.local[%i]; \n", i, i);
-        }
+	    for (i = 0; i < r_fx_blur->integer; i++) {
+	        s += sprintf(s, "PARAM p%i = program.local[%i]; \n", i, i);
+	    }
 
-        s += sprintf(s, "MOV base, {0.0, 0.0, 0.0, 1.0};\n");
+	    s += sprintf(s, "MOV base, {0.0, 0.0, 0.0, 1.0};\n");
 
-        for (i = 0; i < r_fx_blur->integer; i++) {
-            s += sprintf(s, "TEMP c%i, tc%i; \n", i, i);
-        }
+	    for (i = 0; i < r_fx_blur->integer; i++) {
+	        s += sprintf(s, "TEMP tc%i, c%i; \n", i, i);
+	    }
 
-        for (i = 0; i < r_fx_blur->integer; i++) {
-            s += sprintf(s, "ADD tc%i.xy, tc, p%i; \n", i, i);
-        }
+	    for (i = 0; i < r_fx_blur->integer; i++) {
+	        s += sprintf(s, "ADD tc%i.xy, baseTexCoord, p%i.xy; \n", i, i);
+	    }
 
-        for (i = 0; i < r_fx_blur->integer; i++) {
-            s += sprintf(s, "TEX c%i, tc%i, texture[0], 2D; \n", i, i);
-            s += sprintf(s, "MAD base, c%i, p%i.w, base; \n", i, i);
-        }
-    }
+	    for (i = 0; i < r_fx_blur->integer; i++) {
+	        s += sprintf(s, "TEX c%i, tc%i, texture[0], 2D; \n", i, i);
+	        s += sprintf(s, "MAD base, c%i, p%i.w, base; \n", i, i);
+	    }
+	}
 
     // 1. Greyscale
     if ( r_fx_greyscale->value != 0.0 ) {
