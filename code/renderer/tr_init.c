@@ -1704,7 +1704,7 @@ static void R_Register( void )
 	ri.Cvar_SetGroup( r_fx_chameleon, CVG_RENDERER );
 	r_fx_ambientlight = ri.Cvar_Get( "r_fx_ambientlight", "0.0", CVAR_ARCHIVE_ND );
 	ri.Cvar_SetGroup( r_fx_ambientlight, CVG_RENDERER );
-	r_fx_blur = ri.Cvar_Get( "r_fx_blur", "0.0", CVAR_ARCHIVE_ND );
+	r_fx_blur = ri.Cvar_Get( "r_fx_blur", "0.0", 0 );
 	ri.Cvar_SetGroup( r_fx_blur, CVG_RENDERER );
 
 	//
