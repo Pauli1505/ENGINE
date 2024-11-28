@@ -850,7 +850,28 @@ static char *ARB_BuildPostFXProgram( char *buf ) {
 
 	// 4 fragment. Blur
 	if (r_fx_blur->value != 0.0) {
-	    s = ARB_BuildBlurProgram(s, r_fx_blur->integer);
+		int taps, i;
+
+		s += sprintf(s, "ATTRIB tc = fragment.texcoord[0]; \n");
+
+		for ( i = 0; i < taps; i++ ) {
+			s += sprintf(s, "PARAM p%i = program.local[%i]; \n", i, i ); // tex_offset_x, tex_offset_y, 0.0, weight
+		}
+
+		s += sprintf(s, "MOV base, {0.0, 0.0, 0.0, 1.0};\n");
+
+		for ( i = 0; i < taps; i++ ) {
+			s += sprintf(s, "TEMP c%i, tc%i; \n", i, i);
+		}
+
+		for ( i = 0; i < taps; i++ ) {
+			s += sprintf(s, "ADD tc%i.xy, tc, p%i; \n", i, i);
+		}
+
+		for ( i = 0; i < taps; i++ ) {
+			s += sprintf(s, "TEX c%i, tc%i, texture[0], 2D; \n", i, i);
+			s += sprintf(s, "MAD base, c%i, p%i.w, base; \n", i, i);
+		}
 	}
 
     // 1. Greyscale
