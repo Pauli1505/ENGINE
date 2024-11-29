@@ -1672,7 +1672,7 @@ static void R_Register( void )
 	ri.Cvar_SetGroup( r_postfx, CVG_RENDERER );
 
 	//colors
-	r_fx_greyscale = ri.Cvar_Get( "r_fx_greyscale", "-0.10", CVAR_ARCHIVE_ND );
+	r_fx_greyscale = ri.Cvar_Get( "r_fx_greyscale", "-0.25", CVAR_ARCHIVE_ND );
 	ri.Cvar_SetGroup( r_fx_greyscale, CVG_RENDERER );
 	r_fx_sepia = ri.Cvar_Get( "r_fx_sepia", "1.0", CVAR_ARCHIVE_ND );
 	ri.Cvar_SetGroup( r_fx_sepia, CVG_RENDERER );
