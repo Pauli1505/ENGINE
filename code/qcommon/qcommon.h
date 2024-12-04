@@ -1022,8 +1022,10 @@ extern	cvar_t	*com_cameraMode;
 extern	cvar_t	*com_protocol;
 extern	qboolean com_protocolCompat;
 extern 	cvar_t	*cl_selectedmod;
-extern 	cvar_t	*cl_32bit;
-extern 	cvar_t	*cl_oslinux;
+extern 	cvar_t	*os_32bit;
+extern 	cvar_t	*os_linux;
+extern 	cvar_t	*os_windows;
+extern 	cvar_t	*os_macos;
 extern 	cvar_t	*cl_inputmode;
 
 // both client and server must agree to pause
