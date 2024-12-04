@@ -2016,7 +2016,8 @@ void Cvar_Update( vmCvar_t *vmCvar, int privateFlag ) {
 	assert(vmCvar);
 
 	if ( (unsigned)vmCvar->handle >= cvar_numIndexes ) {
-		Com_Printf( S_COLOR_YELLOW "Cvar_Update: handle out of range\n");
+		//Com_Printf( S_COLOR_YELLOW "Cvar_Update: handle out of range\n");
+		return;
 	}
 
 	cv = cvar_indexes + vmCvar->handle;
