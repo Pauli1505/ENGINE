@@ -106,8 +106,10 @@ cvar_t	*sv_paused;
 cvar_t  *sv_packetdelay;
 cvar_t	*com_sv_running;
 cvar_t	*cl_selectedmod;
-cvar_t	*cl_32bit;
-cvar_t	*cl_oslinux;
+cvar_t	*os_32bit;
+cvar_t	*os_linux;
+cvar_t	*os_windows;
+cvar_t	*os_macos;
 cvar_t	*cl_inputmode;
 
 cvar_t	*com_cameraMode;
@@ -3840,15 +3842,27 @@ void Com_Init( char *commandLine ) {
 	
 	cl_selectedmod = Cvar_Get("cl_selectedmod", "default", CVAR_ARCHIVE | CVAR_SERVERINFO);
 	#if defined(__i386__)
-	cl_32bit = Cvar_Get("cl_32bit", "1", CVAR_ARCHIVE);
+	os_32bit = Cvar_Get("os_32bit", "1", CVAR_ARCHIVE);
 	#else
-	cl_32bit = Cvar_Get("cl_32bit", "0", CVAR_ARCHIVE);
+	os_32bit = Cvar_Get("os_32bit", "0", CVAR_ARCHIVE);
 	#endif
 
 	#if defined(__linux__)
-	cl_oslinux = Cvar_Get("cl_oslinux", "1", CVAR_ARCHIVE);
+	os_linux = Cvar_Get("os_linux", "1", CVAR_ARCHIVE);
 	#else
-	cl_oslinux = Cvar_Get("cl_oslinux", "0", CVAR_ARCHIVE);
+	os_linux = Cvar_Get("os_linux", "0", CVAR_ARCHIVE);
+	#endif
+
+	#if defined(_WIN32)
+	os_windows = Cvar_Get("os_windows", "1", CVAR_ARCHIVE);
+	#else
+	os_windows = Cvar_Get("os_windows", "0", CVAR_ARCHIVE);
+	#endif
+
+	#if defined(__APPLE__)
+	os_macos = Cvar_Get("os_macos", "1", CVAR_ARCHIVE);
+	#else
+	os_macos = Cvar_Get("os_macos", "0", CVAR_ARCHIVE);
 	#endif
 
 	cl_inputmode = Cvar_Get("cl_inputmode", "0", 0);
