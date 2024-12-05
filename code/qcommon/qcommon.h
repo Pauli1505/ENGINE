@@ -145,7 +145,7 @@ NET
 #define NET_DISABLEMCAST        0x08
 
 
-#define	PACKET_BACKUP	128	// number of old messages that must be kept on client and
+#define	PACKET_BACKUP	32	// number of old messages that must be kept on client and
 							// server for delta compression and ping estimation
 #define	PACKET_MASK		(PACKET_BACKUP-1)
 
