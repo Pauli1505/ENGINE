@@ -32,25 +32,25 @@ Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 #ifndef SVN_VERSION
   #define SVN_VERSION Q3_VERSION
 #endif
-#define CLIENT_WINDOW_TITLE   "SourceTech: Engine"
-#define CONSOLE_WINDOW_TITLE  "SourceTech: Console"
+#define CLIENT_WINDOW_TITLE   "Cytrine Engine"
+#define CONSOLE_WINDOW_TITLE  "Cytrine Console"
 // 1.32 released 7-10-2002
 
 //#define DEFAULT_GAME			"edawn"
 
-#define BASEGAME				"milab"
-#define BASEDEMO				"milabt"
+#define BASEGAME				"basegame"
+#define BASEDEMO				"basegame"
 #define BASETA					"milabc"
-#define STEAMPATH_NAME			"SourceTech"
+#define STEAMPATH_NAME			"Cytrine"
 #define STEAMPATH_APPID			"2200"
 
 #define MAX_TEAMNAME            32
 #define MAX_MASTER_SERVERS      5	// number of supported master servers
 
-#define GAMENAME_FOR_MASTER		"Quake3Arena"
-#define HEARTBEAT_FOR_MASTER	"QuakeArena-1"
+#define GAMENAME_FOR_MASTER		"QuakeSandbox"
+#define HEARTBEAT_FOR_MASTER	"QS-1"
 
-#define DEMOEXT	"dm_"			// standard demo extension
+#define DEMOEXT	"dem"			// standard demo extension
 
 #ifdef _MSC_VER
 
