@@ -1124,6 +1124,7 @@ static qboolean R_MirrorViewBySurface( const drawSurf_t *drawSurf, int entityNum
         return qfalse;
     } else {
 		tr.viewParms.portalViewDepth += 1;
+		tr.viewParms.lastENum = entityNum;
 	}
 
 	if ( r_noportals->integer > 1 ) {
