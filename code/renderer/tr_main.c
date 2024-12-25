@@ -1145,7 +1145,7 @@ static qboolean R_MirrorViewBySurface( const drawSurf_t *drawSurf, int entityNum
 	newParms = tr.viewParms;
 	newParms.portalView = PV_NONE;
 
-	if ( tr.viewParms.portalViewDepth >= 1 ) {
+	if ( tr.viewParms.portalViewDepth <= 1 ) {
 		if ( !R_GetPortalOrientations( drawSurf, entityNum, &surface, &camera, 
 			newParms.pvsOrigin, &newParms.portalView ) ) {
 			return qfalse;		// bad portal, no portalentity
