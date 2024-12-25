@@ -1709,7 +1709,7 @@ static void R_Register( void )
 	r_fx_blur = ri.Cvar_Get( "r_fx_blur", "0.0", 0 );
 	ri.Cvar_SetGroup( r_fx_blur, CVG_RENDERER );
 
-	r_recurseLimit = ri.Cvar_Get( "r_recurseLimit", "8", 0 );
+	r_recurseLimit = ri.Cvar_Get( "r_recurseLimit", "8", CVAR_ARCHIVE_ND );
 
 	//
 	// temporary variables that can change at any time
