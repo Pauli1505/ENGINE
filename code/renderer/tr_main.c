@@ -1119,7 +1119,7 @@ static qboolean R_MirrorViewBySurface( const drawSurf_t *drawSurf, int entityNum
 	qboolean		isMirror;
 
     // Check if we're exceeding recursion limit
-    if ( tr.viewParms.portalViewDepth >= MAX_PORTAL_RECURSION_DEPTH && tr.viewParms.portalView != PV_NONE && tr.viewParms.lastENum != entityNum ) {
+    if ( tr.viewParms.portalViewDepth >= MAX_PORTAL_RECURSION_DEPTH && tr.viewParms.portalView != PV_NONE || tr.viewParms.lastENum == entityNum ) {
         ri.Printf( PRINT_DEVELOPER, "WARNING: portal recursion limit reached\n" );
         return qfalse;
     } else {
