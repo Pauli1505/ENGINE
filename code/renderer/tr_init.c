@@ -79,6 +79,8 @@ cvar_t	*r_fx_chameleon;
 cvar_t	*r_fx_ambientlight;
 cvar_t	*r_fx_blur;
 
+cvar_t	*r_recurseLimit;
+
 static cvar_t *r_ignorehwgamma;
 
 cvar_t	*r_fastsky;
@@ -1706,6 +1708,8 @@ static void R_Register( void )
 	ri.Cvar_SetGroup( r_fx_ambientlight, CVG_RENDERER );
 	r_fx_blur = ri.Cvar_Get( "r_fx_blur", "0.0", 0 );
 	ri.Cvar_SetGroup( r_fx_blur, CVG_RENDERER );
+
+	r_recurseLimit = ri.Cvar_Get( "r_recurseLimit", "8", 0 );
 
 	//
 	// temporary variables that can change at any time

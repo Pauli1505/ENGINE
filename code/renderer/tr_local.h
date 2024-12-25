@@ -1325,6 +1325,8 @@ extern	cvar_t	*r_fx_chameleon;
 extern	cvar_t	*r_fx_ambientlight;
 extern	cvar_t	*r_fx_blur;
 
+extern	cvar_t	*r_recurseLimit;
+
 extern	cvar_t	*r_ignoreGLErrors;
 
 extern	cvar_t	*r_overBrightBits;
