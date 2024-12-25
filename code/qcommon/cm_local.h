@@ -24,9 +24,9 @@ Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 #include "qcommon.h"
 #include "cm_polylib.h"
 
-#define	MAX_SUBMODELS			MAX_GENTITIES
-#define CAPSULE_MODEL_HANDLE	MAX_GENTITIES
-#define	BOX_MODEL_HANDLE		MAX_GENTITIES-1
+#define	MAX_SUBMODELS			4096
+#define CAPSULE_MODEL_HANDLE	4096
+#define	BOX_MODEL_HANDLE		4095
 
 
 // forced double-precison functions
