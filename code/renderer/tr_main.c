@@ -785,7 +785,7 @@ static qboolean R_GetPortalOrientations(const drawSurf_t *drawSurf, int entityNu
 
     // Track the closest portal
     trRefEntity_t *closestPortal = NULL;
-    float closestDistance = FLT_MAX;
+    float closestDistance = 1100000;
     vec3_t cameraOrigin;
     VectorCopy(pvsOrigin, cameraOrigin); // The camera origin is the PVS origin
 
@@ -874,8 +874,6 @@ static qboolean R_GetPortalOrientations(const drawSurf_t *drawSurf, int entityNu
     // If no portal was found, don't render anything
     return qfalse;
 }
-
-
 
 static qboolean IsMirror( const drawSurf_t *drawSurf, int entityNum )
 {
