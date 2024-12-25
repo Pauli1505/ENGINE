@@ -254,7 +254,7 @@ void SV_LinkEntity( sharedEntity_t *gEnt ) {
 	angles = gEnt->r.currentAngles;
 
 	// set the abs box
-	if ( gEnt->r.bmodel && (angles[0] || angles[1] || angles[2]) ) {
+	if (/* gEnt->r.bmodel && */(angles[0] || angles[1] || angles[2]) ) {
 		// expand for rotation
 		float		max;
 
@@ -484,9 +484,9 @@ void SV_ClipToEntity( trace_t *trace, const vec3_t start, const vec3_t mins, con
 	origin = touch->r.currentOrigin;
 	angles = touch->r.currentAngles;
 
-	if ( !touch->r.bmodel ) {
+	/*if ( !touch->r.bmodel ) {
 		angles = vec3_origin;	// boxes don't rotate
-	}
+	}*/
 
 	CM_TransformedBoxTrace ( trace, (float *)start, (float *)end,
 		(float *)mins, (float *)maxs, clipHandle,  contentmask,
@@ -557,9 +557,9 @@ static void SV_ClipMoveToEntities( moveclip_t *clip ) {
 		angles = touch->r.currentAngles;
 
 
-		if ( !touch->r.bmodel ) {
+		/*if ( !touch->r.bmodel ) {
 			angles = vec3_origin;	// boxes don't rotate
-		}
+		}*/
 
 		CM_TransformedBoxTrace ( &trace, (float *)clip->start, (float *)clip->end,
 			(float *)clip->mins, (float *)clip->maxs, clipHandle,  clip->contentmask,
@@ -674,9 +674,9 @@ int SV_PointContents( const vec3_t p, int passEntityNum ) {
 		// might intersect, so do an exact clip
 		clipHandle = SV_ClipHandleForEntity( hit );
 		angles = hit->r.currentAngles;
-		if ( !hit->r.bmodel ) {
+		/*if ( !hit->r.bmodel ) {
 			angles = vec3_origin;	// boxes don't rotate
-		}
+		}*/
 
 		c2 = CM_TransformedPointContents (p, clipHandle, hit->r.currentOrigin, angles);
 
