@@ -1109,6 +1109,9 @@ R_MirrorViewBySurface
 Returns qtrue if another view has been rendered
 ========================
 */
+
+#define MAX_PORTAL_RECURSION_DEPTH 8
+
 extern int r_numdlights;
 static qboolean R_MirrorViewBySurface( const drawSurf_t *drawSurf, int entityNum ) {
 	viewParms_t		newParms;
@@ -1116,13 +1119,15 @@ static qboolean R_MirrorViewBySurface( const drawSurf_t *drawSurf, int entityNum
 	orientation_t	surface, camera;
 	qboolean		isMirror;
 
-	// don't recursively mirror
-	if ( tr.viewParms.portalView != PV_NONE ) {
-		ri.Printf( PRINT_DEVELOPER, "WARNING: recursive mirror/portal found\n" );
-		return qfalse;
+    // Check if we're exceeding recursion limit
+    if ( tr.viewParms.portalViewDepth >= MAX_PORTAL_RECURSION_DEPTH && tr.viewParms.portalView != PV_NONE ) {
+        ri.Printf( PRINT_DEVELOPER, "WARNING: portal recursion limit reached\n" );
+        return qfalse;
+    } else {
+		tr.viewParms.portalViewDepth += 1;
 	}
 
-	if ( r_noportals->integer > 1 /*|| r_fastsky->integer == 1 */ ) {
+	if ( r_noportals->integer > 1 ) {
 		return qfalse;
 	}
 

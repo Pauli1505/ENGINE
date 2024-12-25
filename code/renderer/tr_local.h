@@ -575,6 +575,7 @@ typedef struct {
 	vec3_t		visBounds[2];
 	float		zFar;
 	stereoFrame_t	stereoFrame;
+	int 		portalViewDepth;
 #ifdef USE_PMLIGHT
 	// each view will have its own dlight set
 	unsigned int num_dlights;
