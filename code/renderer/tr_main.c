@@ -786,7 +786,7 @@ static qboolean R_GetPortalOrientations( const drawSurf_t *drawSurf, int entityN
 	// locate the portal entity closest to this plane.
 	// origin will be the origin of the portal, origin2 will be
 	// the origin of the camera
-	for ( i = tr.refdef.num_entities ; i >= 0 ; i-- ) {
+	for ( i = 0 ; i < tr.refdef.num_entities ; i++ ) {
 		e = &tr.refdef.entities[i];
 		if ( e->e.reType != RT_PORTALSURFACE ) {
 			continue;
@@ -1119,7 +1119,7 @@ static qboolean R_MirrorViewBySurface( const drawSurf_t *drawSurf, int entityNum
 	qboolean		isMirror;
 
     // Check if we're exceeding recursion limit
-    if ( tr.viewParms.portalViewDepth >= MAX_PORTAL_RECURSION_DEPTH && tr.viewParms.portalView != PV_NONE ) {
+    if ( tr.viewParms.portalViewDepth >= MAX_PORTAL_RECURSION_DEPTH && tr.viewParms.portalView != PV_NONE && tr.viewParms.lastENum != entityNum ) {
         ri.Printf( PRINT_DEVELOPER, "WARNING: portal recursion limit reached\n" );
         return qfalse;
     } else {
