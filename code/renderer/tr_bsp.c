@@ -2294,6 +2294,7 @@ void RE_LoadWorldMap( const char *name )
 		void *v;
 	} buffer;
 	byte		*startMarker;
+	char		strippedName2[MAX_QPATH];
 
 #if defined(USE_BSP_MODELS)
 	int j, empty = -1;
