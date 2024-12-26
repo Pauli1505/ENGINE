@@ -2251,6 +2251,7 @@ qhandle_t RE_LoadWorldMap_real( const char *name, model_t *model, int clipIndex 
 		void *v;
 	} buffer;
 	byte		*startMarker;
+	char		strippedName2[MAX_QPATH];
 
 	int j, empty = -1;
 	for(j = 0; j < MAX_WORLD_MODELS; j++) {
