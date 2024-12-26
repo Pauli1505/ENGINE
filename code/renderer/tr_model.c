@@ -193,6 +193,18 @@ static qhandle_t R_RegisterIQM(const char *name, model_t *mod)
 	return mod->index;
 }
 
+#ifdef USE_BSP_MODELS
+qhandle_t RE_LoadWorldMap_real( const char *name, model_t *model, int clipIndex );
+static qhandle_t R_RegisterBSP(const char *name, model_t *mod)
+{
+	int chechsum, index;
+	// TODO: patch the bsp into the clipmap
+	index = ri.CM_LoadMap(name, qtrue, &chechsum);
+	//Com_Printf("loading bsp model: %s: %i\n", name, index);
+	return RE_LoadWorldMap_real( name, mod, index );
+}
+#endif
+
 
 typedef struct
 {
@@ -206,7 +218,10 @@ static modelExtToLoaderMap_t modelLoaders[ ] =
 {
 	{ "iqm", R_RegisterIQM },
 	{ "mdr", R_RegisterMDR },
-	{ "md3", R_RegisterMD3 }
+	{ "md3", R_RegisterMD3 },
+#ifdef USE_BSP_MODELS
+	{ "bsp", R_RegisterBSP }
+#endif
 };
 
 static int numModelLoaders = ARRAY_LEN(modelLoaders);

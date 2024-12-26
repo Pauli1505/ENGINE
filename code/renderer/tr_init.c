@@ -1852,6 +1852,11 @@ static void R_Register( void )
 
 #define EPSILON 1e-6f
 
+
+#ifdef USE_BSP_MODELS
+extern world_t		s_worldDatas[MAX_WORLD_MODELS];
+#endif
+
 /*
 ===============
 R_Init
@@ -1865,6 +1870,10 @@ void R_Init( void ) {
 	ri.Printf( PRINT_ALL, "----- R_Init -----\n" );
 
 	// clear all our internal state
+#ifdef USE_BSP_MODELS
+	Com_Memset( &trWorlds, 0, sizeof( trWorlds ) );
+	Com_Memset( &s_worldDatas, 0, sizeof( s_worldDatas ) );
+#endif
 	Com_Memset( &tr, 0, sizeof( tr ) );
 	Com_Memset( &backEnd, 0, sizeof( backEnd ) );
 	Com_Memset( &tess, 0, sizeof( tess ) );

@@ -103,7 +103,10 @@ void RE_RemapShader(const char *shaderName, const char *newShaderName, const cha
 ParseVector
 ===============
 */
-static qboolean ParseVector( const char **text, int count, float *v ) {
+#ifndef USE_BSP_MODELS
+static 
+#endif
+qboolean ParseVector( const char **text, int count, float *v ) {
 	const char	*token;
 	int		i;
 
@@ -2532,6 +2535,7 @@ static shader_t *GeneratePermanentShader( void ) {
 	return newShader;
 }
 
+#ifndef USE_BSP_MODELS
 
 /*
 =================
@@ -2633,6 +2637,7 @@ static void VertexLightingCollapse( void ) {
 	}
 }
 
+#endif
 
 /*
 ===============
@@ -2873,6 +2878,7 @@ static shader_t *FinishShader( void ) {
 			pStage->alphaGen = AGEN_SKIP;
 	}
 
+#ifndef USE_BSP_MODELS
 	//
 	// if we are in r_vertexLight mode, never use a lightmap texture
 	//
@@ -2881,6 +2887,7 @@ static shader_t *FinishShader( void ) {
 		stage = 1;
 		hasLightmapStage = qfalse;
 	}
+#endif
 
 	// whiteimage + "filter" texture == texture
 	if ( stage > 1 && stages[0].bundle[0].image[0] == tr.whiteImage && stages[0].bundle[0].numImageAnimations <= 1 && stages[0].rgbGen == CGEN_IDENTITY && stages[0].alphaGen == AGEN_SKIP ) {
@@ -3764,6 +3771,41 @@ R_InitShaders
 ==================
 */
 void R_InitShaders( void ) {
+#if defined(USE_BSP_MODELS)
+	int i;
+	ri.Printf( PRINT_ALL, "\nInitializing Shaders\n" );
+  tr.lastRegistrationTime = ri.Milliseconds();
+
+	if(tr.numShaders == 0) {
+		Com_Memset(hashTable, 0, sizeof(hashTable));
+
+		CreateInternalShaders();
+
+#if defined(USE_BSP_MODELS)
+for(i = 1; i < MAX_WORLD_MODELS; i++) {
+	trWorlds[i].defaultShader = tr.defaultShader;
+	trWorlds[i].cinematicShader = tr.cinematicShader;
+	trWorlds[i].whiteShader = tr.whiteShader;
+	trWorlds[i].numShaders = 3;
+}
+#endif
+
+		ScanAndLoadShaderFiles();
+
+		CreateExternalShaders();
+
+
+	} else {
+		ScanAndLoadShaderFiles();
+		//RE_ClearScene();
+
+		//tr.inited = qtrue;
+		//tr.registered = qtrue;
+
+	}
+
+
+#else
 	ri.Printf( PRINT_ALL, "Initializing Shaders\n" );
 
 	Com_Memset(hashTable, 0, sizeof(hashTable));
@@ -3773,4 +3815,5 @@ void R_InitShaders( void ) {
 	ScanAndLoadShaderFiles();
 
 	CreateExternalShaders();
+#endif
 }

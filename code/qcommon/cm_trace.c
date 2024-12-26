@@ -1398,6 +1398,35 @@ void CM_TransformedBoxTrace( trace_t *results, const vec3_t start, const vec3_t 
 		maxs = vec3_origin;
 	}
 
+#ifdef USE_BSP_MODELS
+		int j, numInlines, indexAdjusted;
+
+		// set the right map before entering trace
+		cmi = 0;
+		if(model < CM_NumInlineModels() || model == BOX_MODEL_HANDLE) {
+			indexAdjusted = model;
+		} else {
+			// might intersect, so do an exact clip
+			indexAdjusted = CM_InlineModel (model);
+
+			for(j = 0; j < 64; j++) {
+				cmi = j;
+				numInlines = CM_NumInlineModels();
+				if(numInlines == 0) {
+					continue;
+				}
+				if(indexAdjusted >= numInlines) {
+					indexAdjusted -= numInlines;
+				} else {
+					break;
+				}
+			}
+		}
+
+#endif
+
+
+
 	// adjust so that mins and maxs are always symmetric, which
 	// avoids some complications with plane expanding of rotated
 	// bmodels
@@ -1414,8 +1443,7 @@ void CM_TransformedBoxTrace( trace_t *results, const vec3_t start, const vec3_t 
 	VectorSubtract( end_l, origin, end_l );
 
 	// rotate start and end into the models frame of reference
-	if ( /*model != BOX_MODEL_HANDLE &&*/
-		(angles[0] || angles[1] || angles[2]) ) {
+	if ( angles[0] || angles[1] || angles[2] ) {
 		rotated = qtrue;
 	} else {
 		rotated = qfalse;
@@ -1449,7 +1477,11 @@ void CM_TransformedBoxTrace( trace_t *results, const vec3_t start, const vec3_t 
 	}
 
 	// sweep the box through the model
+#ifdef USE_BSP_MODELS
+	CM_Trace( &trace, start_l, end_l, symetricSize[0], symetricSize[1], indexAdjusted, origin, brushmask, capsule, &sphere );
+#else
 	CM_Trace( &trace, start_l, end_l, symetricSize[0], symetricSize[1], model, origin, brushmask, capsule, &sphere );
+#endif
 
 	// if the bmodel was rotated and there was a collision
 	if ( rotated && trace.fraction != 1.0 ) {
@@ -1465,4 +1497,8 @@ void CM_TransformedBoxTrace( trace_t *results, const vec3_t start, const vec3_t 
 	trace.endpos[2] = start[2] + trace.fraction * (end[2] - start[2]);
 
 	*results = trace;
+
+#ifdef USE_BSP_MODELS
+	cmi = 0;
+#endif
 }
