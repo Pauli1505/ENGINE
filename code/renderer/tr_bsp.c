@@ -2391,7 +2391,7 @@ void RE_LoadWorldMap( const char *name )
 	R_LoadSurfaces( &header->lumps[LUMP_SURFACES], &header->lumps[LUMP_DRAWVERTS], &header->lumps[LUMP_DRAWINDEXES] );
 	R_LoadMarksurfaces( &header->lumps[LUMP_LEAFSURFACES] );
 	R_LoadNodesAndLeafs( &header->lumps[LUMP_NODES], &header->lumps[LUMP_LEAFS] );
-	R_LoadSubmodels( &header->lumps[LUMP_MODELS] );
+	R_LoadSubmodels( &header->lumps[LUMP_MODELS], model );
 	R_LoadVisibility( &header->lumps[LUMP_VISIBILITY] );
 	R_LoadEntities( &header->lumps[LUMP_ENTITIES] );
 	R_LoadLightGrid( &header->lumps[LUMP_LIGHTGRID] );
@@ -2414,5 +2414,5 @@ void RE_LoadWorldMap( const char *name )
 		return model->index;
 	}
 	return empty;
-#else
+#endif
 }
