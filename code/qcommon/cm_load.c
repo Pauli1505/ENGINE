@@ -51,7 +51,8 @@ void SetPlaneSignbits( cplane_t *out ) {
 #define	LL(x) x=LittleLong(x)
 
 
-clipMap_t	cm;
+clipMap_t cmWorlds[MAX_NUM_MAPS];
+int       cmi = 0;
 int			c_pointcontents;
 int			c_traces, c_brush_traces, c_patch_traces;
 
@@ -64,9 +65,12 @@ cvar_t		*cm_noCurves;
 cvar_t		*cm_playerCurveClip;
 #endif
 
-static cmodel_t box_model;
-static cplane_t *box_planes;
-static cbrush_t *box_brush;
+static cmodel_t	box_modelWorlds[MAX_NUM_MAPS];
+static cplane_t	*box_planesWorlds[MAX_NUM_MAPS];
+static cbrush_t	*box_brushWorlds[MAX_NUM_MAPS];
+#define box_model box_modelWorlds[cmi]
+#define box_planes box_planesWorlds[cmi]
+#define box_brush box_brushWorlds[cmi]
 
 
 
@@ -601,15 +605,36 @@ CM_LoadMap
 Loads in the map and all submodels
 ==================
 */
-void CM_LoadMap( const char *name, qboolean clientload, int *checksum ) {
+int CM_LoadMap( const char *name, qboolean clientload, int *checksum )
+{
 	void			*buf;
 	int				i;
 	dheader_t		header;
 	int				length;
+	int outModel = 0;
 
 	if ( !name || !name[0] ) {
 		Com_Error( ERR_DROP, "%s: NULL name", __func__ );
 	}
+
+
+	int				j, empty = -1;
+	for(j = 0; j < MAX_NUM_MAPS; j++) {
+		if ( !strcmp( cmWorlds[j].name, name ) /* && clientload */ ) {
+			*checksum = cmWorlds[j].checksum;
+			cmi = 0;
+			return cmWorlds[j].brushIndex;
+		} else if (cmWorlds[j].name[0] == '\0' && empty == -1) {
+			// fill the next empty clipmap slot
+			empty = j;
+		}
+	}
+	cmi = empty;
+  Com_DPrintf( "%s( '%s', %i )\n", __func__, name, clientload );
+
+	if(cmi == 0) {
+
+
 
 #ifndef BSPC
 	cm_noAreas = Cvar_Get( "cm_noAreas", "0", CVAR_CHEAT );
@@ -630,6 +655,9 @@ void CM_LoadMap( const char *name, qboolean clientload, int *checksum ) {
 	// free old stuff
 	CM_ClearMap();
 
+	for(i = 0; i < MAX_NUM_MAPS && i < empty; i++) {
+		outModel += cmWorlds[i].numSubModels;
+	}
 #if 0
 	if ( !name[0] ) {
 		cm.numLeafs = 1;
@@ -650,6 +678,10 @@ void CM_LoadMap( const char *name, qboolean clientload, int *checksum ) {
 	length = LoadQuakeFile( (quakefile_t *) name, &buf );
 #endif
 
+	if( !buf && empty > 0 ) {
+		cmi = 0;
+		return 0;
+	} else
 	if ( !buf ) {
 		Com_Error( ERR_DROP, "%s: couldn't load %s", __func__, name );
 	}
@@ -705,6 +737,9 @@ void CM_LoadMap( const char *name, qboolean clientload, int *checksum ) {
 	if ( !clientload ) {
 		Q_strncpyz( cm.name, name, sizeof( cm.name ) );
 	}
+	cm.brushIndex = outModel;
+	cmi = 0;
+	return outModel;
 }
 
 
@@ -714,6 +749,7 @@ CM_ClearMap
 ==================
 */
 void CM_ClearMap( void ) {
+  	Com_Memset( &cmWorlds, 0, sizeof( cmWorlds ) );
 	Com_Memset( &cm, 0, sizeof( cm ) );
 	CM_ClearLevelPatches();
 }
@@ -727,6 +763,17 @@ CM_ClipHandleToModel
 cmodel_t *CM_ClipHandleToModel( clipHandle_t handle ) {
 	if ( handle < 0 ) {
 		Com_Error( ERR_DROP, "CM_ClipHandleToModel: bad handle %i", handle );
+	}
+	
+	if(handle >= cm.numSubModels) {
+		int i;
+		int modifiedHandle = (int)handle;
+		for(i = 0; i < MAX_NUM_MAPS; i++) {
+			if ( modifiedHandle < cmWorlds[i].numSubModels ) {
+				return &cmWorlds[i].cmodels[modifiedHandle];
+			}
+			modifiedHandle -= cmWorlds[i].numSubModels;
+		}
 	}
 	if ( handle < cm.numSubModels ) {
 		return &cm.cmodels[handle];
@@ -749,9 +796,18 @@ cmodel_t *CM_ClipHandleToModel( clipHandle_t handle ) {
 CM_InlineModel
 ==================
 */
-clipHandle_t CM_InlineModel( int index ) {
+clipHandle_t CM_InlineModel( int index ) 
+{
+	int i;
+	int modifiedIndex = index;
+	for(i = 0; i < MAX_NUM_MAPS; i++) {
+		if ( modifiedIndex >= 0 && modifiedIndex < cmWorlds[i].numSubModels ) {
+			return index;
+		}
+		modifiedIndex -= cmWorlds[i].numSubModels;
+	}
 	if ( index < 0 || index >= cm.numSubModels ) {
-		Com_Error (ERR_DROP, "CM_InlineModel: bad number");
+		Com_Error (ERR_DROP, "CM_InlineModel: bad number %i >= %i", index, cm.numSubModels);
 	}
 	return index;
 }

@@ -1189,7 +1189,9 @@ typedef struct {
 } trGlobals_t;
 
 extern backEndState_t	backEnd;
-extern trGlobals_t	tr;
+#define MAX_WORLD_MODELS 64
+extern trGlobals_t	trWorlds[MAX_WORLD_MODELS];
+#define tr trWorlds[0]
 
 extern int					gl_clamp_mode;
 
