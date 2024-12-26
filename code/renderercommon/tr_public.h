@@ -178,6 +178,8 @@ typedef struct {
 	void	(*Cmd_ExecuteText)( cbufExec_t exec_when, const char *text );
 
 	byte	*(*CM_ClusterPVS)(int cluster);
+	int (*CM_LoadMap)( const char *name, qboolean clientload, int *checksum );
+
 
 	// visualization for debugging collision detection
 	void	(*CM_DrawDebugSurface)( void (*drawPoly)(int color, int numPoints, float *points) );
