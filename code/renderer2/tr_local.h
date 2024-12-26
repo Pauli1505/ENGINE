@@ -1483,6 +1483,7 @@ typedef struct {
 */
 typedef struct {
 	qboolean				registered;		// cleared at shutdown, set at beginRegistration
+  int							lastRegistrationTime;
 
 	int						visIndex;
 	int						visClusters[MAX_VISCOUNTS];
