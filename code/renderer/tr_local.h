@@ -1085,7 +1085,6 @@ typedef struct {
 */
 typedef struct {
 	qboolean				registered;		// cleared at shutdown, set at beginRegistration
-	int							lastRegistrationTime;
 	qboolean				inited;			// cleared at shutdown, set at InitOpenGL
 
 	int						visCount;		// incremented every time a new vis cluster is entered
@@ -1190,9 +1189,7 @@ typedef struct {
 } trGlobals_t;
 
 extern backEndState_t	backEnd;
-#define MAX_WORLD_MODELS 64
-extern trGlobals_t	trWorlds[MAX_WORLD_MODELS];
-#define tr trWorlds[0]
+extern trGlobals_t	tr;
 
 extern int					gl_clamp_mode;
 
@@ -1448,7 +1445,7 @@ void		RE_UploadCinematic( int w, int h, int cols, int rows, byte *data, int clie
 
 void		RE_BeginFrame( stereoFrame_t stereoFrame );
 void		RE_BeginRegistration( glconfig_t *glconfig );
-qhandle_t RE_LoadWorldMap( const char *mapname );
+void		RE_LoadWorldMap( const char *mapname );
 void		RE_SetWorldVisData( const byte *vis );
 qhandle_t	RE_RegisterModel( const char *name );
 qhandle_t	RE_RegisterSkin( const char *name );

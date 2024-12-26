@@ -103,7 +103,7 @@ void RE_RemapShader(const char *shaderName, const char *newShaderName, const cha
 ParseVector
 ===============
 */
-qboolean ParseVector( const char **text, int count, float *v ) {
+static qboolean ParseVector( const char **text, int count, float *v ) {
 	const char	*token;
 	int		i;
 
@@ -3764,35 +3764,13 @@ R_InitShaders
 ==================
 */
 void R_InitShaders( void ) {
-	int i;
-	ri.Printf( PRINT_ALL, "\nInitializing Shaders\n" );
-  tr.lastRegistrationTime = ri.Milliseconds();
+	ri.Printf( PRINT_ALL, "Initializing Shaders\n" );
 
-	if(tr.numShaders == 0) {
-		Com_Memset(hashTable, 0, sizeof(hashTable));
+	Com_Memset(hashTable, 0, sizeof(hashTable));
 
-		CreateInternalShaders();
+	CreateInternalShaders();
 
-for(i = 1; i < MAX_WORLD_MODELS; i++) {
-	trWorlds[i].defaultShader = tr.defaultShader;
-	trWorlds[i].cinematicShader = tr.cinematicShader;
-	trWorlds[i].whiteShader = tr.whiteShader;
-	trWorlds[i].numShaders = 3;
-}
+	ScanAndLoadShaderFiles();
 
-		ScanAndLoadShaderFiles();
-
-		CreateExternalShaders();
-
-
-	} else {
-		ScanAndLoadShaderFiles();
-		//RE_ClearScene();
-
-		//tr.inited = qtrue;
-		//tr.registered = qtrue;
-
-	}
-
-
+	CreateExternalShaders();
 }

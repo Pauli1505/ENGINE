@@ -25,7 +25,7 @@ Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 #include "cm_polylib.h"
 
 #define	MAX_SUBMODELS			4096
-#define CAPSULE_MODEL_HANDLE		4096
+#define CAPSULE_MODEL_HANDLE	4096
 #define	BOX_MODEL_HANDLE		4095
 
 
@@ -172,7 +172,6 @@ typedef struct {
 	int			checkcount;					// incremented on each trace
 
 	unsigned int checksum;
-	int brushIndex;
 } clipMap_t;
 
 
@@ -180,10 +179,7 @@ typedef struct {
 // and to avoid various numeric issues
 #define	SURFACE_CLIP_EPSILON	(0.125)
 
-#define MAX_NUM_MAPS 64
-#define cm        cmWorlds[cmi]
-extern	clipMap_t	cmWorlds[MAX_NUM_MAPS];
-extern  int       cmi;
+extern	clipMap_t	cm;
 extern	int			c_pointcontents;
 extern	int			c_traces, c_brush_traces, c_patch_traces;
 extern	cvar_t		*cm_noAreas;

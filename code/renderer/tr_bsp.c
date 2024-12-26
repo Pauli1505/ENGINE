@@ -33,10 +33,7 @@ void RE_LoadWorldMap( const char *name );
 
 */
 
-#define MAX_WORLD_MODELS 64
-int       rwi = 0;
-world_t		s_worldDatas[MAX_WORLD_MODELS];
-#define s_worldData s_worldDatas[rwi]
+static	world_t		s_worldData;
 static	byte		*fileBase;
 
 static int	c_gridVerts;
@@ -1640,7 +1637,7 @@ static void R_LoadSurfaces( const lump_t *surfs, const lump_t *verts, const lump
 R_LoadSubmodels
 =================
 */
-static void R_LoadSubmodels( const lump_t *l, model_t *inModel ) {
+static void R_LoadSubmodels( const lump_t *l ) {
 	const dmodel_t *in;
 	bmodel_t	*out;
 	int			i, j, count;
@@ -1655,10 +1652,6 @@ static void R_LoadSubmodels( const lump_t *l, model_t *inModel ) {
 	for ( i=0 ; i<count ; i++, in++, out++ ) {
 		model_t *model;
 
-		if(i == 0 && inModel) {
-			model = inModel;
-			//tr.models[tr.numModels++] = model;
-		} else
 		model = R_AllocModel();
 
 		if ( model == NULL ) {
@@ -1667,7 +1660,7 @@ static void R_LoadSubmodels( const lump_t *l, model_t *inModel ) {
 
 		model->type = MOD_BRUSH;
 		model->bmodel = out;
-		Com_sprintf( model->name, sizeof( model->name ), "*%d", model->index + i - 1 );
+		Com_sprintf( model->name, sizeof( model->name ), "*%d", i );
 
 		for (j=0 ; j<3 ; j++) {
 			out->bounds[0][j] = LittleFloat (in->mins[j]);
@@ -2071,20 +2064,6 @@ static void R_LoadLightGrid( const lump_t *l ) {
 }
 
 
-qboolean ParseVector( const char **text, int count, float *v );
-
-
-typedef struct {
-	vec3_t origin;
-	vec3_t angles;
-	char name[MAX_QPATH];
-} expectedModel_t;
-
-expectedModel_t expectedMapModels[MAX_WORLD_MODELS];
-int expectedMapModelCount = 0;
-
-
-
 /*
 ================
 R_LoadEntities
@@ -2095,10 +2074,6 @@ static void R_LoadEntities( const lump_t *l ) {
 	char keyname[MAX_TOKEN_CHARS];
 	char value[MAX_TOKEN_CHARS], *v[3];
 	world_t	*w;
-	qboolean inModel = qfalse;
-	qboolean hasValid = qfalse;
-	expectedModel_t expectedModel;
-	memset(&expectedModel, 0, sizeof(expectedModel));
 
 	w = &s_worldData;
 	w->lightGridSize[0] = 64;
@@ -2127,14 +2102,6 @@ static void R_LoadEntities( const lump_t *l ) {
 		}
 		Q_strncpyz(keyname, token, sizeof(keyname));
 
-		s = "angles";
-		if (inModel && !Q_strncmp(keyname, s, (int)strlen(s)) ) {
-			ParseVector(&p, 3, expectedModel.angles);
-		} else
-		s = "origin";
-		if (inModel && !Q_strncmp(keyname, s, (int)strlen(s)) ) {
-			ParseVector(&p, 3, expectedModel.origin);
-		} else
 		// parse value
 		token = COM_ParseExt( &p, qtrue );
 
@@ -2168,33 +2135,6 @@ static void R_LoadEntities( const lump_t *l ) {
 			*vs++ = '\0';
 			RE_RemapShader(value, s, "0");
 			continue;
-		}
-
-		s = "model";
-		if (!Q_strncmp(keyname, s, (int)strlen(s)) ) {
-			if(!Q_stristr(value, ".bsp")) {
-				hasValid = qtrue;
-				Q_strncpyz(expectedModel.name, value, MAX_QPATH);
-			}
-		}
-		s = "classname";
-		if (!Q_strncmp(keyname, s, (int)strlen(s)) ) {
-			if(hasValid) {
-				// store before the next model is started so it has time to parse, but doesn't overwrite
-				expectedMapModels[expectedMapModelCount] = expectedModel;
-				expectedMapModelCount++;
-				hasValid = qfalse;
-				memset(&expectedModel, 0, sizeof(expectedModel));
-			}
-			inModel = qfalse;
-			s = "misc_model";
-			if (!Q_strncmp(value, s, (int)strlen(s)) ) {
-				inModel = qtrue;
-			}
-			s = "func_";
-			if (!Q_strncmp(value, s, (int)strlen(s)) ) {
-				inModel = qtrue;
-			}
 		}
 		// check for a different grid size
 		if (!Q_stricmp(keyname, "gridsize")) {
@@ -2235,14 +2175,7 @@ RE_LoadWorldMap
 Called directly from cgame
 =================
 */
-qhandle_t RE_LoadWorldMap_real( const char *name, model_t *model, int clipIndex );
-
-qhandle_t RE_LoadWorldMap( const char *name ) {
-	return RE_LoadWorldMap_real(name, NULL, 0);
-}
-
-qhandle_t RE_LoadWorldMap_real( const char *name, model_t *model, int clipIndex )
-{
+void RE_LoadWorldMap( const char *name ) {
 	int			i;
 	int32_t		size;
 	dheader_t	*header;
@@ -2251,25 +2184,9 @@ qhandle_t RE_LoadWorldMap_real( const char *name, model_t *model, int clipIndex 
 		void *v;
 	} buffer;
 	byte		*startMarker;
-	char		strippedName2[MAX_QPATH];
-
-	int j, empty = -1;
-	for(j = 0; j < MAX_WORLD_MODELS; j++) {
-		if ( !Q_stricmp( s_worldDatas[j].name, strippedName2 ) ) {
-			// TODO: PRINT_DEVELOPER
-			rwi = 0;
-			ri.Printf( PRINT_ALL, "RE_LoadWorldMap (%i): Already loaded %s\n", j, name );
-			return j;
-		} else if (s_worldDatas[j].name[0] == '\0' && empty == -1) {
-			// load additional world in to next slot
-			empty = j;
-		}
-	}
-	rwi = empty;
-	// TODO: if (empty == -1) FreeOldestClipmap
 
 	if ( tr.worldMapLoaded ) {
-  	ri.Printf( PRINT_WARNING, "ERROR: attempted to redundantly load world map\n" );
+		ri.Error( ERR_DROP, "ERROR: attempted to redundantly load world map" );
 	}
 
 	// set default sun direction to be used if it isn't
@@ -2284,10 +2201,6 @@ qhandle_t RE_LoadWorldMap_real( const char *name, model_t *model, int clipIndex 
 
 	// load it
 	size = ri.FS_ReadFile( name, &buffer.v );
-	if(!buffer.b && trWorlds[0].world) {
-		rwi = 0;
-		return 0;
-	}
 	if ( !buffer.b ) {
 		ri.Error( ERR_DROP, "%s: couldn't load %s", __func__, name );
 	}
@@ -2338,7 +2251,7 @@ qhandle_t RE_LoadWorldMap_real( const char *name, model_t *model, int clipIndex 
 	R_LoadSurfaces( &header->lumps[LUMP_SURFACES], &header->lumps[LUMP_DRAWVERTS], &header->lumps[LUMP_DRAWINDEXES] );
 	R_LoadMarksurfaces( &header->lumps[LUMP_LEAFSURFACES] );
 	R_LoadNodesAndLeafs( &header->lumps[LUMP_NODES], &header->lumps[LUMP_LEAFS] );
-	R_LoadSubmodels( &header->lumps[LUMP_MODELS], model );
+	R_LoadSubmodels( &header->lumps[LUMP_MODELS] );
 	R_LoadVisibility( &header->lumps[LUMP_VISIBILITY] );
 	R_LoadEntities( &header->lumps[LUMP_ENTITIES] );
 	R_LoadLightGrid( &header->lumps[LUMP_LIGHTGRID] );
@@ -2355,9 +2268,4 @@ qhandle_t RE_LoadWorldMap_real( const char *name, model_t *model, int clipIndex 
 	tr.world = &s_worldData;
 
 	ri.FS_FreeFile( buffer.v );
-	rwi = 0;
-	if(model) {
-		return model->index;
-	}
-	return empty;
 }
