@@ -53,6 +53,7 @@ void SetPlaneSignbits( cplane_t *out ) {
 
 clipMap_t cmWorlds[MAX_NUM_MAPS];
 int       cmi = 0;
+
 int			c_pointcontents;
 int			c_traces, c_brush_traces, c_patch_traces;
 
@@ -572,6 +573,19 @@ static void CMod_LoadPatches( const lump_t *surfs, const lump_t *verts ) {
 //==================================================================
 
 
+
+static void CM_MapList_f(void) {
+	int count = 0;
+	Com_Printf ("-----------------------\n");
+	for(int i = 0; i < MAX_NUM_MAPS; i++) {
+		if(!cmWorlds[i].name[0]) break;
+		count++;
+		Com_Printf("%s\n", cmWorlds[i].name);
+	}
+	Com_Printf ("%i total maps\n", count);
+	Com_Printf ("------------------\n");
+}
+
 #if 0
 static uint32_t CM_LumpChecksum( const lump_t *lump ) {
 	return LittleLong( Com_BlockChecksum( cmod_base + lump->fileofs, lump->filelen ) );
@@ -605,7 +619,7 @@ CM_LoadMap
 Loads in the map and all submodels
 ==================
 */
-int CM_LoadMap( const char *name, qboolean clientload, int *checksum )
+int CM_LoadMap( const char *name, qboolean clientload, int *checksum ) 
 {
 	void			*buf;
 	int				i;
@@ -643,17 +657,12 @@ int CM_LoadMap( const char *name, qboolean clientload, int *checksum )
 	Cvar_SetDescription( cm_noCurves, "Do not collide against curves." );
 	cm_playerCurveClip = Cvar_Get( "cm_playerCurveClip", "1", CVAR_ARCHIVE_ND | CVAR_CHEAT );
 	Cvar_SetDescription( cm_playerCurveClip, "Collide player against curves." );
+	Cmd_AddCommand("cmlist", CM_MapList_f);
+	//Cmd_SetDescription("cmlist", "List the currently loaded clip maps\nUsage: maplist");
 #endif
 
-	Com_DPrintf( "%s( '%s', %i )\n", __func__, name, clientload );
-
-	if ( !strcmp( cm.name, name ) && clientload ) {
-		*checksum = cm.checksum;
-		return;
 	}
-
-	// free old stuff
-	CM_ClearMap();
+	Com_Printf( "%s( '%s', %i )\n", __func__, name, clientload );
 
 	for(i = 0; i < MAX_NUM_MAPS && i < empty; i++) {
 		outModel += cmWorlds[i].numSubModels;
@@ -737,6 +746,7 @@ int CM_LoadMap( const char *name, qboolean clientload, int *checksum )
 	if ( !clientload ) {
 		Q_strncpyz( cm.name, name, sizeof( cm.name ) );
 	}
+
 	cm.brushIndex = outModel;
 	cmi = 0;
 	return outModel;
@@ -749,8 +759,7 @@ CM_ClearMap
 ==================
 */
 void CM_ClearMap( void ) {
-  	Com_Memset( &cmWorlds, 0, sizeof( cmWorlds ) );
-	Com_Memset( &cm, 0, sizeof( cm ) );
+  Com_Memset( &cmWorlds, 0, sizeof( cmWorlds ) );
 	CM_ClearLevelPatches();
 }
 
@@ -760,7 +769,8 @@ void CM_ClearMap( void ) {
 CM_ClipHandleToModel
 ==================
 */
-cmodel_t *CM_ClipHandleToModel( clipHandle_t handle ) {
+cmodel_t *CM_ClipHandleToModel( clipHandle_t handle ) 
+{
 	if ( handle < 0 ) {
 		Com_Error( ERR_DROP, "CM_ClipHandleToModel: bad handle %i", handle );
 	}
