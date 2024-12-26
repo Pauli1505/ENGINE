@@ -1665,7 +1665,7 @@ static void R_LoadSurfaces( const lump_t *surfs, const lump_t *verts, const lump
 R_LoadSubmodels
 =================
 */
-static void R_LoadSubmodels( const lump_t *l ) {
+static void R_LoadSubmodels( const lump_t *l, model_t *inModel ) {
 	const dmodel_t *in;
 	bmodel_t	*out;
 	int			i, j, count;
