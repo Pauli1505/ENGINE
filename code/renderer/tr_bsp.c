@@ -2070,7 +2070,7 @@ static void R_LoadLightGrid( const lump_t *l ) {
 	}
 }
 
-#ifdef USE_BSP_MODELS
+
 qboolean ParseVector( const char **text, int count, float *v );
 
 
@@ -2082,6 +2082,8 @@ typedef struct {
 
 expectedModel_t expectedMapModels[MAX_WORLD_MODELS];
 int expectedMapModelCount = 0;
+
+
 
 /*
 ================
