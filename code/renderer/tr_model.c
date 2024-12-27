@@ -197,11 +197,14 @@ static qhandle_t R_RegisterIQM(const char *name, model_t *mod)
 qhandle_t RE_LoadWorldMap_real( const char *name, model_t *model, int clipIndex );
 static qhandle_t R_RegisterBSP(const char *name, model_t *mod)
 {
+	union {
+		unsigned *u;
+		void *v;
+	} buf;
 	int chechsum, index;
-
 	int filesize;
 
-	filesize = ri.FS_ReadFile(name, (void **) &buf.v);
+	filesize = ri.FS_ReadFile(va("%s.bsp", name), (void **) &buf.v);
 	if(!buf.u)
 	{
 		mod->type = MOD_BAD;
@@ -209,9 +212,9 @@ static qhandle_t R_RegisterBSP(const char *name, model_t *mod)
 	}
 	// TODO: patch the bsp into the clipmap
 
-	index = ri.CM_LoadMap(name, qtrue, &chechsum);
-	Com_Printf("loading bsp model: %s: %i\n", name, index);
-	return RE_LoadWorldMap_real( name, mod, index );
+	index = ri.CM_LoadMap(va("%s.bsp", name), qtrue, &chechsum);
+	Com_Printf("loading bsp model: %s: %i\n", va("%s.bsp", name), index);
+	return RE_LoadWorldMap_real( va("%s.bsp", name), mod, index );
 }
 #endif
 

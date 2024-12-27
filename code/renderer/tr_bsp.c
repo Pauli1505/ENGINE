@@ -2378,7 +2378,7 @@ void RE_LoadWorldMap( const char *name )
 	}
 
 	if ( header->version != BSP_VERSION ) {
-		ri.Error( ERR_DROP, "%s: %s has wrong version number (%i should be %i)", __func__, name, header->version, BSP_VERSION );
+		return 0;
 	}
 
 	for ( i = 0; i < HEADER_LUMPS; i++ ) {
