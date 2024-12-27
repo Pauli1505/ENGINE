@@ -365,7 +365,7 @@ qhandle_t RE_RegisterModel( const char *name ) {
 
 	// Try and find a suitable match using all
 	// the model formats supported
-	for( i = 0; i < numModelLoaders-1; i++ )
+	for( i = 0; i < numModelLoaders; i++ )
 	{
 		if (i == orgLoader)
 			continue;
