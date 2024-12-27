@@ -660,7 +660,6 @@ void CM_LoadMap( const char *name, qboolean clientload, int *checksum )
 			cmi = 0;
 			return cmWorlds[j].brushIndex;
 #else
-			CM_SwitchMap(j);
 			Com_DPrintf( "CM_LoadMap( %s, %i ) already loaded\n", name, clientload );
 			return cmi;
 #endif
