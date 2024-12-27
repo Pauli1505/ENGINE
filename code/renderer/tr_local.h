@@ -1185,7 +1185,6 @@ typedef struct {
 	qboolean				needScreenMap;
 
 	qboolean				vertexLightingAllowed;
-	int					lastRegistrationTime;
 } trGlobals_t;
 
 extern backEndState_t	backEnd;
