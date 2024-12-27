@@ -32,6 +32,7 @@ A single entry point:
 void RE_LoadWorldMap( const char *name );
 
 */
+#undef USE_BSP_MODELS
 
 #ifdef USE_BSP_MODELS
 #define MAX_WORLD_MODELS 64
@@ -2318,15 +2319,8 @@ void RE_LoadWorldMap( const char *name )
 
 #else
 	if ( tr.worldMapLoaded ) {
-#if defined(USE_BSP_MODELS)
   	ri.Printf( PRINT_WARNING, "ERROR: attempted to redundantly load world map\n" );
-#else
-	if ( tr.worldMapLoaded ) {
-		ri.Error( ERR_DROP, "ERROR: attempted to redundantly load world map" );
 	}
-#endif
-	}
-
 #endif
 
 	// set default sun direction to be used if it isn't
@@ -2378,7 +2372,7 @@ void RE_LoadWorldMap( const char *name )
 	}
 
 	if ( header->version != BSP_VERSION ) {
-		return 0;
+		ri.Error( ERR_DROP, "%s: %s has wrong version number (%i should be %i)", __func__, name, header->version, BSP_VERSION );
 	}
 
 	for ( i = 0; i < HEADER_LUMPS; i++ ) {
