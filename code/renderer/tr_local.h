@@ -1085,7 +1085,6 @@ typedef struct {
 */
 typedef struct {
 	qboolean				registered;		// cleared at shutdown, set at beginRegistration
-	int							lastRegistrationTime;
 	qboolean				inited;			// cleared at shutdown, set at InitOpenGL
 
 	int						visCount;		// incremented every time a new vis cluster is entered
@@ -1186,7 +1185,7 @@ typedef struct {
 	qboolean				needScreenMap;
 
 	qboolean				vertexLightingAllowed;
-
+	int					lastRegistrationTime;
 } trGlobals_t;
 
 extern backEndState_t	backEnd;

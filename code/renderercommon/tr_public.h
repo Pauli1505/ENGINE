@@ -182,7 +182,9 @@ typedef struct {
 	void	(*Cmd_ExecuteText)( cbufExec_t exec_when, const char *text );
 
 	byte	*(*CM_ClusterPVS)(int cluster);
+	#ifdef USE_BSP_MODELS
 	int (*CM_LoadMap)( const char *name, qboolean clientload, int *checksum );
+	#endif
 
 
 	// visualization for debugging collision detection

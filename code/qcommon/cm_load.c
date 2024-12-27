@@ -654,13 +654,8 @@ void CM_LoadMap( const char *name, qboolean clientload, int *checksum )
 	for(j = 0; j < MAX_NUM_MAPS; j++) {
 		if ( !strcmp( cmWorlds[j].name, name ) /* && clientload */ ) {
 			*checksum = cmWorlds[j].checksum;
-#ifdef USE_BSP_MODELS
 			cmi = 0;
 			return cmWorlds[j].brushIndex;
-#else
-			Com_DPrintf( "CM_LoadMap( %s, %i ) already loaded\n", name, clientload );
-			return cmi;
-#endif
 		} else if (cmWorlds[j].name[0] == '\0' && empty == -1) {
 			// fill the next empty clipmap slot
 			empty = j;
@@ -691,7 +686,7 @@ void CM_LoadMap( const char *name, qboolean clientload, int *checksum )
 	}
 #endif
 
-	Com_Printf( "%s( '%s', %i )\n", __func__, name, clientload );
+	Com_DPrintf( "%s( '%s', %i )\n", __func__, name, clientload );
 
 #if !defined(USE_BSP_MODELS)
 
@@ -859,11 +854,7 @@ CM_InlineModel
 ==================
 */
 #if defined(USE_BSP_MODELS)
-#if defined(USE_BSP_MODELS)
 clipHandle_t CM_InlineModel( int index ) 
-#else
-clipHandle_t CM_InlineModel( int index, int client, int world ) 
-#endif
 {
 	int i;
 	int modifiedIndex = index;
@@ -874,11 +865,7 @@ clipHandle_t CM_InlineModel( int index, int client, int world )
 		modifiedIndex -= cmWorlds[i].numSubModels;
 	}
 	if ( index < 0 || index >= cm.numSubModels ) {
-#if defined(USE_BSP_MODELS)
 		Com_Error (ERR_DROP, "CM_InlineModel: bad number %i >= %i", index, cm.numSubModels);
-#else
-		Com_Error (ERR_DROP, "CM_InlineModel: bad number %i in %i (client: %i, world: %i)", index, cmi, client, world);
-#endif
 	}
 	return index;
 }
