@@ -3778,14 +3778,12 @@ void R_InitShaders( void ) {
 
 		CreateInternalShaders();
 
-#if defined(USE_BSP_MODELS)
 for(i = 1; i < MAX_WORLD_MODELS; i++) {
 	trWorlds[i].defaultShader = tr.defaultShader;
 	trWorlds[i].cinematicShader = tr.cinematicShader;
 	trWorlds[i].whiteShader = tr.whiteShader;
 	trWorlds[i].numShaders = 3;
 }
-#endif
 
 		ScanAndLoadShaderFiles();
 

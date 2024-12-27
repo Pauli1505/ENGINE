@@ -30,10 +30,6 @@ void		CM_LoadMap( const char *name, qboolean clientload, int *checksum);
 #endif
 void		CM_ClearMap( void );
 
-#if defined(USE_BSP_MODELS)
-int		CM_SwitchMap( int world );
-#endif
-
 clipHandle_t CM_InlineModel( int index );		// 0 = world, 1 + are bmodels
 
 clipHandle_t CM_TempBoxModel( const vec3_t mins, const vec3_t maxs, int capsule );
