@@ -367,11 +367,6 @@ qhandle_t RE_RegisterModel( const char *name ) {
 	// the model formats supported
 	for( i = 0; i < numModelLoaders; i++ )
 	{
-		#ifdef USE_BSP_MODELS
-		if (i == 3)
-			continue;
-		#endif
-		
 		if (i == orgLoader)
 			continue;
 
