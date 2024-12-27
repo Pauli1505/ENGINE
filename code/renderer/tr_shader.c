@@ -103,9 +103,6 @@ void RE_RemapShader(const char *shaderName, const char *newShaderName, const cha
 ParseVector
 ===============
 */
-#ifndef USE_BSP_MODELS
-static 
-#endif
 qboolean ParseVector( const char **text, int count, float *v ) {
 	const char	*token;
 	int		i;
