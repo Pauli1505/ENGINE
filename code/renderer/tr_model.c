@@ -200,7 +200,6 @@ static qhandle_t R_RegisterBSP(const char *name, model_t *mod)
 	int chechsum, index;
 	// TODO: patch the bsp into the clipmap
 	index = ri.CM_LoadMap(name, qtrue, &chechsum);
-	Com_Printf("loading bsp model: %s: %i\n", name, index);
 	return RE_LoadWorldMap_real( name, mod, index );
 }
 #endif
