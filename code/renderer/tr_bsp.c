@@ -32,7 +32,6 @@ A single entry point:
 void RE_LoadWorldMap( const char *name );
 
 */
-#undef USE_BSP_MODELS
 
 #ifdef USE_BSP_MODELS
 #define MAX_WORLD_MODELS 64
