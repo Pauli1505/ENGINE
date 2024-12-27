@@ -57,7 +57,6 @@ int       cmi = 0;
 #else
 clipMap_t	cm;
 #endif
-
 int			c_pointcontents;
 int			c_traces, c_brush_traces, c_patch_traces;
 
@@ -583,7 +582,6 @@ static void CMod_LoadPatches( const lump_t *surfs, const lump_t *verts ) {
 //==================================================================
 
 #if defined(USE_BSP_MODELS)
-
 static void CM_MapList_f(void) {
 	int count = 0;
 	Com_Printf ("-----------------------\n");
@@ -631,11 +629,10 @@ Loads in the map and all submodels
 ==================
 */
 #if defined(USE_BSP_MODELS)
-int CM_LoadMap( const char *name, qboolean clientload, int *checksum ) 
+int CM_LoadMap( const char *name, qboolean clientload, int *checksum ) {
 #else
-void CM_LoadMap( const char *name, qboolean clientload, int *checksum ) 
+void CM_LoadMap( const char *name, qboolean clientload, int *checksum ) {
 #endif
-{
 	void			*buf;
 	int				i;
 	dheader_t		header;
@@ -647,8 +644,6 @@ void CM_LoadMap( const char *name, qboolean clientload, int *checksum )
 	if ( !name || !name[0] ) {
 		Com_Error( ERR_DROP, "%s: NULL name", __func__ );
 	}
-
-
 #if defined(USE_BSP_MODELS)
 	int				j, empty = -1;
 	for(j = 0; j < MAX_NUM_MAPS; j++) {
@@ -666,8 +661,6 @@ void CM_LoadMap( const char *name, qboolean clientload, int *checksum )
 
 	if(cmi == 0) {
 #endif
-
-
 
 #ifndef BSPC
 	cm_noAreas = Cvar_Get( "cm_noAreas", "0", CVAR_CHEAT );
@@ -689,7 +682,6 @@ void CM_LoadMap( const char *name, qboolean clientload, int *checksum )
 	Com_DPrintf( "%s( '%s', %i )\n", __func__, name, clientload );
 
 #if !defined(USE_BSP_MODELS)
-
 	if ( !strcmp( cm.name, name ) && clientload ) {
 		*checksum = cm.checksum;
 		return;
@@ -697,7 +689,6 @@ void CM_LoadMap( const char *name, qboolean clientload, int *checksum )
 
 	// free old stuff
 	CM_ClearMap();
-
 #endif
 
 #ifdef USE_BSP_MODELS
@@ -786,7 +777,6 @@ void CM_LoadMap( const char *name, qboolean clientload, int *checksum )
 	if ( !clientload ) {
 		Q_strncpyz( cm.name, name, sizeof( cm.name ) );
 	}
-
 #if defined(USE_BSP_MODELS)
 	cm.brushIndex = outModel;
 	cmi = 0;

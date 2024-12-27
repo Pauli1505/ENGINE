@@ -190,7 +190,6 @@ extern  int       cmi;
 #else
 extern	clipMap_t	cm;
 #endif
-
 extern	int			c_pointcontents;
 extern	int			c_traces, c_brush_traces, c_patch_traces;
 extern	cvar_t		*cm_noAreas;

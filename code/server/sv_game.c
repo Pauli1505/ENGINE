@@ -126,7 +126,6 @@ static void SV_SetBrushModel( sharedEntity_t *ent, const char *name ) {
 		int chechsum, index;
 		// TODO: patch the bsp into the clipmap
 		index = CM_LoadMap(name, qfalse, &chechsum);
-//Com_Printf("sub: %i\n", index);
 		ent->s.modelindex = index;
 	} else {
 #endif
@@ -134,7 +133,7 @@ static void SV_SetBrushModel( sharedEntity_t *ent, const char *name ) {
 		Com_Error( ERR_DROP, "SV_SetBrushModel: %s isn't a brush model", name );
 	}
 
-		ent->s.modelindex = atoi( name + 1 );
+	ent->s.modelindex = atoi( name + 1 );
 #ifdef USE_BSP_MODELS
 	}
 #endif

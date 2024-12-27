@@ -1424,9 +1424,6 @@ void CM_TransformedBoxTrace( trace_t *results, const vec3_t start, const vec3_t 
 		}
 
 #endif
-
-
-
 	// adjust so that mins and maxs are always symmetric, which
 	// avoids some complications with plane expanding of rotated
 	// bmodels
@@ -1497,7 +1494,6 @@ void CM_TransformedBoxTrace( trace_t *results, const vec3_t start, const vec3_t 
 	trace.endpos[2] = start[2] + trace.fraction * (end[2] - start[2]);
 
 	*results = trace;
-
 #ifdef USE_BSP_MODELS
 	cmi = 0;
 #endif

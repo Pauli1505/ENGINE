@@ -204,7 +204,6 @@ static qhandle_t R_RegisterBSP(const char *name, model_t *mod)
 }
 #endif
 
-
 typedef struct
 {
 	const char *ext;
@@ -217,9 +216,11 @@ static modelExtToLoaderMap_t modelLoaders[ ] =
 {
 	{ "iqm", R_RegisterIQM },
 	{ "mdr", R_RegisterMDR },
-	{ "md3", R_RegisterMD3 },
 #ifdef USE_BSP_MODELS
+	{ "md3", R_RegisterMD3 },
 	{ "bsp", R_RegisterBSP }
+#else
+	{ "md3", R_RegisterMD3 }
 #endif
 };
 

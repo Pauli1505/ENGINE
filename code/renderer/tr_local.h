@@ -1185,10 +1185,10 @@ typedef struct {
 	qboolean				needScreenMap;
 
 	qboolean				vertexLightingAllowed;
+
 } trGlobals_t;
 
 extern backEndState_t	backEnd;
-
 #ifdef USE_BSP_MODELS
 #define MAX_WORLD_MODELS 64
 extern trGlobals_t	trWorlds[MAX_WORLD_MODELS];
@@ -1451,13 +1451,11 @@ void		RE_UploadCinematic( int w, int h, int cols, int rows, byte *data, int clie
 
 void		RE_BeginFrame( stereoFrame_t stereoFrame );
 void		RE_BeginRegistration( glconfig_t *glconfig );
-
 #ifdef USE_BSP_MODELS
 qhandle_t RE_LoadWorldMap( const char *mapname );
 #else
-void			RE_LoadWorldMap( const char *mapname );
+void		RE_LoadWorldMap( const char *mapname );
 #endif
-
 void		RE_SetWorldVisData( const byte *vis );
 qhandle_t	RE_RegisterModel( const char *name );
 qhandle_t	RE_RegisterSkin( const char *name );

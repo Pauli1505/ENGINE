@@ -639,7 +639,6 @@ typedef struct {
 	const int	bits;	// 0 = float
 } netField_t;
 
-
 // using the stringizing operator to save typing...
 #define	NETF(x) #x,(size_t)&((entityState_t*)0)->x
 
@@ -755,7 +754,6 @@ void MSG_WriteDeltaEntity( msg_t *msg, const entityState_t *from, const entitySt
 	for ( i = 0, field = entityStateFields ; i < numFields ; i++, field++ ) {
 		fromF = (int *)( (byte *)from + field->offset );
 		toF = (int *)( (byte *)to + field->offset );
-
 		if ( *fromF != *toF ) {
 			lc = i+1;
 		}

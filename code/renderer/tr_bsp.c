@@ -45,10 +45,7 @@ world_t		s_worldDatas[MAX_WORLD_MODELS];
 #else
 static	world_t		s_worldData;
 #endif
-
 static	byte		*fileBase;
-
-cvar_t  *r_scale;
 
 static int	c_gridVerts;
 
@@ -296,7 +293,6 @@ static float R_ProcessLightmap( byte *image, const byte *buf_p, float maxIntensi
 
 
 #if !defined(USE_BSP_MODELS)
-
 static int SetLightmapParams( int numLightmaps, int maxTextureSize )
 {
 	lightmapWidth = log2pad( LIGHTMAP_LEN, 1 );
@@ -326,7 +322,6 @@ static int SetLightmapParams( int numLightmaps, int maxTextureSize )
 }
 
 #endif
-
 
 int R_GetLightmapCoords( const int lightmapIndex, float *x, float *y )
 {
@@ -400,7 +395,6 @@ static void R_LoadMergedLightmaps( const lump_t *l, byte *image )
 }
 
 #endif
-
 
 /*
 ===============
@@ -1705,8 +1699,8 @@ static void R_LoadSubmodels( const lump_t *l ) {
 #endif
 
 		for (j=0 ; j<3 ; j++) {
-			out->bounds[0][j] = LittleFloat (in->mins[j]) * r_scale->value;
-			out->bounds[1][j] = LittleFloat (in->maxs[j]) * r_scale->value;
+			out->bounds[0][j] = LittleFloat (in->mins[j]);
+			out->bounds[1][j] = LittleFloat (in->maxs[j]);
 		}
 
 		out->firstSurface = s_worldData.surfaces + LittleLong( in->firstSurface );
@@ -1764,8 +1758,8 @@ static void R_LoadNodesAndLeafs( const lump_t *nodeLump, const lump_t *leafLump 
 	{
 		for (j=0 ; j<3 ; j++)
 		{
-			out->mins[j] = LittleLong (in->mins[j]) * r_scale->value;
-			out->maxs[j] = LittleLong (in->maxs[j]) * r_scale->value;
+			out->mins[j] = LittleLong (in->mins[j]);
+			out->maxs[j] = LittleLong (in->maxs[j]);
 		}
 	
 		p = LittleLong(in->planeNum);
@@ -1789,8 +1783,8 @@ static void R_LoadNodesAndLeafs( const lump_t *nodeLump, const lump_t *leafLump 
 	{
 		for (j=0 ; j<3 ; j++)
 		{
-			out->mins[j] = LittleLong (inLeaf->mins[j]) * r_scale->value;
-			out->maxs[j] = LittleLong (inLeaf->maxs[j]) * r_scale->value;
+			out->mins[j] = LittleLong (inLeaf->mins[j]);
+			out->maxs[j] = LittleLong (inLeaf->maxs[j]);
 		}
 
 		out->cluster = LittleLong(inLeaf->cluster);
@@ -1918,7 +1912,7 @@ static	void R_LoadPlanes( const lump_t *l ) {
 			}
 		}
 
-		out->dist = LittleFloat (in->dist) * r_scale->value;
+		out->dist = LittleFloat (in->dist);
 		out->type = PlaneTypeForNormal( out->normal );
 		out->signbits = bits;
 	}
@@ -2050,7 +2044,7 @@ static void R_LoadFogs( const lump_t *l, const lump_t *brushesLump, const lump_t
 				out->hasSurface = qtrue;
 				planeNum = LittleLong( sides[ sideOffset ].planeNum );
 				VectorSubtract( vec3_origin, s_worldData.planes[ planeNum ].normal, out->surface );
-				out->surface[3] = -s_worldData.planes[ planeNum ].dist * r_scale->value;
+				out->surface[3] = -s_worldData.planes[ planeNum ].dist;
 			}
 		}
 
@@ -2104,8 +2098,6 @@ static void R_LoadLightGrid( const lump_t *l ) {
 		R_ColorShiftLightingBytes( &w->lightGridData[i*8+3], &w->lightGridData[i*8+3], qfalse );
 	}
 }
-
-
 #ifdef USE_BSP_MODELS
 qboolean ParseVector( const char **text, int count, float *v );
 
@@ -2119,7 +2111,6 @@ typedef struct {
 expectedModel_t expectedMapModels[MAX_WORLD_MODELS];
 int expectedMapModelCount = 0;
 #endif
-
 
 
 /*
@@ -2210,7 +2201,6 @@ static void R_LoadEntities( const lump_t *l ) {
 			RE_RemapShader(value, s, "0");
 			continue;
 		}
-
 #ifdef USE_BSP_MODELS
 		s = "model";
 		if (!Q_strncmp(keyname, s, (int)strlen(s)) ) {
@@ -2285,11 +2275,10 @@ qhandle_t RE_LoadWorldMap( const char *name ) {
 	return RE_LoadWorldMap_real(name, NULL, 0);
 }
 
-qhandle_t RE_LoadWorldMap_real( const char *name, model_t *model, int clipIndex )
+qhandle_t RE_LoadWorldMap_real( const char *name, model_t *model, int clipIndex ) {
 #else
-void RE_LoadWorldMap( const char *name )
+void RE_LoadWorldMap( const char *name ) {
 #endif
-{
 	int			i;
 	int32_t		size;
 	dheader_t	*header;
@@ -2298,9 +2287,9 @@ void RE_LoadWorldMap( const char *name )
 		void *v;
 	} buffer;
 	byte		*startMarker;
+#if defined(USE_BSP_MODELS)
 	char		strippedName2[MAX_QPATH];
 
-#if defined(USE_BSP_MODELS)
 	int j, empty = -1;
 	for(j = 0; j < MAX_WORLD_MODELS; j++) {
 		if ( !Q_stricmp( s_worldDatas[j].name, strippedName2 ) ) {

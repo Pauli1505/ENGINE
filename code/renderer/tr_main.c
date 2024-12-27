@@ -32,7 +32,6 @@ trGlobals_t		trWorlds[MAX_WORLD_MODELS];
 trGlobals_t		tr;
 #endif
 
-
 static const float s_flipMatrix[16] = {
 	// convert from our coordinate system (looking down X)
 	// to OpenGL's coordinate system (looking down -Z)

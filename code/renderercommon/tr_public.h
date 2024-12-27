@@ -60,7 +60,7 @@ typedef struct {
 #ifdef USE_BSP_MODELS
 	qhandle_t	(*LoadWorld)( const char *name );
 #else
-	void			(*LoadWorld)( const char *name );
+	void	(*LoadWorld)( const char *name );
 #endif
 
 	// the vis data is a large enough block of data that we go to the trouble
@@ -185,7 +185,6 @@ typedef struct {
 	#ifdef USE_BSP_MODELS
 	int (*CM_LoadMap)( const char *name, qboolean clientload, int *checksum );
 	#endif
-
 
 	// visualization for debugging collision detection
 	void	(*CM_DrawDebugSurface)( void (*drawPoly)(int color, int numPoints, float *points) );

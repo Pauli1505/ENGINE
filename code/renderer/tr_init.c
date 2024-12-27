@@ -1852,11 +1852,9 @@ static void R_Register( void )
 
 #define EPSILON 1e-6f
 
-
 #ifdef USE_BSP_MODELS
 extern world_t		s_worldDatas[MAX_WORLD_MODELS];
 #endif
-
 /*
 ===============
 R_Init
