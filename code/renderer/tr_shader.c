@@ -3771,7 +3771,6 @@ void R_InitShaders( void ) {
 #if defined(USE_BSP_MODELS)
 	int i;
 	ri.Printf( PRINT_ALL, "\nInitializing Shaders\n" );
-  tr.lastRegistrationTime = ri.Milliseconds();
 
 	if(tr.numShaders == 0) {
 		Com_Memset(hashTable, 0, sizeof(hashTable));
