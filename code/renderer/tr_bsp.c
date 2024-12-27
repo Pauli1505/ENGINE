@@ -295,7 +295,7 @@ static float R_ProcessLightmap( byte *image, const byte *buf_p, float maxIntensi
 }
 
 
-#if !defined(USE_BSP_MODELS)
+//#if !defined(USE_BSP_MODELS)
 
 static int SetLightmapParams( int numLightmaps, int maxTextureSize )
 {
@@ -325,7 +325,7 @@ static int SetLightmapParams( int numLightmaps, int maxTextureSize )
 	return numLightmaps;
 }
 
-#endif
+//#endif
 
 
 int R_GetLightmapCoords( const int lightmapIndex, float *x, float *y )
@@ -341,7 +341,7 @@ int R_GetLightmapCoords( const int lightmapIndex, float *x, float *y )
 	return lightmapNum;
 }
 
-#if !defined(USE_BSP_MODELS)
+//#if !defined(USE_BSP_MODELS)
 
 /*
 ===============
@@ -399,7 +399,7 @@ static void R_LoadMergedLightmaps( const lump_t *l, byte *image )
 	//}
 }
 
-#endif
+//#endif
 
 
 /*
@@ -436,7 +436,7 @@ static void R_LoadLightmaps( const lump_t *l ) {
 
 	numLightmaps = l->filelen / (LIGHTMAP_SIZE * LIGHTMAP_SIZE * 3);
 
-#if !defined(USE_BSP_MODELS)
+///#if !defined(USE_BSP_MODELS)
 	if ( r_mergeLightmaps->integer && numLightmaps > 1 ) {
 		// check for low texture sizes
 		if ( glConfig.maxTextureSize >= LIGHTMAP_LEN*2 ) {
@@ -445,7 +445,7 @@ static void R_LoadLightmaps( const lump_t *l ) {
 			return;
 		}
 	}
-#endif
+//#endif
 
 	buf = fileBase + l->fileofs;
 
