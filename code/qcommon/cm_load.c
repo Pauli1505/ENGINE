@@ -70,8 +70,6 @@ cvar_t		*cm_noCurves;
 cvar_t		*cm_playerCurveClip;
 #endif
 
-cvar_t    *cm_scale;
-
 #if defined(USE_BSP_MODELS)
 static cmodel_t	box_modelWorlds[MAX_NUM_MAPS];
 static cplane_t	*box_planesWorlds[MAX_NUM_MAPS];
@@ -161,8 +159,8 @@ static void CMod_LoadSubmodels( const lump_t *l ) {
 
 		for (j=0 ; j<3 ; j++)
 		{	// spread the mins / maxs by a pixel
-			out->mins[j] = LittleFloat (in->mins[j]) - 1 * cm_scale->value;
-			out->maxs[j] = LittleFloat (in->maxs[j]) + 1 * cm_scale->value;
+			out->mins[j] = LittleFloat (in->mins[j]) - 1;
+			out->maxs[j] = LittleFloat (in->maxs[j]) + 1;
 		}
 
 		if ( i == 0 ) {
@@ -360,7 +358,7 @@ static void CMod_LoadPlanes( const lump_t *l )
 				bits |= 1<<j;
 		}
 
-		out->dist = LittleFloat( in->dist ) * cm_scale->value;
+		out->dist = LittleFloat( in->dist );
 		out->type = PlaneTypeForNormal( out->normal );
 		out->signbits = bits;
 	}
@@ -568,9 +566,9 @@ static void CMod_LoadPatches( const lump_t *surfs, const lump_t *verts ) {
 
 		dv_p = dv + LittleLong( in->firstVert );
 		for ( j = 0 ; j < c ; j++, dv_p++ ) {
-			points[j][0] = LittleFloat( dv_p->xyz[0] ) * cm_scale->value;
-			points[j][1] = LittleFloat( dv_p->xyz[1] ) * cm_scale->value;
-			points[j][2] = LittleFloat( dv_p->xyz[2] ) * cm_scale->value;
+			points[j][0] = LittleFloat( dv_p->xyz[0] );
+			points[j][1] = LittleFloat( dv_p->xyz[1] );
+			points[j][2] = LittleFloat( dv_p->xyz[2] );
 		}
 
 		shaderNum = LittleLong( in->shaderNum );
@@ -683,8 +681,6 @@ void CM_LoadMap( const char *name, qboolean clientload, int *checksum )
 	Cmd_AddCommand("cmlist", CM_MapList_f);
 	//Cmd_SetDescription("cmlist", "List the currently loaded clip maps\nUsage: maplist");
 #endif
-
-	cm_scale = Cvar_Get ("cm_scale", "1.0", CVAR_TEMP);
 
 #if defined(USE_BSP_MODELS)
 	}

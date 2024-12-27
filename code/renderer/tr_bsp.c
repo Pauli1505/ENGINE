@@ -2329,8 +2329,6 @@ void RE_LoadWorldMap( const char *name )
 
 #endif
 
-	r_scale = ri.Cvar_Get("cm_scale", "1.0", 0);
-
 	// set default sun direction to be used if it isn't
 	// overridden by a shader
 	tr.sunDirection[0] = 0.45f;
