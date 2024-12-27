@@ -103,7 +103,7 @@ void RE_RemapShader(const char *shaderName, const char *newShaderName, const cha
 ParseVector
 ===============
 */
-static qboolean ParseVector( const char **text, int count, float *v ) {
+qboolean ParseVector( const char **text, int count, float *v ) {
 	const char	*token;
 	int		i;
 
