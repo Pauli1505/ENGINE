@@ -130,16 +130,14 @@ static void SV_SetBrushModel( sharedEntity_t *ent, const char *name ) {
 		ent->s.modelindex = index;
 	} else {
 #endif
-		if ( name[0] != '*' ) {
-			Com_Error( ERR_DROP, "SV_SetBrushModel: %s isn't a brush model", name );
-		}
+	if ( name[0] != '*' ) {
+		Com_Error( ERR_DROP, "SV_SetBrushModel: %s isn't a brush model", name );
+	}
 
 		ent->s.modelindex = atoi( name + 1 );
 #ifdef USE_BSP_MODELS
 	}
 #endif
-
-	ent->s.modelindex = atoi( name + 1 );
 
 	h = CM_InlineModel( ent->s.modelindex );
 	CM_ModelBounds( h, mins, maxs );
