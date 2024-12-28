@@ -200,7 +200,12 @@ static qhandle_t R_RegisterBSP(const char *name, model_t *mod)
 	int chechsum, index;
 	// TODO: patch the bsp into the clipmap
 	index = ri.CM_LoadMap(name, qtrue, &chechsum);
-	return RE_LoadWorldMap_real( name, mod, index );
+	RE_LoadWorldMap_real( name, mod, index );
+	//if(mod) {
+	//	return mod->index;
+	//}
+	mod->type = MOD_BAD;
+	return 0;
 }
 #endif
 
@@ -218,7 +223,7 @@ static modelExtToLoaderMap_t modelLoaders[ ] =
 	{ "mdr", R_RegisterMDR },
 #ifdef USE_BSP_MODELS
 	{ "md3", R_RegisterMD3 },
-	{ "bsp", R_RegisterMD3 }
+	{ "bsp", R_RegisterBSP }
 #else
 	{ "md3", R_RegisterMD3 }
 #endif

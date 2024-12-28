@@ -2324,7 +2324,7 @@ void RE_LoadWorldMap( const char *name ) {
 	// load it
 	size = ri.FS_ReadFile( name, &buffer.v );
 #ifdef USE_BSP_MODELS
-	if(!buffer.b && trWorlds[0].world) {
+	if(!buffer.b /* && trWorlds[0].world*/) {
 		rwi = 0;
 		return 0;
 	}
@@ -2402,9 +2402,6 @@ void RE_LoadWorldMap( const char *name ) {
 	ri.FS_FreeFile( buffer.v );
 #ifdef USE_BSP_MODELS
 	rwi = 0;
-	if(model) {
-		return model->index;
-	}
 	return empty;
 #endif
 }
