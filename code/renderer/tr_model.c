@@ -197,9 +197,21 @@ static qhandle_t R_RegisterIQM(const char *name, model_t *mod)
 qhandle_t RE_LoadWorldMap_real( const char *name, model_t *model, int clipIndex );
 static qhandle_t R_RegisterBSP(const char *name, model_t *mod)
 {
+	char		expanded[MAX_QPATH];
 	int chechsum, index;
 	// TODO: patch the bsp into the clipmap
+	if(Q_stristr(name, ".bsp") == 0) {
+		Com_sprintf( expanded, sizeof( expanded ), "%s.bsp", name );
+	} else {
+		Com_sprintf( expanded, sizeof( expanded ), "%s", name );
+	}
 	index = ri.CM_LoadMap(name, qtrue, &chechsum);
+	//Com_Printf("loading bsp model: %s: %i\n", name, index);
+	if(index == 0) {
+		mod->type = MOD_BAD;
+		return 0;
+	}
+	Com_Printf("loading bsp model: %s: %i -> %i\n", name, index, mod->index);
 	return RE_LoadWorldMap_real( name, mod, index );
 }
 #endif
@@ -259,6 +271,13 @@ model_t *R_AllocModel( void ) {
 	mod = ri.Hunk_Alloc( sizeof( *tr.models[tr.numModels] ), h_low );
 	mod->index = tr.numModels;
 	tr.models[tr.numModels] = mod;
+	#if defined(USE_BSP_MODELS)
+	if(rwi != 0) {
+		trWorlds[0].models[trWorlds[0].numModels] = mod;
+		mod->index = trWorlds[0].numModels;
+		trWorlds[0].numModels++;
+	}
+	#endif
 	tr.numModels++;
 
 	return mod;
