@@ -2288,11 +2288,9 @@ void RE_LoadWorldMap( const char *name ) {
 	} buffer;
 	byte		*startMarker;
 #if defined(USE_BSP_MODELS)
-	char		strippedName2[MAX_QPATH];
-
 	int j, empty = -1;
 	for(j = 0; j < MAX_WORLD_MODELS; j++) {
-		if ( !Q_stricmp( s_worldDatas[j].name, strippedName2 ) ) {
+		if ( !Q_stricmp( s_worldDatas[j].name, name ) ) {
 			// TODO: PRINT_DEVELOPER
 			rwi = 0;
 			ri.Printf( PRINT_ALL, "RE_LoadWorldMap (%i): Already loaded %s\n", j, name );
