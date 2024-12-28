@@ -218,7 +218,7 @@ static modelExtToLoaderMap_t modelLoaders[ ] =
 	{ "mdr", R_RegisterMDR },
 #ifdef USE_BSP_MODELS
 	{ "md3", R_RegisterMD3 },
-	{ "bsp", R_RegisterBSP }
+	{ "bsp", R_RegisterMD3 }
 #else
 	{ "md3", R_RegisterMD3 }
 #endif
@@ -374,12 +374,6 @@ qhandle_t RE_RegisterModel( const char *name ) {
 	// the model formats supported
 	for( i = 0; i < numModelLoaders; i++ )
 	{
-
-		#ifdef USE_BSP_MODELS
-		if (i == 3){
-			continue;
-		}
-		#endif
 		if (i == orgLoader)
 			continue;
 
