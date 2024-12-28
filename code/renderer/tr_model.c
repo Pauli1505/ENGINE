@@ -218,7 +218,7 @@ static modelExtToLoaderMap_t modelLoaders[ ] =
 	{ "mdr", R_RegisterMDR },
 #ifdef USE_BSP_MODELS
 	{ "md3", R_RegisterMD3 },
-	{ "bsp", R_RegisterMD3 }
+	{ "bsp", R_RegisterBSP }
 #else
 	{ "md3", R_RegisterMD3 }
 #endif
