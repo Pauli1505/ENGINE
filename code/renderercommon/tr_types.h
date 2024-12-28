@@ -25,7 +25,7 @@ Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 
 #define MAX_VIDEO_HANDLES	16
 
-#define	MAX_DLIGHTS			256			// can't be increased, because bit flags are used on surfaces
+#define	MAX_DLIGHTS			1024		// can't be increased, because bit flags are used on surfaces
 
 // renderfx flags
 #define	RF_MINLIGHT			0x0001		// always have some light (viewmodel, some items)
