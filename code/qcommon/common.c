@@ -43,8 +43,8 @@ const int demo_protocols[] = { 66, 67, OLD_PROTOCOL_VERSION, NEW_PROTOCOL_VERSIO
         #define MIN_COMHUNKMEGS    1023
         #define DEF_COMHUNKMEGS    1023
     #else
-        #define MIN_COMHUNKMEGS    1023
-        #define DEF_COMHUNKMEGS    1023
+        #define MIN_COMHUNKMEGS    2047 // 1023 for 32bit - 2047 for 64bit
+        #define DEF_COMHUNKMEGS    2047
     #endif
 #else
     #if defined(__i386__)

@@ -2460,6 +2460,22 @@ static void SortNewShader( void ) {
 	float	sort;
 	shader_t	*newShader;
 
+#if defined(USE_BSP_MODELS)
+	newShader = trWorlds[0].shaders[ trWorlds[0].numShaders - 1 ];
+	sort = newShader->sort;
+	for ( i = trWorlds[0].numShaders - 2 ; i >= 0 ; i-- ) {
+		if ( trWorlds[0].sortedShaders[ i ]->sort <= sort ) {
+			break;
+		}
+		trWorlds[0].sortedShaders[i+1] = trWorlds[0].sortedShaders[i];
+		trWorlds[0].sortedShaders[i+1]->sortedIndex++;
+	}
+	if(rwi == 0) {
+		FixRenderCommandList( i+1 );
+	}
+	newShader->sortedIndex = i+1;
+	trWorlds[0].sortedShaders[i+1] = newShader;
+#else
 	newShader = tr.shaders[ tr.numShaders - 1 ];
 	sort = newShader->sort;
 
@@ -2477,6 +2493,7 @@ static void SortNewShader( void ) {
 
 	newShader->sortedIndex = i+1;
 	tr.sortedShaders[i+1] = newShader;
+#endif
 }
 
 
@@ -2506,6 +2523,16 @@ static shader_t *GeneratePermanentShader( void ) {
 	newShader->sortedIndex = tr.numShaders;
 
 	tr.numShaders++;
+
+#if defined(USE_BSP_MODELS)
+	if(rwi != 0) {
+		trWorlds[0].shaders[ trWorlds[0].numShaders ] = newShader;
+		trWorlds[0].sortedShaders[ trWorlds[0].numShaders ] = newShader;
+		newShader->index = trWorlds[0].numShaders;
+		newShader->sortedIndex = trWorlds[0].numShaders;
+		trWorlds[0].numShaders++;
+	}
+#endif
 
 	for ( i = 0 ; i < newShader->numUnfoggedPasses ; i++ ) {
 		if ( !stages[i].active ) {
