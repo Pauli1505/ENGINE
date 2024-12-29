@@ -126,7 +126,7 @@ static void SV_SetBrushModel( sharedEntity_t *ent, const char *name ) {
 		int chechsum, index;
 		// TODO: patch the bsp into the clipmap
 		index = CM_LoadMap(name, qfalse, &chechsum);
-		//ent->s.modelindex = index;	//model index not needed because models loads from client .bsp
+		ent->s.modelindex = index;
 	} else {
 #endif
 	if ( name[0] != '*' ) {
