@@ -2293,6 +2293,11 @@ void RE_LoadWorldMap( const char *name ) {
 		if ( !Q_stricmp( s_worldDatas[j].name, name ) ) {
 			// TODO: PRINT_DEVELOPER
 			rwi = 0;
+			if(model) {
+				//model->index = trWorlds[j].numModels;
+				model->bmodel = trWorlds[j].models[1]->bmodel;
+				model->type = MOD_BRUSH;
+			}
 			ri.Printf( PRINT_ALL, "RE_LoadWorldMap (%i): Already loaded %s\n", j, name );
 			return j;
 		} else if (s_worldDatas[j].name[0] == '\0' && empty == -1) {
