@@ -205,7 +205,7 @@ static qhandle_t R_RegisterBSP(const char *name, model_t *mod)
 		return 0;
 	}
 	index = ri.CM_LoadMap(name, qtrue, &chechsum);
-	//mod->type = MOD_BAD;
+	mod->type = MOD_BAD;
 	RE_LoadWorldMap_real( name, mod, index );
 	if(mod->type == MOD_BRUSH) {
 		Com_Printf("loading bsp model: %s: %i\n", name, mod->index);
@@ -386,11 +386,6 @@ qhandle_t RE_RegisterModel( const char *name ) {
 	// the model formats supported
 	for( i = 0; i < numModelLoaders; i++ )
 	{
-		#ifdef USE_BSP_MODELS
-		if (i == 3)		//skip bsp for ui and wait .bsp entension
-			continue;
-		#endif
-
 		if (i == orgLoader)
 			continue;
 
