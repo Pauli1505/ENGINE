@@ -2460,7 +2460,7 @@ static void SortNewShader( void ) {
 	float	sort;
 	shader_t	*newShader;
 
-#if defined(USE_BSP_MODELS)
+#if 0 //defined(USE_BSP_MODELS)
 	newShader = trWorlds[0].shaders[ trWorlds[0].numShaders - 1 ];
 	sort = newShader->sort;
 	for ( i = trWorlds[0].numShaders - 2 ; i >= 0 ; i-- ) {
@@ -2524,7 +2524,7 @@ static shader_t *GeneratePermanentShader( void ) {
 
 	tr.numShaders++;
 
-#if defined(USE_BSP_MODELS)
+#if 0 //defined(USE_BSP_MODELS)
 	if(rwi != 0) {
 		trWorlds[0].shaders[ trWorlds[0].numShaders ] = newShader;
 		trWorlds[0].sortedShaders[ trWorlds[0].numShaders ] = newShader;
@@ -3804,12 +3804,12 @@ void R_InitShaders( void ) {
 
 		CreateInternalShaders();
 
-for(i = 1; i < MAX_WORLD_MODELS; i++) {
-	trWorlds[i].defaultShader = tr.defaultShader;
-	trWorlds[i].cinematicShader = tr.cinematicShader;
-	trWorlds[i].whiteShader = tr.whiteShader;
-	trWorlds[i].numShaders = 3;
-}
+		for(i = 1; i < MAX_WORLD_MODELS; i++) {
+			trWorlds[i].defaultShader = tr.defaultShader;
+			trWorlds[i].cinematicShader = tr.cinematicShader;
+			trWorlds[i].whiteShader = tr.whiteShader;
+			trWorlds[i].numShaders = 3;
+		}
 
 		ScanAndLoadShaderFiles();
 

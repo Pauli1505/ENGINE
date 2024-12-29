@@ -2288,13 +2288,16 @@ void RE_LoadWorldMap( const char *name ) {
 	} buffer;
 	byte		*startMarker;
 #if defined(USE_BSP_MODELS)
-	char		strippedName2[MAX_QPATH];
-
 	int j, empty = -1;
 	for(j = 0; j < MAX_WORLD_MODELS; j++) {
-		if ( !Q_stricmp( s_worldDatas[j].name, strippedName2 ) ) {
+		if ( !Q_stricmp( s_worldDatas[j].name, name ) ) {
 			// TODO: PRINT_DEVELOPER
 			rwi = 0;
+			if(model) {
+				//model->index = trWorlds[j].numModels;
+				model->bmodel = trWorlds[j].models[1]->bmodel;
+				model->type = MOD_BRUSH;
+			}
 			ri.Printf( PRINT_ALL, "RE_LoadWorldMap (%i): Already loaded %s\n", j, name );
 			return j;
 		} else if (s_worldDatas[j].name[0] == '\0' && empty == -1) {
@@ -2324,7 +2327,7 @@ void RE_LoadWorldMap( const char *name ) {
 	// load it
 	size = ri.FS_ReadFile( name, &buffer.v );
 #ifdef USE_BSP_MODELS
-	if(!buffer.b && trWorlds[0].world) {
+	if(!buffer.b /* && trWorlds[0].world*/) {
 		rwi = 0;
 		return 0;
 	}
@@ -2402,9 +2405,6 @@ void RE_LoadWorldMap( const char *name ) {
 	ri.FS_FreeFile( buffer.v );
 #ifdef USE_BSP_MODELS
 	rwi = 0;
-	if(model) {
-		return model->index;
-	}
 	return empty;
 #endif
 }

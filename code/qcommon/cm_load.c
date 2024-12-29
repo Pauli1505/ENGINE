@@ -717,7 +717,7 @@ void CM_LoadMap( const char *name, qboolean clientload, int *checksum ) {
 #endif
 
 #if defined(USE_BSP_MODELS)
-	if( !buf && empty > 0 ) {
+	if( !buf /*&& empty > 0*/ ) {
 		cmi = 0;
 		return 0;
 	} else
