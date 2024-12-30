@@ -1,3 +1,7 @@
+LICENSE:
+Dual-License Model: This software is licensed under both the GNU General Public License Version 2
+(GPL-2) and a Proprietary License. You may choose which license to use.
+
 GNU GENERAL PUBLIC LICENSE
                        Version 2, June 1991
 
@@ -337,3 +341,38 @@ proprietary programs.  If your program is a subroutine library, you may
 consider it more useful to permit linking proprietary applications with the
 library.  If this is what you want to do, use the GNU Lesser General
 Public License instead of this License.
+
+Proprietary License
+
+Copyright 2024 Neovoid
+
+This software and all associated content (the "Software") are protected by copyright law. The Software is licensed, not sold, to you under the terms of this license. By using the Software, you agree to comply with the following terms and conditions:
+
+    License Grant
+        You are granted a non-exclusive, non-transferable, revocable license to use the Software solely for personal or internal use in accordance with the terms of this license.
+
+    Restrictions
+        You may not:
+            Copy, distribute, or share the Software in any form or medium without prior written consent.
+            Modify, reverse-engineer, decompile, disassemble, or otherwise attempt to derive the source code of the Software.
+            Rent, lease, sublicense, or otherwise transfer the Software to third parties.
+            Redistribute the Software in any form, except for redistribution as part of a game or application where the Software is integrated and not made available as standalone source code or assets.
+
+    Redistribution
+        If you redistribute the Software, you must do so without modification and include a copy of this license with it. Redistribution shall not grant the recipient any additional rights or permissions.
+
+    Closed Source
+        The Software must remain closed source and shall not be disclosed to third parties in source code form or made available for modification.
+
+    Termination
+        This license will terminate automatically without notice if you breach any term of this agreement. Upon termination, you must immediately cease all use of the Software and destroy all copies in your possession.
+
+    No Warranty
+        The Software is provided "as-is," without any warranties, express or implied, including but not limited to implied warranties of merchantability or fitness for a particular purpose. You assume all risks associated with using the Software.
+
+    Ownership
+        You acknowledge that all rights, title, and interest in the Software, including intellectual property rights, are owned by the copyright holder.
+
+    Governing Law
+        This license agreement shall be governed by the laws of the Federal Republic of Germany, without regard to its conflict of laws provisions.
+
