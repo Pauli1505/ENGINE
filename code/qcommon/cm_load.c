@@ -692,7 +692,7 @@ void CM_LoadMap( const char *name, qboolean clientload, int *checksum ) {
 #endif
 
 #ifdef USE_BSP_MODELS
-	outModel += cmWorlds[0].bspModelNum + MAX_SUBMODELS;
+	outModel += cmWorlds[0].bspModelNum + MAX_SUBMODELS_HALF;
 	cmWorlds[0].bspModelNum += 1;
 #endif
 #if 0
@@ -809,9 +809,9 @@ cmodel_t *CM_ClipHandleToModel( clipHandle_t handle ) {
 		Com_Error( ERR_DROP, "CM_ClipHandleToModel: bad handle %i", handle );
 	}
 #ifdef USE_BSP_MODELS
-	if(handle >= MAX_SUBMODELS) {
+	if(handle >= MAX_SUBMODELS_HALF) {
 		int modifiedHandle = (int)handle;
-		if ( modifiedHandle < cmWorlds[0].bspModelNum + MAX_SUBMODELS ) {
+		if ( modifiedHandle < MAX_SUBMODELS_HALF + cmWorlds[0].bspModelNum ) {
 			return &cmWorlds[0].cmodels[modifiedHandle];
 		}
 	}
@@ -841,7 +841,7 @@ CM_InlineModel
 clipHandle_t CM_InlineModel( int index ) 
 {
 	int modifiedIndex = index;
-	if ( modifiedIndex >= MAX_SUBMODELS && modifiedIndex < cmWorlds[0].bspModelNum + MAX_SUBMODELS ) {
+	if ( modifiedIndex >= MAX_SUBMODELS_HALF && modifiedIndex < MAX_SUBMODELS_HALF + cmWorlds[0].bspModelNum ) {
 		return index;
 	}
 	if ( index < 0 || index >= cm.numSubModels ) {
