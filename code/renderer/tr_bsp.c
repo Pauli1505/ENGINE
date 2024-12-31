@@ -1692,7 +1692,7 @@ static void R_LoadSubmodels( const lump_t *l ) {
 
 		model->type = MOD_BRUSH;
 		model->bmodel = out;
-#ifdef USE_BSP_MODELS
+#if 0 //USE_BSP_MODELS
 		Com_sprintf( model->name, sizeof( model->name ), "*%d", model->index + i - 1 );
 #else
 		Com_sprintf( model->name, sizeof( model->name ), "*%d", i );

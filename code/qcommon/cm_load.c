@@ -653,6 +653,7 @@ void CM_LoadMap( const char *name, qboolean clientload, int *checksum ) {
 			return cmWorlds[j].brushIndex;
 		} else if (cmWorlds[j].name[0] == '\0' && empty == -1) {
 			// fill the next empty clipmap slot
+			outModel = j;
 			empty = j;
 		}
 	}
