@@ -125,7 +125,7 @@ static void SV_SetBrushModel( sharedEntity_t *ent, const char *name ) {
 	if(Q_stristr(name, ".bsp")) {
 		int chechsum, index;
 		// TODO: patch the bsp into the clipmap
-		index = CM_LoadMap(name, qfalse, &chechsum, qtrue);
+		index = CM_LoadMap(name, qfalse, &chechsum);
 		ent->s.modelindex = index;
 	} else {
 #endif

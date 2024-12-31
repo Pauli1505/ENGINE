@@ -629,7 +629,7 @@ Loads in the map and all submodels
 ==================
 */
 #if defined(USE_BSP_MODELS)
-int CM_LoadMap( const char *name, qboolean clientload, int *checksum, qboolean isModel ) {
+int CM_LoadMap( const char *name, qboolean clientload, int *checksum ) {
 #else
 void CM_LoadMap( const char *name, qboolean clientload, int *checksum ) {
 #endif
@@ -758,16 +758,10 @@ void CM_LoadMap( const char *name, qboolean clientload, int *checksum ) {
 	CMod_LoadPlanes (&header.lumps[LUMP_PLANES]);
 	CMod_LoadBrushSides (&header.lumps[LUMP_BRUSHSIDES]);
 	CMod_LoadBrushes (&header.lumps[LUMP_BRUSHES]);
-	#if defined(USE_BSP_MODELS)
-	if(!isModel){
-	#endif
 	CMod_LoadSubmodels (&header.lumps[LUMP_MODELS]);
 	CMod_LoadNodes (&header.lumps[LUMP_NODES]);
 	CMod_LoadEntityString (&header.lumps[LUMP_ENTITIES]);
 	CMod_LoadVisibility( &header.lumps[LUMP_VISIBILITY] );
-	#if defined(USE_BSP_MODELS)
-	}
-	#endif
 	CMod_LoadPatches( &header.lumps[LUMP_SURFACES], &header.lumps[LUMP_DRAWVERTS] );
 
 	CMod_CheckLeafBrushes();

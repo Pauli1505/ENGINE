@@ -204,7 +204,7 @@ static qhandle_t R_RegisterBSP(const char *name, model_t *mod)
 		mod->type = MOD_BAD;
 		return 0;
 	}
-	index = ri.CM_LoadMap(name, qtrue, &chechsum, qtrue);
+	index = ri.CM_LoadMap(name, qtrue, &chechsum);
 	mod->type = MOD_BAD;
 	RE_LoadWorldMap_real( name, mod, index );
 	if(mod->type == MOD_BRUSH) {
@@ -388,11 +388,6 @@ qhandle_t RE_RegisterModel( const char *name ) {
 	{
 		if (i == orgLoader)
 			continue;
-
-		#ifdef USE_BSP_MODELS
-		if (i == 3)
-			continue;
-		#endif
 
 		Com_sprintf( altName, sizeof (altName), "%s.%s", localName, modelLoaders[ i ].ext );
 

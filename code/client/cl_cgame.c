@@ -367,11 +367,7 @@ Just adds default parameters that cgame doesn't need to know about
 static void CL_CM_LoadMap( const char *mapname ) {
 	int		checksum;
 
-#ifdef USE_BSP_MODELS
-	CM_LoadMap( mapname, qtrue, &checksum, qfalse );
-#else
 	CM_LoadMap( mapname, qtrue, &checksum );
-#endif
 }
 
 
