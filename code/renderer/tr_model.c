@@ -389,6 +389,11 @@ qhandle_t RE_RegisterModel( const char *name ) {
 		if (i == orgLoader)
 			continue;
 
+		#ifdef USE_BSP_MODELS
+		if (i == 3)
+			continue;
+		#endif
+
 		Com_sprintf( altName, sizeof (altName), "%s.%s", localName, modelLoaders[ i ].ext );
 
 		// Load
