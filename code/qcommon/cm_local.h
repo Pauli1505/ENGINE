@@ -174,6 +174,7 @@ typedef struct {
 	unsigned int checksum;
 #ifdef USE_BSP_MODELS
 	int brushIndex;
+	int bspModelNum;
 #endif
 } clipMap_t;
 
