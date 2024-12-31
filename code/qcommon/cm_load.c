@@ -629,7 +629,7 @@ Loads in the map and all submodels
 ==================
 */
 #if defined(USE_BSP_MODELS)
-int CM_LoadMap( const char *name, qboolean clientload, int *checksum ) {
+int CM_LoadMap( const char *name, qboolean clientload, int *checksum, qboolean isModel ) {
 #else
 void CM_LoadMap( const char *name, qboolean clientload, int *checksum ) {
 #endif
@@ -758,10 +758,16 @@ void CM_LoadMap( const char *name, qboolean clientload, int *checksum ) {
 	CMod_LoadPlanes (&header.lumps[LUMP_PLANES]);
 	CMod_LoadBrushSides (&header.lumps[LUMP_BRUSHSIDES]);
 	CMod_LoadBrushes (&header.lumps[LUMP_BRUSHES]);
+	#if defined(USE_BSP_MODELS)
+	if(!isModel){
+	#endif
 	CMod_LoadSubmodels (&header.lumps[LUMP_MODELS]);
 	CMod_LoadNodes (&header.lumps[LUMP_NODES]);
 	CMod_LoadEntityString (&header.lumps[LUMP_ENTITIES]);
 	CMod_LoadVisibility( &header.lumps[LUMP_VISIBILITY] );
+	#if defined(USE_BSP_MODELS)
+	}
+	#endif
 	CMod_LoadPatches( &header.lumps[LUMP_SURFACES], &header.lumps[LUMP_DRAWVERTS] );
 
 	CMod_CheckLeafBrushes();
@@ -848,14 +854,14 @@ clipHandle_t CM_InlineModel( int index )
 {
 	int i;
 	int modifiedIndex = index;
-	if ( index < 0 || index >= cm.numSubModels ) {
-		Com_Error (ERR_DROP, "CM_InlineModel: bad number %i >= %i", index, cm.numSubModels);
-	}
 	for(i = 0; i < MAX_NUM_MAPS; i++) {
 		if ( modifiedIndex >= 0 && modifiedIndex < cmWorlds[i].numSubModels ) {
 			return index;
 		}
 		modifiedIndex -= cmWorlds[i].numSubModels;
+	}
+	if ( index < 0 || index >= cm.numSubModels ) {
+		Com_Error (ERR_DROP, "CM_InlineModel: bad number %i >= %i", index, cm.numSubModels);
 	}
 	return index;
 }

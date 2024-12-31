@@ -523,7 +523,11 @@ void SV_SpawnServer( const char *mapname, qboolean killBots ) {
 	FS_Restart( sv.checksumFeed );
 
 	Sys_SetStatus( "Loading map %s", mapname );
+	#ifdef USE_BSP_MODELS
+	CM_LoadMap( va( "maps/%s.bsp", mapname ), qfalse, &checksum, qfalse );
+	#else
 	CM_LoadMap( va( "maps/%s.bsp", mapname ), qfalse, &checksum );
+	#endif
 
 	// set serverinfo visible name
 	Cvar_Set( "mapname", mapname );

@@ -204,7 +204,7 @@ static qhandle_t R_RegisterBSP(const char *name, model_t *mod)
 		mod->type = MOD_BAD;
 		return 0;
 	}
-	index = ri.CM_LoadMap(name, qtrue, &chechsum);
+	index = ri.CM_LoadMap(name, qtrue, &chechsum, qtrue);
 	mod->type = MOD_BAD;
 	RE_LoadWorldMap_real( name, mod, index );
 	if(mod->type == MOD_BRUSH) {
