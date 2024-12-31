@@ -843,7 +843,7 @@ cmodel_t *CM_ClipHandleToModel( clipHandle_t handle ) {
 CM_InlineModel
 ==================
 */
-#ifdef USE_BSP_MODELS
+#if 0
 clipHandle_t CM_InlineModel( int index ) 
 {
 	int i;
