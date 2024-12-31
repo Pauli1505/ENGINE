@@ -23,7 +23,7 @@ Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 #include "qfiles.h"
 
 
-#if defined(USE_BSP_MODELS)
+#ifdef USE_BSP_MODELS
 int		CM_LoadMap( const char *name, qboolean clientload, int *checksum);
 #else
 void		CM_LoadMap( const char *name, qboolean clientload, int *checksum);

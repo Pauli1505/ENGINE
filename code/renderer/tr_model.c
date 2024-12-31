@@ -271,7 +271,7 @@ model_t *R_AllocModel( void ) {
 	mod = ri.Hunk_Alloc( sizeof( *tr.models[tr.numModels] ), h_low );
 	mod->index = tr.numModels;
 	tr.models[tr.numModels] = mod;
-	#if defined(USE_BSP_MODELS)
+	#ifdef USE_BSP_MODELS
 	if(rwi != 0) {
 		trWorlds[0].models[trWorlds[0].numModels] = mod;
 		mod->index = trWorlds[0].numModels;

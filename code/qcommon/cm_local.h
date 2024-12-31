@@ -24,8 +24,7 @@ Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 #include "qcommon.h"
 #include "cm_polylib.h"
 
-#define	MAX_SUBMODELS			8192
-#define	MAX_SUBMODELS_HALF			MAX_SUBMODELS*0.5
+#define	MAX_SUBMODELS			4096
 #define CAPSULE_MODEL_HANDLE	4096
 #define	BOX_MODEL_HANDLE		4095
 
@@ -174,8 +173,7 @@ typedef struct {
 
 	unsigned int checksum;
 #ifdef USE_BSP_MODELS
-	int brushIndex;
-	int bspModelNum;
+	int brushIndex;Z
 #endif
 } clipMap_t;
 

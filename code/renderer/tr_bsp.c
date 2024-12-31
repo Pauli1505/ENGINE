@@ -292,7 +292,7 @@ static float R_ProcessLightmap( byte *image, const byte *buf_p, float maxIntensi
 }
 
 
-#if !defined(USE_BSP_MODELS)
+#ifndef USE_BSP_MODELS
 static int SetLightmapParams( int numLightmaps, int maxTextureSize )
 {
 	lightmapWidth = log2pad( LIGHTMAP_LEN, 1 );
@@ -336,7 +336,7 @@ int R_GetLightmapCoords( const int lightmapIndex, float *x, float *y )
 	return lightmapNum;
 }
 
-#if !defined(USE_BSP_MODELS)
+#ifndef USE_BSP_MODELS
 
 /*
 ===============
@@ -430,7 +430,7 @@ static void R_LoadLightmaps( const lump_t *l ) {
 
 	numLightmaps = l->filelen / (LIGHTMAP_SIZE * LIGHTMAP_SIZE * 3);
 
-#if !defined(USE_BSP_MODELS)
+#ifndef USE_BSP_MODELS
 	if ( r_mergeLightmaps->integer && numLightmaps > 1 ) {
 		// check for low texture sizes
 		if ( glConfig.maxTextureSize >= LIGHTMAP_LEN*2 ) {
@@ -2287,7 +2287,7 @@ void RE_LoadWorldMap( const char *name ) {
 		void *v;
 	} buffer;
 	byte		*startMarker;
-#if defined(USE_BSP_MODELS)
+#ifdef USE_BSP_MODELS
 	int j, empty = -1;
 	for(j = 0; j < MAX_WORLD_MODELS; j++) {
 		if ( !Q_stricmp( s_worldDatas[j].name, name ) ) {

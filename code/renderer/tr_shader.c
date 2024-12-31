@@ -3795,7 +3795,7 @@ R_InitShaders
 ==================
 */
 void R_InitShaders( void ) {
-#if defined(USE_BSP_MODELS)
+#ifdef USE_BSP_MODELS
 	int i;
 	ri.Printf( PRINT_ALL, "\nInitializing Shaders\n" );
 
