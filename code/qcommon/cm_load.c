@@ -809,7 +809,7 @@ cmodel_t *CM_ClipHandleToModel( clipHandle_t handle ) {
 		Com_Error( ERR_DROP, "CM_ClipHandleToModel: bad handle %i", handle );
 	}
 #ifdef USE_BSP_MODELS
-	if(handle >= cm.numSubModels) {
+	if(handle >= MAX_SUBMODELS) {
 		int modifiedHandle = (int)handle;
 		if ( modifiedHandle < cmWorlds[0].bspModelNum + MAX_SUBMODELS ) {
 			return &cmWorlds[0].cmodels[modifiedHandle];
@@ -841,7 +841,7 @@ CM_InlineModel
 clipHandle_t CM_InlineModel( int index ) 
 {
 	int modifiedIndex = index;
-	if ( modifiedIndex >= 0 && modifiedIndex < cmWorlds[0].bspModelNum + MAX_SUBMODELS ) {
+	if ( modifiedIndex >= MAX_SUBMODELS && modifiedIndex < cmWorlds[0].bspModelNum + MAX_SUBMODELS ) {
 		return index;
 	}
 	if ( index < 0 || index >= cm.numSubModels ) {
