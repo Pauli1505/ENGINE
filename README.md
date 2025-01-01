@@ -1,8 +1,8 @@
 # SourceTech Engine
 
-<a href="https://discord.com/invite/TZubjHHKty"><img src="https://img.shields.io/discord/1145198169441960067?color=7289da&logo=discord&logoColor=white" alt="QS Discord" /></a>
+<a href="https://discord.com/invite/TZubjHHKty"><img src="https://img.shields.io/discord/1145198169441960067?color=7289da&logo=discord&logoColor=white" alt="NMod Discord" /></a>
 
-This is a modern engine created for Quake Sandbox.
+This is a modern engine created for Noire's Mod.
 
 ## Features:
 
@@ -70,5 +70,5 @@ Performance is usually greater or equal to other opengl1 renderers
 
 ## Links
 
-* https://www.moddb.com/games/qs - Quake Sandbox ModDB page
-* https://discord.gg/TZubjHHKty - Quake Sandbox Discord
+* https://www.moddb.com/games/nmod - Noire's Mod ModDB page
+* https://discord.gg/TZubjHHKty - Noire's Mod Discord

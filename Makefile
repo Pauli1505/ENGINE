@@ -45,8 +45,8 @@ USE_RENDERER_DLOPEN = 1
 # valid options: opengl, vulkan, opengl2
 RENDERER_DEFAULT = opengl
 
-CNAME            = qsand
-DNAME            = qsand.ded
+CNAME            = nmod
+DNAME            = nmod.ded
 
 RENDERER_PREFIX  = $(CNAME)
 

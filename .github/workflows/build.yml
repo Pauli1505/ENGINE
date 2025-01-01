@@ -150,19 +150,19 @@ jobs:
       matrix:
         include:
           - artifact_dir: linux-x86
-            artifact_name: qsand_linux-x86.zip
+            artifact_name: nmod_linux-x86.zip
 
           - artifact_dir: linux-x86_64
-            artifact_name: qsand_linux-x86_64.zip
+            artifact_name: nmod_linux-x86_64.zip
 
           - artifact_dir: windows-mingw-x86
-            artifact_name: qsand_windows-x86.zip 
+            artifact_name: nmod_windows-x86.zip 
 
           - artifact_dir: windows-mingw-x86_64
-            artifact_name: qsand_windows-x86_64.zip
+            artifact_name: nmod_windows-x86_64.zip
 
           - artifact_dir: macos-x86_64
-            artifact_name: qsand_macos-x86_64.zip
+            artifact_name: nmod_macos-x86_64.zip
 
     steps:
       - name: Download Artifacts

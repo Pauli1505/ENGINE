@@ -1433,7 +1433,7 @@ static qboolean FS_GeneralRef( const char *filename )
 	if ( FS_HasExt( filename, extList, ARRAY_LEN( extList ) ) )
 		return qfalse;
 	
-	if ( !Q_stricmp( filename, "vm/qagame.qvm" ) )
+	if ( !Q_stricmp( filename, "qvm/qagame.qvm" ) )
 		return qfalse;
 
 	if ( strstr( filename, "levelshots" ) )
@@ -1479,10 +1479,10 @@ static int FS_OpenFileInPak( fileHandle_t *file, pack_t *pak, fileInPack_t *pakF
 	if ( !( pak->referenced & FS_GENERAL_REF ) && FS_GeneralRef( pakFile->name ) ) {
 		pak->referenced |= FS_GENERAL_REF;
 	}
-	if ( !( pak->referenced & FS_CGAME_REF ) && !strcmp( pakFile->name, "vm/cgame.qvm" ) ) {
+	if ( !( pak->referenced & FS_CGAME_REF ) && !strcmp( pakFile->name, "qvm/cgame.qvm" ) ) {
 		pak->referenced |= FS_CGAME_REF;
 	}
-	if ( !( pak->referenced & FS_UI_REF ) && !strcmp( pakFile->name, "vm/ui.qvm" ) ) {
+	if ( !( pak->referenced & FS_UI_REF ) && !strcmp( pakFile->name, "qvm/ui.qvm" ) ) {
 		pak->referenced |= FS_UI_REF;
 	}
 
@@ -1731,10 +1731,10 @@ void FS_TouchFileInPak( const char *filename ) {
 					if ( !( pak->referenced & FS_GENERAL_REF ) && FS_GeneralRef( filename ) ) {
 						pak->referenced |= FS_GENERAL_REF;
 					}
-					if ( !( pak->referenced & FS_CGAME_REF ) && !strcmp( filename, "vm/cgame.qvm" ) ) {
+					if ( !( pak->referenced & FS_CGAME_REF ) && !strcmp( filename, "qvm/cgame.qvm" ) ) {
 						pak->referenced |= FS_CGAME_REF;
 					}
-					if ( !( pak->referenced & FS_UI_REF ) && !strcmp( filename, "vm/ui.qvm" ) ) {
+					if ( !( pak->referenced & FS_UI_REF ) && !strcmp( filename, "qvm/ui.qvm" ) ) {
 						pak->referenced |= FS_UI_REF;
 					}
 					return;

@@ -439,7 +439,7 @@ static void VM_LoadSymbols( vm_t *vm ) {
 	}
 
 	COM_StripExtension(vm->name, name, sizeof(name));
-	Com_sprintf( symbols, sizeof( symbols ), "vm/%s.map", name );
+	Com_sprintf( symbols, sizeof( symbols ), "qvm/%s.map", name );
 	FS_ReadFile( symbols, &mapfile.v );
 	if ( !mapfile.c ) {
 		Com_Printf( "Couldn't load symbol file: %s\n", symbols );
@@ -582,7 +582,7 @@ static int Load_JTS( vm_t *vm, uint32_t crc32, void *data, int vmPakIndex ) {
 	fileHandle_t fh;
 
 	// load the image
-	Com_sprintf( filename, sizeof(filename), "vm/%s.jts", vm->name );
+	Com_sprintf( filename, sizeof(filename), "qvm/%s.jts", vm->name );
 	if ( data )
 		Com_Printf( "Loading jts file %s...\n", filename );
 
@@ -756,7 +756,7 @@ static vmHeader_t *VM_LoadQVM( vm_t *vm, qboolean alloc ) {
 	int					vmPakIndex;
 
 	// load the image
-	Com_sprintf( filename, sizeof(filename), "vm/%s.qvm", vm->name );
+	Com_sprintf( filename, sizeof(filename), "qvm/%s.qvm", vm->name );
 	Com_Printf( "Loading vm file %s...\n", filename );
 	length = FS_ReadFile( filename, (void **)&header );
 	if ( !header ) {

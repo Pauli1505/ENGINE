@@ -38,9 +38,9 @@ Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 
 //#define DEFAULT_GAME			"edawn"
 
-#define BASEGAME				"milab"
-#define BASEDEMO				"milabt"
-#define BASETA					"milabc"
+#define BASEGAME				"game"
+#define BASEDEMO				"game_t"
+#define BASETA					"game_c"
 #define STEAMPATH_NAME			"SourceTech"
 #define STEAMPATH_APPID			"2200"
 

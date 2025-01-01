@@ -3977,7 +3977,7 @@ void CL_Init( void ) {
 	cl_reconnectArgs = Cvar_Get( "cl_reconnectArgs", "", CVAR_ARCHIVE_ND | CVAR_NOTABCOMPLETE );
 
 	// userinfo
-	Cvar_Get ("name", "QSPlayer", CVAR_USERINFO | CVAR_ARCHIVE_ND );
+	Cvar_Get ("name", "NMod Player", CVAR_USERINFO | CVAR_ARCHIVE_ND );
 	Cvar_Get ("rate", "125000", CVAR_USERINFO | CVAR_ARCHIVE );
 	Cvar_Get ("snaps", "60", CVAR_USERINFO | CVAR_ARCHIVE );
 	Cvar_Get ("model", "beret/default", CVAR_USERINFO | CVAR_ARCHIVE_ND );
