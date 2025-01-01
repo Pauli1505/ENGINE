@@ -1398,7 +1398,7 @@ void CM_TransformedBoxTrace( trace_t *results, const vec3_t start, const vec3_t 
 		maxs = vec3_origin;
 	}
 
-#ifdef USE_BSP_MODELS
+#ifdef USE_BSP_COLMODELS
 		int j, numInlines, indexAdjusted;
 
 		// set the right map before entering trace
@@ -1474,7 +1474,7 @@ void CM_TransformedBoxTrace( trace_t *results, const vec3_t start, const vec3_t 
 	}
 
 	// sweep the box through the model
-#ifdef USE_BSP_MODELS
+#ifdef USE_BSP_COLMODELS
 	CM_Trace( &trace, start_l, end_l, symetricSize[0], symetricSize[1], indexAdjusted, origin, brushmask, capsule, &sphere );
 #else
 	CM_Trace( &trace, start_l, end_l, symetricSize[0], symetricSize[1], model, origin, brushmask, capsule, &sphere );
@@ -1494,7 +1494,7 @@ void CM_TransformedBoxTrace( trace_t *results, const vec3_t start, const vec3_t 
 	trace.endpos[2] = start[2] + trace.fraction * (end[2] - start[2]);
 
 	*results = trace;
-#ifdef USE_BSP_MODELS
+#ifdef USE_BSP_COLMODELS
 	cmi = 0;
 #endif
 }

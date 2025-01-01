@@ -172,7 +172,7 @@ typedef struct {
 	int			checkcount;					// incremented on each trace
 
 	unsigned int checksum;
-#ifdef USE_BSP_MODELS
+#ifdef USE_BSP_COLMODELS
 	int brushIndex;
 #endif
 } clipMap_t;
@@ -182,7 +182,7 @@ typedef struct {
 // and to avoid various numeric issues
 #define	SURFACE_CLIP_EPSILON	(0.125)
 
-#ifdef USE_BSP_MODELS
+#ifdef USE_BSP_COLMODELS
 #define MAX_NUM_MAPS 64
 #define cm        cmWorlds[cmi]
 extern	clipMap_t	cmWorlds[MAX_NUM_MAPS];
