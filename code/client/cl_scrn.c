@@ -210,17 +210,12 @@ void SCR_DrawSmallChar( int x, int y, int ch ) {
 ** small string are drawn at native screen resolution
 */
 void SCR_DrawSmallString( int x, int y, const char *s, int len ) {
-	int row, col, ch, i;
+	int row, col, i;
 	float frow, fcol;
 	float size;
 
 	if ( y < -smallchar_height ) {
 		return;
-	}
-
-	// Unicode Russian support
-	if (ch > 0x80) {
-		ch += 48;
 	}
 
 	size = 0.0625;
