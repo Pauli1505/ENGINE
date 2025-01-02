@@ -401,7 +401,7 @@ ifdef MINGW
     $(error Cannot find a suitable cross compiler for $(PLATFORM))
   endif
 
-  BASE_CFLAGS += -Wall -Wimplicit -Wstrict-prototypes -DUSE_ICON -DMINGW=1
+  BASE_CFLAGS += -Wall -Wimplicit -Wstrict-prototypes -DMINGW=1
 
   BASE_CFLAGS += -Wno-unused-result -fvisibility=hidden
   BASE_CFLAGS += -ffunction-sections -flto
@@ -530,8 +530,6 @@ else
   BASE_CFLAGS += -Wall -Wimplicit -Wstrict-prototypes -pipe
 
   BASE_CFLAGS += -Wno-unused-result
-
-  BASE_CFLAGS += -DUSE_ICON
 
   BASE_CFLAGS += -I/usr/include -I/usr/local/include
 
