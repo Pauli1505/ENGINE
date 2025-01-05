@@ -210,7 +210,7 @@ void SCR_DrawSmallChar( int x, int y, int ch ) {
 ** small string are drawn at native screen resolution
 */
 void SCR_DrawSmallString( int x, int y, const char *s, int len ) {
-	int row, col, i;
+	int row, col, ch, i;
 	float frow, fcol;
 	float size;
 
