@@ -28,15 +28,15 @@ Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 
 #define	STANDALONE				1
 
-#define Q3_VERSION            "SourceTech 1.0"
+#define Q3_VERSION            "Neovoid BETA"
 #ifndef SVN_VERSION
   #define SVN_VERSION Q3_VERSION
 #endif
-#define CLIENT_WINDOW_TITLE   "Cytrine Engine"
-#define CONSOLE_WINDOW_TITLE  "Cytrine Console"
+#define CLIENT_WINDOW_TITLE   "Engine"
+#define CONSOLE_WINDOW_TITLE  "Console"
 // 1.32 released 7-10-2002
 
-//#define DEFAULT_GAME			"edawn"
+//#define DEFAULT_GAME			"edawn" // this def is disabled because we are no longer in the bounds of Quake3E
 
 #define BASEGAME				"basegame"
 #define BASEDEMO				"basegame"
@@ -47,8 +47,8 @@ Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 #define MAX_TEAMNAME            32
 #define MAX_MASTER_SERVERS      5	// number of supported master servers
 
-#define GAMENAME_FOR_MASTER		"QuakeSandbox"
-#define HEARTBEAT_FOR_MASTER	"QS-1"
+#define GAMENAME_FOR_MASTER		"Deathmatch"
+#define HEARTBEAT_FOR_MASTER	"DM-1"
 
 #define DEMOEXT	"dem"			// standard demo extension
 

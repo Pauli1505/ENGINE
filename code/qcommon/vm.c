@@ -24,6 +24,8 @@ Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 
 /*
 
+// Basically this is the stuff to handle Virtual machines (QVM) which are files instructing the engine what to do
+// They are used in games
 
 intermix code and data
 symbol table
