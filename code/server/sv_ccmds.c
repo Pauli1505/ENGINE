@@ -1621,7 +1621,6 @@ void SV_AddDedicatedCommands( void )
 	Cmd_AddCommand( "systeminfo", SV_Systeminfo_f );
 	Cmd_AddCommand( "tell", SV_ConTell_f );
 	Cmd_AddCommand( "say", SV_ConSay_f );
-	Cmd_AddCommand( "locations", SV_Locations_f );
 }
 
 
@@ -1631,5 +1630,4 @@ void SV_RemoveDedicatedCommands( void )
 	Cmd_RemoveCommand( "systeminfo" );
 	Cmd_RemoveCommand( "tell" );
 	Cmd_RemoveCommand( "say" );
-	Cmd_RemoveCommand( "locations" ); // what the fuck is locations?? i cant do anything with the coordinates of my friend in the game dumbass
 }
