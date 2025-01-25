@@ -2,7 +2,7 @@
 
 <a href="https://discord.com/invite/TZubjHHKty"><img src="https://img.shields.io/discord/1145198169441960067?color=7289da&logo=discord&logoColor=white" alt="NMod Discord" /></a>
 
-This is a modern engine created for Noire's Mod.
+This is a modern engine created for OpenSandbox.
 
 ## Features:
 
@@ -70,5 +70,5 @@ Performance is usually greater or equal to other opengl1 renderers
 
 ## Links
 
-* https://www.moddb.com/games/nmod - Noire's Mod ModDB page
-* https://discord.gg/TZubjHHKty - Noire's Mod Discord
+* https://www.moddb.com/games/opensandbox - OpenSandbox ModDB page
+* https://discord.gg/TZubjHHKty - OpenSandbox Discord
