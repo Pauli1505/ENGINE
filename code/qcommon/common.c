@@ -4042,10 +4042,10 @@ void Com_Init( char *commandLine ) {
 		if ( !com_dedicated->integer ) {
 #ifndef DEDICATED
 			if ( !com_skipIdLogo || !com_skipIdLogo->integer )
-				Cbuf_AddText( "cinematic nmod_logo.RoQ\n" );
+				Cbuf_AddText( "cinematic sandbox_logo.RoQ\n" );
 			if( !com_introPlayed->integer ) {
 				Cvar_Set( com_introPlayed->name, "1" );
-				Cvar_Set( "nextmap", "cinematic nmod_intro.RoQ" );
+				Cvar_Set( "nextmap", "cinematic sandbox_intro.RoQ" );
 			}
 #endif
 		}

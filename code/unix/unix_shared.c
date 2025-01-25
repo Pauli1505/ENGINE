@@ -421,9 +421,9 @@ const char *Sys_DefaultHomePath( void )
 	{
 		Q_strncpyz( homePath, p, sizeof( homePath ) );
 #ifdef MACOS_X
-		Q_strcat( homePath, sizeof(homePath), "/Library/Application Support/Noiresmod" );
+		Q_strcat( homePath, sizeof(homePath), "/Library/Application Support/opensandbox" );
 #else
-		Q_strcat( homePath, sizeof( homePath ), "/.noiresmod" );
+		Q_strcat( homePath, sizeof( homePath ), "/.opensandbox" );
 #endif
 		if ( mkdir( homePath, 0750 ) ) 
 		{
