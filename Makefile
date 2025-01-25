@@ -45,8 +45,8 @@ USE_RENDERER_DLOPEN = 1
 # valid options: opengl, vulkan, opengl2
 RENDERER_DEFAULT = opengl
 
-CNAME            = nmod
-DNAME            = nmod.ded
+CNAME            = sandbox
+DNAME            = sandbox.ded
 
 RENDERER_PREFIX  = $(CNAME)
 
