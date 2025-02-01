@@ -2041,7 +2041,7 @@ void Cvar_Update( vmCvar_t *vmCvar, int privateFlag ) {
 			cv->string, (int)len );
 	}
 
-	Com_Printf( S_COLOR_YELLOW "Cvar %s Updated: %s\n", cv->name, cv->string);
+	//Com_Printf( S_COLOR_YELLOW "Cvar %s Updated: %s\n", cv->name, cv->string);
 
 	Q_strncpyz( vmCvar->string, cv->string, sizeof( vmCvar->string ) ); 
 
