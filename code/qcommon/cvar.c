@@ -2016,7 +2016,7 @@ void Cvar_Update( vmCvar_t *vmCvar, int privateFlag ) {
 	assert(vmCvar);
 
 	if ( (unsigned)vmCvar->handle >= cvar_numIndexes ) {
-		//Com_Printf( S_COLOR_YELLOW "Cvar_Update: handle out of range\n");
+		Com_Printf( S_COLOR_YELLOW "Cvar_Update: handle out of range\n");
 		return;
 	}
 
@@ -2040,6 +2040,8 @@ void Cvar_Update( vmCvar_t *vmCvar, int privateFlag ) {
 		Com_Printf( S_COLOR_YELLOW "Cvar_Update: src %s length %d exceeds MAX_CVAR_VALUE_STRING - truncate\n",
 			cv->string, (int)len );
 	}
+
+	Com_Printf( S_COLOR_YELLOW "Cvar %s Updated: %s\n", cv->name, cv->string);
 
 	Q_strncpyz( vmCvar->string, cv->string, sizeof( vmCvar->string ) ); 
 
