@@ -146,7 +146,7 @@ void RB_ShadowTessEnd( void ) {
 
 	// project vertexes away from light direction
 	for ( i = 0; i < tess.numVertexes; i++ ) {
-		VectorMA( tess.xyz[i], -65536, lightDir, tess.xyz[i+tess.numVertexes] );
+		VectorMA( tess.xyz[i], -2048, lightDir, tess.xyz[i+tess.numVertexes] );
 	}
 
 	// decide which triangles face the light
