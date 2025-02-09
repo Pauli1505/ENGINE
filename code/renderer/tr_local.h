@@ -1312,6 +1312,7 @@ extern	cvar_t	*r_anaglyphMode;
 
 //postFX
 extern	cvar_t	*r_postfx;
+extern	cvar_t	*r_postprocess;
 
 //color
 extern	cvar_t	*r_fx_greyscale;

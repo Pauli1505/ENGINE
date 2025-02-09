@@ -787,6 +787,49 @@ static char *ARB_BuildBlendProgram( char *buf, int count ) {
 	return buf;
 }
 
+static char *ARB_BuildPostProcessProgram( char *buf ) {
+    FILE *file;
+    long file_size;
+    size_t read_size;
+    char *file_contents;
+	const char *ospath;
+
+	ospath = FS_BuildOSPath( FS_GetHomePath(), FS_GetCurrentGameDir(), va("shaders/%s.fp", r_postprocess->string) );
+
+    if (r_postprocess->value == 0) {
+        *buf = '\0';
+        return buf;
+    }
+
+    file = fopen(ospath, "r");
+    if (!file) {
+        *buf = '\0';
+        return buf;
+    }
+
+    fseek(file, 0, SEEK_END);
+    file_size = ftell(file);
+    fseek(file, 0, SEEK_SET);
+
+    file_contents = (char *)malloc(file_size + 1);
+    if (!file_contents) {
+        fclose(file);
+        *buf = '\0';
+        return buf;
+    }
+
+    read_size = fread(file_contents, 1, file_size, file);
+    file_contents[read_size] = '\0';
+
+    fclose(file);
+
+    strcpy(buf, file_contents);
+
+    free(file_contents);
+
+    return buf;
+}
+
 static char *ARB_BuildPostFXProgram( char *buf ) {
     char *s = buf;
 
@@ -794,6 +837,8 @@ static char *ARB_BuildPostFXProgram( char *buf ) {
 
     s += sprintf(s, "TEMP baseTexCoord; \n");
     s += sprintf(s, "MOV baseTexCoord, fragment.texcoord[0]; \n");
+
+	s = ARB_BuildPostProcessProgram(s);
 
 	// 1 fragment. Chromatic Aberration
     if (r_fx_chromaticAberration->value != 0.0) {
@@ -908,7 +953,7 @@ static char *ARB_BuildPostFXProgram( char *buf ) {
 
     // 5. Invert
     if ( r_fx_invert->value != 0.0 ) {
-        s += sprintf( s, "SUB base.xyz, 1.0, base; \n" );
+        s += sprintf( s, "SUB base.xyz, 0.5, base; \n" );
     }
 
     // 6. Color Tint
@@ -935,17 +980,10 @@ static char *ARB_BuildPostFXProgram( char *buf ) {
 
     // 9. Filmic
     if ( r_fx_filmic->value != 0.0 ) {
-		s += sprintf( s, "TEMP hueMatRow1, hueMatRow2, hueMatRow3;\n" );
-		s += sprintf( s, "PARAM hueAngle = { %1.2f, 0.0, 0.0, 0.0 };\n", r_fx_filmic->value );
-		s += sprintf( s, "SIN hueMatRow1.x, hueAngle.x;\n" );
-		s += sprintf( s, "COS hueMatRow1.y, hueAngle.x;\n" );
-		s += sprintf( s, "PARAM lum = { 0.299, 0.587, 0.114, 0.0 };\n" );
-		s += sprintf( s, "MUL hueMatRow2.x, lum.x, (1.0 - hueMatRow1.y) + hueMatRow1.x * 0.213;\n" );
-		s += sprintf( s, "MUL hueMatRow2.y, lum.y, (1.0 - hueMatRow1.y) + hueMatRow1.x * 0.715;\n" );
-		s += sprintf( s, "MUL hueMatRow2.z, lum.z, (1.0 - hueMatRow1.y) + hueMatRow1.x * 0.072;\n" );
-		s += sprintf( s, "DP3 base.x, base, hueMatRow2;\n" );
-		s += sprintf( s, "DP3 base.y, base, hueMatRow3;\n" );
-		s += sprintf( s, "DP3 base.z, base, hueMatRow1;\n" );
+        s += sprintf( s, "TEMP hueShift; \n" );
+        s += sprintf( s, "PARAM hueRotation = { %1.2f, 0.0, 0.0, 0.0 }; \n", r_fx_filmic->value );
+        s += sprintf( s, "DP3 hueShift.x, base, hueRotation; \n" );
+        s += sprintf( s, "MUL base.xyz, base, hueShift.x; \n" );
     }
 
 	// 10. Bloom
