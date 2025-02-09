@@ -28,7 +28,7 @@ Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 
 #define	STANDALONE				1
 
-#define Q3_VERSION            "SourceTech 1.0"
+#define Q3_VERSION            "SourceTech 1.1"
 #ifndef SVN_VERSION
   #define SVN_VERSION Q3_VERSION
 #endif
@@ -1123,7 +1123,7 @@ typedef enum {
 //
 // per-level limits
 //
-#define	MAX_CLIENTS			256		// absolute limit
+#define	MAX_CLIENTS			99		// absolute limit
 #define MAX_LOCATIONS		64
 
 #define	GENTITYNUM_BITS		12		// not all of them send on network

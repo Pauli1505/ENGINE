@@ -379,7 +379,7 @@ static void InitLevelItemHeap(void)
 
 	if (levelitemheap) FreeMemory(levelitemheap);
 
-	max_levelitems = (int) LibVarValue("max_levelitems", "256");
+	max_levelitems = (int) LibVarValue("max_levelitems", "4096");
 	levelitemheap = (levelitem_t *) GetClearedMemory(max_levelitems * sizeof(levelitem_t));
 
 	for (i = 0; i < max_levelitems-1; i++)
@@ -403,7 +403,7 @@ static levelitem_t *AllocLevelItem(void)
 	li = freelevelitems;
 	if (!li)
 	{
-		botimport.Print(PRT_FATAL, "out of level items\n");
+		//botimport.Print(PRT_FATAL, "out of level items\n");
 		return NULL;
 	} //end if
 	//

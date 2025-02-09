@@ -935,10 +935,17 @@ static char *ARB_BuildPostFXProgram( char *buf ) {
 
     // 9. Filmic
     if ( r_fx_filmic->value != 0.0 ) {
-        s += sprintf( s, "TEMP hueShift; \n" );
-        s += sprintf( s, "PARAM hueRotation = { %1.2f, 0.0, 0.0, 0.0 }; \n", r_fx_filmic->value );
-        s += sprintf( s, "DP3 hueShift.x, base, hueRotation; \n" );
-        s += sprintf( s, "MUL base.xyz, base, hueShift.x; \n" );
+		s += sprintf( s, "TEMP hueMatRow1, hueMatRow2, hueMatRow3;\n" );
+		s += sprintf( s, "PARAM hueAngle = { %1.2f, 0.0, 0.0, 0.0 };\n", r_fx_filmic->value );
+		s += sprintf( s, "SIN hueMatRow1.x, hueAngle.x;\n" );
+		s += sprintf( s, "COS hueMatRow1.y, hueAngle.x;\n" );
+		s += sprintf( s, "PARAM lum = { 0.299, 0.587, 0.114, 0.0 };\n" );
+		s += sprintf( s, "MUL hueMatRow2.x, lum.x, (1.0 - hueMatRow1.y) + hueMatRow1.x * 0.213;\n" );
+		s += sprintf( s, "MUL hueMatRow2.y, lum.y, (1.0 - hueMatRow1.y) + hueMatRow1.x * 0.715;\n" );
+		s += sprintf( s, "MUL hueMatRow2.z, lum.z, (1.0 - hueMatRow1.y) + hueMatRow1.x * 0.072;\n" );
+		s += sprintf( s, "DP3 base.x, base, hueMatRow2;\n" );
+		s += sprintf( s, "DP3 base.y, base, hueMatRow3;\n" );
+		s += sprintf( s, "DP3 base.z, base, hueMatRow1;\n" );
     }
 
 	// 10. Bloom
