@@ -838,7 +838,7 @@ static char *ARB_BuildPostFXProgram( char *buf ) {
     s += sprintf(s, "TEMP baseTexCoord; \n");
     s += sprintf(s, "MOV baseTexCoord, fragment.texcoord[0]; \n");
 
-	s = ARB_BuildPostProcessProgram(s);
+	ARB_BuildPostProcessProgram(s + strlen(s));
 
 	// 1 fragment. Chromatic Aberration
     if (r_fx_chromaticAberration->value != 0.0) {
