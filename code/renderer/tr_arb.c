@@ -794,12 +794,7 @@ static char *ARB_BuildPostProcessProgram( char *buf ) {
     char *file_contents;
 	const char *ospath;
 
-	ospath = FS_BuildOSPath( FS_GetHomePath(), FS_GetCurrentGameDir(), va("shaders/%s.fp", r_postprocess->string) );
-
-    if (r_postprocess->value == 0) {
-        *buf = '\0';
-        return buf;
-    }
+	ospath = FS_BuildOSPath( FS_GetHomePath(), FS_GetCurrentGameDir(), r_postprocess->string );
 
     file = fopen(ospath, "r");
     if (!file) {
@@ -832,13 +827,15 @@ static char *ARB_BuildPostProcessProgram( char *buf ) {
 
 static char *ARB_BuildPostFXProgram( char *buf ) {
     char *s = buf;
+	char shaderbuffer[16384];
 
 	s += sprintf( s, " \n" );	//add this for effects off
 
     s += sprintf(s, "TEMP baseTexCoord; \n");
     s += sprintf(s, "MOV baseTexCoord, fragment.texcoord[0]; \n");
 
-	ARB_BuildPostProcessProgram(s + strlen(s));
+	ARB_BuildPostProcessProgram(shaderbuffer);
+	s += sprintf(s, "%s", shaderbuffer);
 
 	// 1 fragment. Chromatic Aberration
     if (r_fx_chromaticAberration->value != 0.0) {
