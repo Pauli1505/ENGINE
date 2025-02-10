@@ -979,6 +979,8 @@ static char *ARB_BuildPostFXProgram( char *buf ) {
     if ( r_fx_filmic->value != 0.0 ) {
 		s += sprintf( s, "TEMP hueShift; \n" );
 		s += sprintf( s, "PARAM hueRotation = { 1.0, 1.0, 1.0, 1.0 }; \n" );
+
+		s += sprintf( s, "ADD base.xyz, base, 0.05; \n" );
 		
 		s += sprintf( s, "DP3 hueShift.x, base, hueRotation; \n" );
 		s += sprintf( s, "MUL hueShift.xyz, base, hueShift.x; \n" );

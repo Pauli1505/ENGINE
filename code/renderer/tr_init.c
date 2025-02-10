@@ -1531,7 +1531,7 @@ static void R_Register( void )
 	ri.Cvar_SetDescription( r_colorMipLevels, "Debugging tool to artificially color different mipmap levels so that they are more apparent." );
 	r_detailTextures = ri.Cvar_Get( "r_detailtextures", "1", CVAR_ARCHIVE_ND | CVAR_LATCH );
 	ri.Cvar_SetDescription( r_detailTextures, "Enables usage of shader stages flagged as detail." );
-	r_texturebits = ri.Cvar_Get( "r_texturebits", "0", CVAR_ARCHIVE_ND | CVAR_LATCH );
+	r_texturebits = ri.Cvar_Get( "r_texturebits", "32", CVAR_ARCHIVE_ND | CVAR_LATCH );
 	ri.Cvar_SetDescription( r_texturebits, "Number of texture bits per texture." );
 
 	r_mergeLightmaps = ri.Cvar_Get( "r_mergeLightmaps", "1", CVAR_ARCHIVE_ND | CVAR_LATCH );
@@ -1635,7 +1635,7 @@ static void R_Register( void )
 	ri.Cvar_SetDescription( r_bloom_filter_size, "Filter size of Gaussian Blur effect for each pass, bigger filter size means stronger and wider blur, lower values are faster, default is 6." );
 	ri.Cvar_SetGroup( r_bloom_filter_size, CVG_RENDERER );
 
-	r_bloom_reflection = ri.Cvar_Get( "r_bloom_reflection", "0.25", CVAR_ARCHIVE_ND );
+	r_bloom_reflection = ri.Cvar_Get( "r_bloom_reflection", "0.05", CVAR_ARCHIVE_ND );
 	ri.Cvar_CheckRange( r_bloom_reflection, "-4", "4", CV_FLOAT );
 	ri.Cvar_SetDescription( r_bloom_reflection, "Bloom lens reflection effect, value is an intensity factor of the effect, negative value means blend only reflection and skip main bloom texture." );
 #endif // USE_FBO
