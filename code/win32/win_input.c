@@ -21,7 +21,7 @@ Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 */
 // win_input.c -- win32 mouse and joystick code
 // 02/21/97 JCB Added extended DirectInput code to support external controllers.
-// but wait, if this is... '97 code, That shit is Windows 96 :sob:
+
 #include "../client/client.h"
 #include "win_local.h"
 #include "glw_win.h"

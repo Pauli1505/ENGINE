@@ -444,8 +444,8 @@ name:						default:			module(s):			description:
 "homedir"					""					be_interface.c		home directory
 
 "log"						"0"					l_log.c				enable/disable creating a log file
-"maxclients"				"256"					be_interface.c		maximum number of clients
-"maxentities"				"1024"				be_interface.c		maximum number of entities
+"maxclients"				"99"					be_interface.c		maximum number of clients
+"maxentities"				"4096"				be_interface.c		maximum number of entities
 "bot_developer"				"0"					be_interface.c		bot developer mode (it's "botDeveloper" in C to prevent symbol clash).
 
 "phys_friction"				"6"					be_aas_move.c		ground friction
@@ -513,7 +513,7 @@ name:						default:			module(s):			description:
 "max_weaponinfo"			"32"				be_ai_weap.c		maximum number of weapon info
 "max_projectileinfo"		"32"				be_ai_weap.c		maximum number of projectile info
 "max_iteminfo"				"4096"				be_ai_goal.c		maximum number of item info
-"max_levelitems"			"256"				be_ai_goal.c		maximum number of level items
+"max_levelitems"			"4096"				be_ai_goal.c		maximum number of level items
 
 */
 

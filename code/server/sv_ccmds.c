@@ -172,7 +172,7 @@ static void SV_Map_f( void ) {
 	len = FS_FOpenFileRead( expanded, NULL, qfalse );
 	FS_RestorePure();
 	if ( len == -1 ) {
-		Com_Printf( "Can't find  %s \n", expanded );
+		Com_Printf( "Can't find map %s\n", expanded );
 		return;
 	}
 
@@ -214,11 +214,7 @@ static void SV_Map_f( void ) {
 	// start up the map
 	SV_SpawnServer( mapname, killBots );
 
-	// set the cheat value
-	// if the level was started with "map <levelname>", then
-	// cheats will not be allowed.  If started with "map <levelname>"
-	// then cheats will be allowed
-	// fuck everything above, i just changed it so that map can also allow cheats :D
+// cheats allowed either way because i say so
 	if ( cheat ) {
 		Cvar_Set( "sv_cheats", "1" );
 	} else {
@@ -929,7 +925,7 @@ static void SV_AddBanToList(qboolean isexception)
 
 	if(ip.type != NA_IP && ip.type != NA_IP6)
 	{
-		Com_Printf("Error: Can ban players connected via the internet only.\n"); // würd mir stinken wenn ich ein lan nutzer wäre (ich nutze lan aber nicht für multiplay)
+		Com_Printf("Error: Can ban players connected via the internet only.\n");
 		return;
 	}
 
@@ -1400,7 +1396,7 @@ static void SV_ConTell_f( void ) {
 ==================
 SV_Heartbeat_f
 
-Also called by SV_DropClient, SV_DirectConnect, and SV_SpawnServer // lmao what if you add z to undo and run sv_spawnserver, would you just explode or something
+Also called by SV_DropClient, SV_DirectConnect, and SV_SpawnServer
 ==================
 */
 void SV_Heartbeat_f( void ) {
@@ -1549,7 +1545,7 @@ void SV_AddOperatorCommands( void ) {
 	initialized = qtrue;
 
 	Cmd_AddCommand ("heartbeat", SV_Heartbeat_f);
-	Cmd_AddCommand ("kick", SV_Kick_f); //dropkick this whigga out of the lobby asap
+	Cmd_AddCommand ("kick", SV_Kick_f);
 #ifndef STANDALONE
 #ifdef USE_BANS
 	if(!Cvar_VariableIntegerValue("com_standalone"))
@@ -1570,11 +1566,12 @@ void SV_AddOperatorCommands( void ) {
 	Cmd_AddCommand ("map", SV_Map_f);
 	Cmd_SetCommandCompletionFunc( "map", SV_CompleteMapName );
 #ifndef PRE_RELEASE_DEMO
-	//Cmd_AddCommand ("devmap", SV_Map_f);
-	//Cmd_SetCommandCompletionFunc( "devmap", SV_CompleteMapName ); // removed devmap command because now that map  enables cheats it doesnt fuckin mattuh (you dont matter, give up you hobo!!)
+	Cmd_AddCommand ("map", SV_Map_f);
+	Cmd_SetCommandCompletionFunc( "map", SV_CompleteMapName );
 	Cmd_AddCommand ("spmap", SV_Map_f);
-	Cmd_SetCommandCompletionFunc( "spmap", SV_CompleteMapName ); // world no change map command ALWAYS bring cheat!!!! you shitty community modders no do shid about this!!!
-	// why the fuk is the above the only string that contains spmap in this entire code? shouldnt it contain an if that checks if thats used to enable the "cheat" var
+	Cmd_SetCommandCompletionFunc( "spmap", SV_CompleteMapName );
+	Cmd_AddCommand ("spmap", SV_Map_f);
+	Cmd_SetCommandCompletionFunc( "spmap", SV_CompleteMapName );
 #endif
 	Cmd_AddCommand ("killserver", SV_KillServer_f);
 #ifdef USE_BANS	
@@ -1621,7 +1618,9 @@ void SV_AddDedicatedCommands( void )
 	Cmd_AddCommand( "systeminfo", SV_Systeminfo_f );
 	Cmd_AddCommand( "tell", SV_ConTell_f );
 	Cmd_AddCommand( "say", SV_ConSay_f );
+	Cmd_AddCommand( "locations", SV_Locations_f );
 }
+
 
 
 void SV_RemoveDedicatedCommands( void )
@@ -1630,4 +1629,5 @@ void SV_RemoveDedicatedCommands( void )
 	Cmd_RemoveCommand( "systeminfo" );
 	Cmd_RemoveCommand( "tell" );
 	Cmd_RemoveCommand( "say" );
+	Cmd_RemoveCommand( "locations" );
 }

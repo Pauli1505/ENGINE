@@ -218,11 +218,6 @@ void SCR_DrawSmallString( int x, int y, const char *s, int len ) {
 		return;
 	}
 
-	// Unicode Russian support
-	if (ch > 0x80) {
-		ch += 48;
-	}
-
 	size = 0.0625;
 
 	for ( i = 0; i < len; i++ ) {

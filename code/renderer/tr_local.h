@@ -575,6 +575,8 @@ typedef struct {
 	vec3_t		visBounds[2];
 	float		zFar;
 	stereoFrame_t	stereoFrame;
+	int 		portalViewDepth;
+	int			lastENum;
 #ifdef USE_PMLIGHT
 	// each view will have its own dlight set
 	unsigned int num_dlights;
@@ -1187,7 +1189,14 @@ typedef struct {
 } trGlobals_t;
 
 extern backEndState_t	backEnd;
+#ifdef USE_BSP_MODELS
+#define MAX_WORLD_MODELS 64
+extern int     rwi;
+extern trGlobals_t	trWorlds[MAX_WORLD_MODELS];
+#define tr trWorlds[0]
+#else
 extern trGlobals_t	tr;
+#endif
 
 extern int					gl_clamp_mode;
 
@@ -1303,6 +1312,7 @@ extern	cvar_t	*r_anaglyphMode;
 
 //postFX
 extern	cvar_t	*r_postfx;
+extern	cvar_t	*r_postprocess;
 
 //color
 extern	cvar_t	*r_fx_greyscale;
@@ -1323,6 +1333,8 @@ extern	cvar_t	*r_fx_chromaticAberration;
 extern	cvar_t	*r_fx_chameleon;
 extern	cvar_t	*r_fx_ambientlight;
 extern	cvar_t	*r_fx_blur;
+
+extern	cvar_t	*r_recurseLimit;
 
 extern	cvar_t	*r_ignoreGLErrors;
 
@@ -1441,7 +1453,11 @@ void		RE_UploadCinematic( int w, int h, int cols, int rows, byte *data, int clie
 
 void		RE_BeginFrame( stereoFrame_t stereoFrame );
 void		RE_BeginRegistration( glconfig_t *glconfig );
+#ifdef USE_BSP_MODELS
+qhandle_t RE_LoadWorldMap( const char *mapname );
+#else
 void		RE_LoadWorldMap( const char *mapname );
+#endif
 void		RE_SetWorldVisData( const byte *vis );
 qhandle_t	RE_RegisterModel( const char *name );
 qhandle_t	RE_RegisterSkin( const char *name );

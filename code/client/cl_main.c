@@ -3425,6 +3425,9 @@ static void CL_InitRef( void ) {
 
 	rimp.CM_ClusterPVS = CM_ClusterPVS;
 	rimp.CM_DrawDebugSurface = CM_DrawDebugSurface;
+#ifdef USE_BSP_MODELS
+	rimp.CM_LoadMap = CM_LoadMap;
+#endif
 
 	rimp.FS_ReadFile = FS_ReadFile;
 	rimp.FS_FreeFile = FS_FreeFile;
@@ -3974,7 +3977,7 @@ void CL_Init( void ) {
 	cl_reconnectArgs = Cvar_Get( "cl_reconnectArgs", "", CVAR_ARCHIVE_ND | CVAR_NOTABCOMPLETE );
 
 	// userinfo
-	Cvar_Get ("name", "player", CVAR_USERINFO | CVAR_ARCHIVE_ND );
+	Cvar_Get ("name", "Sandbox Player", CVAR_USERINFO | CVAR_ARCHIVE_ND );
 	Cvar_Get ("rate", "125000", CVAR_USERINFO | CVAR_ARCHIVE );
 	Cvar_Get ("snaps", "60", CVAR_USERINFO | CVAR_ARCHIVE );
 	Cvar_Get ("model", "beret/default", CVAR_USERINFO | CVAR_ARCHIVE_ND );

@@ -43,8 +43,8 @@ const int demo_protocols[] = { 66, 67, OLD_PROTOCOL_VERSION, NEW_PROTOCOL_VERSIO
         #define MIN_COMHUNKMEGS    1023
         #define DEF_COMHUNKMEGS    1023
     #else
-        #define MIN_COMHUNKMEGS    1023
-        #define DEF_COMHUNKMEGS    1023
+        #define MIN_COMHUNKMEGS    2047 // 1023 for 32bit - 2047 for 64bit
+        #define DEF_COMHUNKMEGS    2047
     #endif
 #else
     #if defined(__i386__)
@@ -4042,10 +4042,10 @@ void Com_Init( char *commandLine ) {
 		if ( !com_dedicated->integer ) {
 #ifndef DEDICATED
 			if ( !com_skipIdLogo || !com_skipIdLogo->integer )
-				Cbuf_AddText( "cinematic idlogo.RoQ\n" );
+				Cbuf_AddText( "cinematic sandbox_logo.RoQ\n" );
 			if( !com_introPlayed->integer ) {
 				Cvar_Set( com_introPlayed->name, "1" );
-				Cvar_Set( "nextmap", "cinematic intro.RoQ" );
+				Cvar_Set( "nextmap", "cinematic sandbox_intro.RoQ" );
 			}
 #endif
 		}

@@ -25,7 +25,12 @@ Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 
 #include <string.h> // memcpy
 
+#ifdef USE_BSP_MODELS
+#define MAX_WORLD_MODELS 64
+trGlobals_t		trWorlds[MAX_WORLD_MODELS];
+#else
 trGlobals_t		tr;
+#endif
 
 static const float s_flipMatrix[16] = {
 	// convert from our coordinate system (looking down X)
@@ -1109,6 +1114,8 @@ R_MirrorViewBySurface
 Returns qtrue if another view has been rendered
 ========================
 */
+
+#define MAX_PORTAL_RECURSION_DEPTH r_recurseLimit->integer
 extern int r_numdlights;
 static qboolean R_MirrorViewBySurface( const drawSurf_t *drawSurf, int entityNum ) {
 	viewParms_t		newParms;
@@ -1116,13 +1123,16 @@ static qboolean R_MirrorViewBySurface( const drawSurf_t *drawSurf, int entityNum
 	orientation_t	surface, camera;
 	qboolean		isMirror;
 
-	// don't recursively mirror
-	if ( tr.viewParms.portalView != PV_NONE ) {
-		ri.Printf( PRINT_DEVELOPER, "WARNING: recursive mirror/portal found\n" );
-		return qfalse;
+    // Check if we're exceeding recursion limit
+    if ( tr.viewParms.portalViewDepth >= MAX_PORTAL_RECURSION_DEPTH && tr.viewParms.portalView != PV_NONE || tr.viewParms.lastENum == entityNum ) {
+        ri.Printf( PRINT_DEVELOPER, "WARNING: portal recursion limit reached\n" );
+        return qfalse;
+    } else {
+		tr.viewParms.portalViewDepth += 1;
+		tr.viewParms.lastENum = entityNum;
 	}
 
-	if ( r_noportals->integer > 1 /*|| r_fastsky->integer == 1 */ ) {
+	if ( r_noportals->integer > 1 ) {
 		return qfalse;
 	}
 

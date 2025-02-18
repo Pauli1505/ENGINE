@@ -1,17 +1,8 @@
-# Qytrine
-<a href="https://discord.gg/RT5wBAZxkP"><img src="https://img.shields.io/discord/1145198169441960067?color=7289da&logo=discord&logoColor=white" alt="Qytrine Discord" /></a>
-
-# Features:
-
-(The same from Quake3e)
-(The same from sourcetech)
--- planned to add better BSP limits and Scripted Sequences (Scripted Sequences will be in a future version of [github.com/ksyuwhy/QuakeSandbox](Quake Sandbox) )
-
 # SourceTech Engine
 
-<a href="https://discord.com/invite/TZubjHHKty"><img src="https://img.shields.io/discord/1145198169441960067?color=7289da&logo=discord&logoColor=white" alt="QS Discord" /></a>
+<a href="https://discord.com/invite/TZubjHHKty"><img src="https://img.shields.io/discord/1145198169441960067?color=7289da&logo=discord&logoColor=white" alt="NMod Discord" /></a>
 
-This is a modern engine created for Quake Sandbox.
+This is a modern engine created for OpenSandbox.
 
 ## Features:
 
@@ -79,5 +70,5 @@ Performance is usually greater or equal to other opengl1 renderers
 
 ## Links
 
-* https://www.moddb.com/games/qs - Quake Sandbox ModDB page
-* https://discord.gg/TZubjHHKty - Quake Sandbox Discord
+* https://www.moddb.com/games/opensandbox - OpenSandbox ModDB page
+* https://discord.gg/TZubjHHKty - OpenSandbox Discord

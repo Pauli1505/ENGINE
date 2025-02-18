@@ -58,6 +58,7 @@ cvar_t	*r_anaglyphMode;
 
 //postFX
 cvar_t	*r_postfx;
+cvar_t	*r_postprocess;
 
 //color
 cvar_t	*r_fx_greyscale;
@@ -78,6 +79,8 @@ cvar_t	*r_fx_chromaticAberration;
 cvar_t	*r_fx_chameleon;
 cvar_t	*r_fx_ambientlight;
 cvar_t	*r_fx_blur;
+
+cvar_t	*r_recurseLimit;
 
 static cvar_t *r_ignorehwgamma;
 
@@ -1528,7 +1531,7 @@ static void R_Register( void )
 	ri.Cvar_SetDescription( r_colorMipLevels, "Debugging tool to artificially color different mipmap levels so that they are more apparent." );
 	r_detailTextures = ri.Cvar_Get( "r_detailtextures", "1", CVAR_ARCHIVE_ND | CVAR_LATCH );
 	ri.Cvar_SetDescription( r_detailTextures, "Enables usage of shader stages flagged as detail." );
-	r_texturebits = ri.Cvar_Get( "r_texturebits", "0", CVAR_ARCHIVE_ND | CVAR_LATCH );
+	r_texturebits = ri.Cvar_Get( "r_texturebits", "32", CVAR_ARCHIVE_ND | CVAR_LATCH );
 	ri.Cvar_SetDescription( r_texturebits, "Number of texture bits per texture." );
 
 	r_mergeLightmaps = ri.Cvar_Get( "r_mergeLightmaps", "1", CVAR_ARCHIVE_ND | CVAR_LATCH );
@@ -1615,7 +1618,7 @@ static void R_Register( void )
 	r_bloom_threshold_mode = ri.Cvar_Get( "r_bloom_threshold_mode", "0", CVAR_ARCHIVE_ND );
 	ri.Cvar_SetDescription( r_bloom_threshold_mode, "Color extraction mode:\n 0: (r|g|b) >= threshold\n 1: (r + g + b ) / 3 >= threshold\n 2: luma(r, g, b) >= threshold" );
 	ri.Cvar_SetGroup( r_bloom_threshold_mode, CVG_RENDERER );
-	r_bloom_intensity = ri.Cvar_Get( "r_bloom_intensity", "0.15", CVAR_ARCHIVE_ND );
+	r_bloom_intensity = ri.Cvar_Get( "r_bloom_intensity", "0.10", CVAR_ARCHIVE_ND );
 	ri.Cvar_SetDescription( r_bloom_intensity, "Final bloom blend factor, default is 0.5." );
 	r_bloom_passes = ri.Cvar_Get( "r_bloom_passes", "6", CVAR_ARCHIVE_ND | CVAR_LATCH );
 	ri.Cvar_CheckRange( r_bloom_passes, "3", XSTRING( MAX_BLUR_PASSES ), CV_INTEGER );
@@ -1632,7 +1635,7 @@ static void R_Register( void )
 	ri.Cvar_SetDescription( r_bloom_filter_size, "Filter size of Gaussian Blur effect for each pass, bigger filter size means stronger and wider blur, lower values are faster, default is 6." );
 	ri.Cvar_SetGroup( r_bloom_filter_size, CVG_RENDERER );
 
-	r_bloom_reflection = ri.Cvar_Get( "r_bloom_reflection", "0.25", CVAR_ARCHIVE_ND );
+	r_bloom_reflection = ri.Cvar_Get( "r_bloom_reflection", "0.05", CVAR_ARCHIVE_ND );
 	ri.Cvar_CheckRange( r_bloom_reflection, "-4", "4", CV_FLOAT );
 	ri.Cvar_SetDescription( r_bloom_reflection, "Bloom lens reflection effect, value is an intensity factor of the effect, negative value means blend only reflection and skip main bloom texture." );
 #endif // USE_FBO
@@ -1670,6 +1673,8 @@ static void R_Register( void )
 	//postFX
 	r_postfx = ri.Cvar_Get( "r_postfx", "1", CVAR_ARCHIVE_ND );
 	ri.Cvar_SetGroup( r_postfx, CVG_RENDERER );
+	r_postprocess = ri.Cvar_Get( "r_postprocess", "0", CVAR_ARCHIVE_ND );
+	ri.Cvar_SetGroup( r_postprocess, CVG_RENDERER );
 
 	//colors
 	r_fx_greyscale = ri.Cvar_Get( "r_fx_greyscale", "-0.25", CVAR_ARCHIVE_ND );
@@ -1706,6 +1711,8 @@ static void R_Register( void )
 	ri.Cvar_SetGroup( r_fx_ambientlight, CVG_RENDERER );
 	r_fx_blur = ri.Cvar_Get( "r_fx_blur", "0.0", 0 );
 	ri.Cvar_SetGroup( r_fx_blur, CVG_RENDERER );
+
+	r_recurseLimit = ri.Cvar_Get( "r_recurseLimit", "8", CVAR_ARCHIVE_ND );
 
 	//
 	// temporary variables that can change at any time
@@ -1848,6 +1855,9 @@ static void R_Register( void )
 
 #define EPSILON 1e-6f
 
+#ifdef USE_BSP_MODELS
+extern world_t		s_worldDatas[MAX_WORLD_MODELS];
+#endif
 /*
 ===============
 R_Init
@@ -1861,6 +1871,10 @@ void R_Init( void ) {
 	ri.Printf( PRINT_ALL, "----- R_Init -----\n" );
 
 	// clear all our internal state
+#ifdef USE_BSP_MODELS
+	Com_Memset( &trWorlds, 0, sizeof( trWorlds ) );
+	Com_Memset( &s_worldDatas, 0, sizeof( s_worldDatas ) );
+#endif
 	Com_Memset( &tr, 0, sizeof( tr ) );
 	Com_Memset( &backEnd, 0, sizeof( backEnd ) );
 	Com_Memset( &tess, 0, sizeof( tess ) );

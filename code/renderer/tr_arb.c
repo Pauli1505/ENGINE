@@ -787,13 +787,55 @@ static char *ARB_BuildBlendProgram( char *buf, int count ) {
 	return buf;
 }
 
+static char *ARB_BuildPostProcessProgram( char *buf ) {
+    FILE *file;
+    long file_size;
+    size_t read_size;
+    char *file_contents;
+	const char *ospath;
+
+	ospath = FS_BuildOSPath( FS_GetHomePath(), FS_GetCurrentGameDir(), r_postprocess->string );
+
+    file = fopen(ospath, "r");
+    if (!file) {
+        *buf = '\0';
+        return buf;
+    }
+
+    fseek(file, 0, SEEK_END);
+    file_size = ftell(file);
+    fseek(file, 0, SEEK_SET);
+
+    file_contents = (char *)malloc(file_size + 1);
+    if (!file_contents) {
+        fclose(file);
+        *buf = '\0';
+        return buf;
+    }
+
+    read_size = fread(file_contents, 1, file_size, file);
+    file_contents[read_size] = '\0';
+
+    fclose(file);
+
+    strcpy(buf, file_contents);
+
+    free(file_contents);
+
+    return buf;
+}
+
 static char *ARB_BuildPostFXProgram( char *buf ) {
     char *s = buf;
+	char shaderbuffer[16384];
 
 	s += sprintf( s, " \n" );	//add this for effects off
 
     s += sprintf(s, "TEMP baseTexCoord; \n");
     s += sprintf(s, "MOV baseTexCoord, fragment.texcoord[0]; \n");
+
+	ARB_BuildPostProcessProgram(shaderbuffer);
+	s += sprintf(s, "%s", shaderbuffer);
 
 	// 1 fragment. Chromatic Aberration
     if (r_fx_chromaticAberration->value != 0.0) {
@@ -908,7 +950,7 @@ static char *ARB_BuildPostFXProgram( char *buf ) {
 
     // 5. Invert
     if ( r_fx_invert->value != 0.0 ) {
-        s += sprintf( s, "SUB base.xyz, 1.0, base; \n" );
+        s += sprintf( s, "SUB base.xyz, 0.25, base; \n" );
     }
 
     // 6. Color Tint
@@ -935,10 +977,34 @@ static char *ARB_BuildPostFXProgram( char *buf ) {
 
     // 9. Filmic
     if ( r_fx_filmic->value != 0.0 ) {
-        s += sprintf( s, "TEMP hueShift; \n" );
-        s += sprintf( s, "PARAM hueRotation = { %1.2f, 0.0, 0.0, 0.0 }; \n", r_fx_filmic->value );
-        s += sprintf( s, "DP3 hueShift.x, base, hueRotation; \n" );
-        s += sprintf( s, "MUL base.xyz, base, hueShift.x; \n" );
+		s += sprintf( s, "TEMP hueShift; \n" );
+		s += sprintf( s, "PARAM hueRotation = { 1.0, 1.0, 1.0, 1.0 }; \n" );
+
+		s += sprintf( s, "ADD base.xyz, base, 0.05; \n" );
+		
+		s += sprintf( s, "DP3 hueShift.x, base, hueRotation; \n" );
+		s += sprintf( s, "MUL hueShift.xyz, base, hueShift.x; \n" );
+		s += sprintf( s, "ADD hueShift.xyz, hueShift, 0.02; \n" );
+		s += sprintf( s, "MUL hueShift.xyz, hueShift, 1.1; \n" );
+		s += sprintf( s, "MOV base, hueShift; \n" );
+		
+		s += sprintf( s, "TEMP blurTexel, blurredColor; \n" );
+		s += sprintf( s, "PARAM blurOffsets = { 0.002, 0.0, 0.0, 0.0 }; \n" );
+		s += sprintf( s, "PARAM ambientLight = { -0.0050, 0.0075, -0.0050, 5.0 }; \n" );
+		s += sprintf( s, "ADD blurTexel.xy, baseTexCoord, blurOffsets; \n" );
+		s += sprintf( s, "TEX blurTexel.r, blurTexel, texture[1], 2D; \n" );
+		s += sprintf( s, "SUB blurTexel.xy, baseTexCoord, blurOffsets; \n" );
+		s += sprintf( s, "TEX blurTexel.g, blurTexel, texture[1], 2D; \n" );
+		s += sprintf( s, "ADD blurredColor.z, blurTexel.r, base.r; \n" );
+		s += sprintf( s, "ADD blurredColor.y, blurTexel.g, base.g; \n" );
+		s += sprintf( s, "ADD blurredColor.x, blurTexel.b, base.b; \n" );
+		s += sprintf( s, "MUL blurredColor.xyz, blurredColor, ambientLight; \n" );
+		s += sprintf( s, "ADD base.xyz, base, blurredColor; \n" );
+		
+		s += sprintf( s, "PARAM sRGBs = { 0.2126, 0.7152, 0.0722, 1.0 }; \n" );
+		s += sprintf( s, "TEMP colors; \n" );
+		s += sprintf( s, "DP3 colors.xyz, base, sRGBs; \n" );
+		s += sprintf( s, "LRP base.xyz, -0.30, colors, base; \n" );		
     }
 
 	// 10. Bloom

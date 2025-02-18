@@ -28,29 +28,33 @@ Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 
 #define	STANDALONE				1
 
-#define Q3_VERSION            "Neovoid BETA"
+#define Q3_VERSION            "16.02.25"
 #ifndef SVN_VERSION
   #define SVN_VERSION Q3_VERSION
 #endif
-#define CLIENT_WINDOW_TITLE   "Engine"
-#define CONSOLE_WINDOW_TITLE  "Console"
+#define CLIENT_WINDOW_TITLE   "Engine (DEBUG)"
+#define CONSOLE_WINDOW_TITLE  "DEVELOPER Console"
 // 1.32 released 7-10-2002
 
-//#define DEFAULT_GAME			"edawn" // this def is disabled because we are no longer in the bounds of Quake3E
+//#define DEFAULT_GAME			"edawn" // edawn because YES
 
-#define BASEGAME				"basegame"
-#define BASEDEMO				"basegame"
-#define BASETA					"milabc"
-#define STEAMPATH_NAME			"Cytrine"
+#define BASEGAME				"game"
+#define BASEDEMO				"game_t"
+#define BASETA					"game_c"
+#define STEAMPATH_NAME			"engine"
 #define STEAMPATH_APPID			"2200"
 
 #define MAX_TEAMNAME            32
 #define MAX_MASTER_SERVERS      5	// number of supported master servers
 
-#define GAMENAME_FOR_MASTER		"Deathmatch"
-#define HEARTBEAT_FOR_MASTER	"DM-1"
+#define GAMENAME_FOR_MASTER		"Quake3Arena" // it seems tempting to change for your
+#define HEARTBEAT_FOR_MASTER	"QuakeArena-1"
 
-#define DEMOEXT	"dem"			// standard demo extension
+#define DEMOEXT	"dm_"			// standard demo extension
+
+//===========================================================================
+//#define USE_BSP_MODELS 1		//client side
+#define USE_BSP_COLMODELS 1 	//server side
 
 #ifdef _MSC_VER
 
@@ -1119,7 +1123,7 @@ typedef enum {
 //
 // per-level limits
 //
-#define	MAX_CLIENTS			256		// absolute limit
+#define	MAX_CLIENTS			99		// absolute limit
 #define MAX_LOCATIONS		64
 
 #define	GENTITYNUM_BITS		12		// not all of them send on network
