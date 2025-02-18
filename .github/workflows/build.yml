@@ -4,9 +4,9 @@ on:
   workflow_dispatch:
 
 jobs:
-  windows-msys:
+windows-msys:
     name: ${{ matrix.btype }} Windows-GCC ${{ matrix.arch }}
-    runs-on: windows-2019
+    runs-on: self-hosted
     strategy:
       fail-fast: false
       matrix:
@@ -56,6 +56,7 @@ jobs:
         path: bin
         if-no-files-found: error
         retention-days: 5
+        
         
   ubuntu-x86:
     name: ${{ matrix.btype }} Ubuntu ${{ matrix.arch }}
