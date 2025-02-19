@@ -24,7 +24,7 @@ Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 #include "client.h"
 
 #define  DEFAULT_CONSOLE_WIDTH 78
-#define  MAX_CONSOLE_WIDTH 120
+#define  MAX_CONSOLE_WIDTH 200
 
 #define  NUM_CON_TIMES  4
 

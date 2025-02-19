@@ -1,0 +1,3 @@
+opengl2 barely works on non-nvidia machines.
+For more performance, use Vulkan or GL1.
+if you have an nvidia machine, then you should use GL2.

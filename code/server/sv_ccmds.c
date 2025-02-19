@@ -186,7 +186,7 @@ static void SV_Map_f( void ) {
 		// may not set sv_maxclients directly, always set latched
 		Cvar_SetLatched( "sv_maxclients", "8" );
 		cmd += 2;
-		if (!Q_stricmp( cmd, "map" ) ) {
+		if (!Q_stricmp( cmd, "devmap" ) ) {
 			cheat = qtrue;
 		} else {
 			cheat = qfalse;
@@ -194,7 +194,7 @@ static void SV_Map_f( void ) {
 		killBots = qtrue;
 	}
 	else {
-		if ( !Q_stricmp( cmd, "map" ) ) {
+		if ( !Q_stricmp( cmd, "devmap" ) ) {
 			cheat = qtrue;
 		} else {
 			cheat = qfalse;
@@ -214,7 +214,10 @@ static void SV_Map_f( void ) {
 	// start up the map
 	SV_SpawnServer( mapname, killBots );
 
-// cheats allowed either way because i say so
+	// set the cheat value
+	// if the level was started with "map <levelname>", then
+	// cheats will not be allowed.  If started with "devmap <levelname>"
+	// then cheats will be allowed
 	if ( cheat ) {
 		Cvar_Set( "sv_cheats", "1" );
 	} else {
@@ -1565,11 +1568,15 @@ void SV_AddOperatorCommands( void ) {
 	Cmd_AddCommand ("sectorlist", SV_SectorList_f);
 	Cmd_AddCommand ("map", SV_Map_f);
 	Cmd_SetCommandCompletionFunc( "map", SV_CompleteMapName );
+#ifdef DEV_RELEASE
+Cmd_AddCommand ("map", SV_Map_f);
+Cmd_SetCommandCompletionFunc( "map", SV_CompleteMapName );
+Cmd_AddCommand ("spmap", SV_Map_f);
+Cmd_SetCommandCompletionFunc( "spmap", SV_CompleteMapName );
+#endif // if !PRE_RELEASE_DEMO then DEV_RELEASE=1 is the scripting eliv of this
 #ifndef PRE_RELEASE_DEMO
 	Cmd_AddCommand ("map", SV_Map_f);
 	Cmd_SetCommandCompletionFunc( "map", SV_CompleteMapName );
-	Cmd_AddCommand ("spmap", SV_Map_f);
-	Cmd_SetCommandCompletionFunc( "spmap", SV_CompleteMapName );
 	Cmd_AddCommand ("spmap", SV_Map_f);
 	Cmd_SetCommandCompletionFunc( "spmap", SV_CompleteMapName );
 #endif
@@ -1620,7 +1627,6 @@ void SV_AddDedicatedCommands( void )
 	Cmd_AddCommand( "say", SV_ConSay_f );
 	Cmd_AddCommand( "locations", SV_Locations_f );
 }
-
 
 
 void SV_RemoveDedicatedCommands( void )

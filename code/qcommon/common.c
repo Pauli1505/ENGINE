@@ -3906,12 +3906,12 @@ void Com_Init( char *commandLine ) {
 	// init commands and vars
 	//
 #ifndef DEDICATED
-	com_maxfps = Cvar_Get( "com_maxfps", "60", 0 ); // try to force that in some light way
+	com_maxfps = Cvar_Get( "com_maxfps", "30", 0 ); // try to force that in some light way
 	Cvar_CheckRange( com_maxfps, "0", "1000", CV_INTEGER );
 	Cvar_SetDescription( com_maxfps, "Sets maximum frames per second." );
-	com_maxfpsUnfocused = Cvar_Get( "com_maxfpsUnfocused", "60", CVAR_ARCHIVE_ND );
+	com_maxfpsUnfocused = Cvar_Get( "com_maxfpsUnfocused", "24", CVAR_ARCHIVE_ND );
 	Cvar_CheckRange( com_maxfpsUnfocused, "0", "1000", CV_INTEGER );
-	Cvar_SetDescription( com_maxfpsUnfocused, "Sets maximum frames per second in unfocused game window." );
+	Cvar_SetDescription( com_maxfpsUnfocused, "Sets Max FPS in an unfocused Window" );
 	com_yieldCPU = Cvar_Get( "com_yieldCPU", "1", CVAR_ARCHIVE_ND );
 	Cvar_CheckRange( com_yieldCPU, "0", "16", CV_INTEGER );
 	Cvar_SetDescription( com_yieldCPU, "Attempt to sleep specified amount of time between rendered frames when game is active, this will greatly reduce CPU load. Use 0 only if you're experiencing some lag." );

@@ -33,9 +33,9 @@ jobs:
           release: false
           update: false
 
-      - uses: actions/checkout@v4
-        with:
-          submodules: recursive
+#      - uses: actions/checkout@v4
+#        with:
+#          submodules: recursive
 
       - name: Build
         if: ${{ github.event_name != 'release' || matrix.btype != 'Debug' }} # skip Debug configuration in Release build
@@ -74,9 +74,11 @@ jobs:
             sudo apt-get -y install libcurl4-openssl-dev mesa-common-dev libxxf86dga-dev libxrandr-dev libxxf86vm-dev libasound-dev libsdl2-dev
           fi
 
-      - uses: actions/checkout@v4
-        with:
-          submodules: recursive
+#      - uses: actions/checkout@v4
+#        with:
+#          submodules: recursive
+# this is what literally forever without the github source code does to ME!!! just lemme take a break from github man
+# microsoft you are lucky github has github workflows if it didnt id be over here making fun of your ass even harder than i already am on gitlab
 
       - name: Build
         if: ${{ github.event_name != 'release' || matrix.btype != 'Debug' }} # skip in Release builds
@@ -108,9 +110,11 @@ jobs:
       - name: Install tools
         run: brew install coreutils sdl2 # pkg-config
 
-      - uses: actions/checkout@v4
-        with:
-          submodules: recursive
+#      - uses: actions/checkout@v4
+#       with:
+#          submodules: recursive
+# use the local code you fucking moron
+# i dont know why but im tweaking the shit out rn
 
       - name: Build
         if: ${{ github.event_name != 'release' || matrix.btype != 'Debug' }} # skip Debug configuration in Release build
