@@ -149,7 +149,7 @@ Q3E_SERVER_ARCHS=""
 
 BASEDIR="baseq3"
 
-DEDICATED_NAME="quake3e.ded"
+DEDICATED_NAME="sandbox.ded"
 
 ICNSDIR="code/unix"
 ICNS="quake3_flat.icns"
@@ -157,7 +157,7 @@ PKGINFO="APPLQ3E"
 
 OBJROOT="build"
 #BUILT_PRODUCTS_DIR="${OBJROOT}/${TARGET_NAME}-darwin-${CURRENT_ARCH}"
-PRODUCT_NAME="quake3e"
+PRODUCT_NAME="sandbox"
 WRAPPER_EXTENSION="app"
 WRAPPER_NAME="${PRODUCT_NAME}.${WRAPPER_EXTENSION}"
 CONTENTS_FOLDER_PATH="${WRAPPER_NAME}/Contents"
@@ -196,12 +196,12 @@ done
 cd `dirname $0`
 
 if [ ! -f Makefile ]; then
-	echo "$0 must be run from the quake3e build directory"
+	echo "$0 must be run from the sandbox build directory"
 	exit 1
 fi
 
 if [ "${Q3E_CLIENT_ARCHS}" == "" ]; then
-	echo "$0: no quake3e binary architectures were found for target '${TARGET_NAME}'"
+	echo "$0: no sandbox binary architectures were found for target '${TARGET_NAME}'"
 	exit 1
 fi
 
@@ -251,7 +251,7 @@ PLIST="<?xml version=\"1.0\" encoding=\"UTF-8\"?>
     <key>CFBundleIconFile</key>
     <string>quake3_flat</string>
     <key>CFBundleIdentifier</key>
-    <string>org.quake3e.${PRODUCT_NAME}</string>
+    <string>org.sandbox.${PRODUCT_NAME}</string>
     <key>CFBundleInfoDictionaryVersion</key>
     <string>6.0</string>
     <key>CFBundleName</key>
