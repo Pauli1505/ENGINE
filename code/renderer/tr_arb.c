@@ -902,7 +902,7 @@ static char *ARB_BuildPostFXProgram( char *buf ) {
     if ( r_fx_greyscale->value != 0.0 ) {
     	s += sprintf( s, "PARAM innersRGB = { 0.2126, 0.7152, 0.0722, 1.0 }; \n" );
     	s += sprintf( s, "TEMP innercolor; \n" );
-        s += sprintf( s, "DP3 color.xyz, base, innersRGB; \n" );
+        s += sprintf( s, "DP3 innercolor.xyz, base, innersRGB; \n" );
         s += sprintf( s, "LRP base.xyz, %1.2f, innercolor, base; \n", r_fx_greyscale->value );
     }
 

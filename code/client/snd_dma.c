@@ -367,7 +367,7 @@ static void S_Base_BeginRegistration( void ) {
 	Com_Memset( s_knownSfx, 0, sizeof( s_knownSfx ) );
 	Com_Memset( sfxHash, 0, sizeof( sfxHash ) );
 
-	S_Base_RegisterSound( "sound/misc/silence.wav", qfalse ); // changed to a sound in nmod
+	S_Base_RegisterSound( "sound/misc/silence.wav", qfalse ); // changed to a sound in opensandbox
 }
 
 

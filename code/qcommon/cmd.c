@@ -420,39 +420,6 @@ static void Cmd_Exec_f( void ) {
 
 /*
 ===============
-Cmd_ExecScript_f
-===============
-*/
-static void Cmd_ExecScript_f( void ) {
-	union {
-		char *c;
-		void *v;
-	} f;
-	char filename[MAX_QPATH];
-
-
-	if (Cmd_Argc () != 2) {
-		Com_Printf ("execscript <filename> : execute a ArenaScript file\n");
-		return;
-	}
-
-	Q_strncpyz( filename, Cmd_Argv(1), sizeof( filename ) );
-	COM_DefaultExtension( filename, sizeof( filename ), ".as" );
-	FS_BypassPure();
-	FS_ReadFile( filename, &f.v );
-	FS_RestorePure();
-	if ( f.v == NULL ) {
-		return;
-	}
-
-	Cbuf_AddText( f.c );
-
-	FS_FreeFile( f.v );
-}
-
-
-/*
-===============
 Cmd_Vstr_f
 
 Inserts the current value of a variable as command text
@@ -1044,19 +1011,8 @@ Cmd_CompleteCfgName
 ==================
 */
 static void Cmd_CompleteCfgName( const char *args, int argNum ) {
-	if( argNum == 2 ) {
-		Field_CompleteFilename( "", "cfg", qfalse, FS_MATCH_ANY | FS_MATCH_STICK );
-	}
-}
-
-/*
-==================
-Cmd_CompleteScriptName
-==================
-*/
-static void Cmd_CompleteScriptName( const char *args, int argNum ) {
-	if( argNum == 2 ) {
-		Field_CompleteFilename( "", "as", qfalse, FS_MATCH_ANY | FS_MATCH_STICK );
+	if ( argNum == 2 ) {
+		Field_CompleteFilename( "", "cfg", qfalse, FS_MATCH_ANY | FS_MATCH_STICK | FS_MATCH_SUBDIRS );
 	}
 }
 
@@ -1081,10 +1037,8 @@ Cmd_Init
 void Cmd_Init( void ) {
 	Cmd_AddCommand ("cmdlist",Cmd_List_f);
 	Cmd_AddCommand ("exec",Cmd_Exec_f);
-	Cmd_AddCommand ("execscript",Cmd_ExecScript_f);
 	Cmd_AddCommand ("execq",Cmd_Exec_f);
 	Cmd_SetCommandCompletionFunc( "exec", Cmd_CompleteCfgName );
-	Cmd_SetCommandCompletionFunc( "execscript", Cmd_CompleteScriptName );
 	Cmd_SetCommandCompletionFunc( "execq", Cmd_CompleteCfgName );
 	Cmd_AddCommand ("vstr",Cmd_Vstr_f);
 	Cmd_SetCommandCompletionFunc( "vstr", Cvar_CompleteCvarName );

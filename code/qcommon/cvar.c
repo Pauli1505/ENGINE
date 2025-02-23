@@ -1610,10 +1610,7 @@ static void Cvar_Unset_f( void )
 	if ( !cv )
 		return;
 	
-	//if ( cv->flags & CVAR_USER_CREATED )
-		Cvar_Unset( cv );
-	//else
-		//Com_Printf( "Error: %s: Variable %s is not user created.\n", Cmd_Argv( 0 ), cv->name );
+	Cvar_Unset( cv );
 }
 
 

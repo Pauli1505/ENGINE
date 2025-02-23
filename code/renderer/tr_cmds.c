@@ -427,12 +427,11 @@ void RE_EndFrame( int *frontEndMsec, int *backEndMsec ) {
 	if ( !cmd ) {
 		return;
 	}
-
 	cmd->commandId = RC_SWAP_BUFFERS;
 
-	R_PerformanceCounters();
-
 	R_IssueRenderCommands();
+
+	R_PerformanceCounters();
 
 	R_InitNextFrame();
 
