@@ -106,54 +106,54 @@ jobs:
         if-no-files-found: error
         retention-days: 5
 
-macos-x86:
-  name: ${{ matrix.btype }} macOS ${{ matrix.arch }}
-  runs-on: macos-latest
-  strategy:
-    fail-fast: false
-    matrix:
-      arch: [x86_64, aarch64]
-      cc: [clang]
-      btype: [Release]
-      include:
-        - btype: Release
-          rule: install
-
-  steps:
-  - name: Install tools
-    run: brew install coreutils sdl2 # pkg-config
-
-  - uses: actions/checkout@v4
-    with:
-      submodules: recursive
-
-  - name: Build
-    if: ${{ github.event_name != 'release' || matrix.btype != 'Debug' }} # skip Debug configuration in Release build
-    run: |
-      make ${{ matrix.rule }} -j 8 ARCH=${{ matrix.arch }} CC=${{ matrix.cc }} DESTDIR=bin INSTALL=ginstall USE_RENDERER_DLOPEN=0 RENDERER_DEFAULT=opengl STRIP=echo
-
-  - name: Create Universal Binary for macOS
-    run: |
-      if [ "${{ matrix.arch }}" == "x86_64" ]; then
-        # Создание бинарников для x86_64
-        mv bin/myapp bin/myapp_x86_64
-      elif [ "${{ matrix.arch }}" == "aarch64" ]; then
-        # Создание бинарников для aarch64
-        mv bin/myapp bin/myapp_aarch64
-      fi
-
-      # После того как оба бинарника будут созданы, объединяем их в универсальный бинарник
-      if [ -f bin/myapp_x86_64 ] && [ -f bin/myapp_aarch64 ]; then
-        lipo -create bin/myapp_x86_64 bin/myapp_aarch64 -output bin/myapp_universal
-      fi
-
-  - uses: actions/upload-artifact@v4
-    if: matrix.cc == 'clang' && matrix.btype == 'release'
-    with:
-      name: macos-${{ matrix.arch }}
-      path: bin
-      if-no-files-found: error
-      retention-days: 5
+  macos-x86:
+    name: ${{ matrix.btype }} macOS ${{ matrix.arch }}
+    runs-on: macos-latest
+    strategy:
+      fail-fast: false
+      matrix:
+        arch: [x86_64, aarch64]
+        cc: [clang]
+        btype: [Release]
+        include:
+          - btype: Release
+            rule: install
+  
+    steps:
+    - name: Install tools
+      run: brew install coreutils sdl2 # pkg-config
+  
+    - uses: actions/checkout@v4
+      with:
+        submodules: recursive
+  
+    - name: Build
+      if: ${{ github.event_name != 'release' || matrix.btype != 'Debug' }} # skip Debug configuration in Release build
+      run: |
+        make ${{ matrix.rule }} -j 8 ARCH=${{ matrix.arch }} CC=${{ matrix.cc }} DESTDIR=bin INSTALL=ginstall USE_RENDERER_DLOPEN=0 RENDERER_DEFAULT=opengl STRIP=echo
+  
+    - name: Create Universal Binary for macOS
+      run: |
+        if [ "${{ matrix.arch }}" == "x86_64" ]; then
+          # Создание бинарников для x86_64
+          mv bin/myapp bin/myapp_x86_64
+        elif [ "${{ matrix.arch }}" == "aarch64" ]; then
+          # Создание бинарников для aarch64
+          mv bin/myapp bin/myapp_aarch64
+        fi
+  
+        # После того как оба бинарника будут созданы, объединяем их в универсальный бинарник
+        if [ -f bin/myapp_x86_64 ] && [ -f bin/myapp_aarch64 ]; then
+          lipo -create bin/myapp_x86_64 bin/myapp_aarch64 -output bin/myapp_universal
+        fi
+  
+    - uses: actions/upload-artifact@v4
+      if: matrix.cc == 'clang' && matrix.btype == 'release'
+      with:
+        name: macos-${{ matrix.arch }}
+        path: bin
+        if-no-files-found: error
+        retention-days: 5
 
   update-release:
     if: ${{ github.event_name == 'release' }}
