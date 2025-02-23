@@ -106,14 +106,13 @@ jobs:
         if-no-files-found: error
         retention-days: 5
 
-  macos-x86:
-    name: ${{ matrix.btype }} macOS ${{ matrix.arch }}
-    runs-on: macos-latest
+  macos:
+    name: ${{ matrix.btype }} macOS universal2
+    runs-on: macos-13
     strategy:
       fail-fast: false
       matrix:
-        arch: [x86_64, aarch64]
-        cc: [clang]
+        cc: [gcc]
         btype: [Release]
         include:
           - btype: Release
@@ -129,15 +128,16 @@ jobs:
         submodules: recursive
 
     - name: Build
-      if: ${{ github.event_name != 'release' || matrix.btype != 'Debug' }} # skip Debug configuration in Release build
       run: |
-        make ${{ matrix.rule }} -j 8 ARCH=${{ matrix.arch }} CC=${{ matrix.cc }} DESTDIR=bin INSTALL=ginstall USE_RENDERER_DLOPEN=0 RENDERER_DEFAULT=opengl STRIP=echo
+        make ${{ matrix.rule }} -j$(sysctl -n hw.logicalcpu) ARCH=x86_64 CC=${{ matrix.cc }} DESTDIR=bin INSTALL=ginstall USE_RENDERER_DLOPEN=0 RENDERER_DEFAULT=opengl STRIP=echo
+        make ${{ matrix.rule }} -j$(sysctl -n hw.logicalcpu) ARCH=arm64 CC=${{ matrix.cc }} DESTDIR=bin INSTALL=ginstall USE_RENDERER_DLOPEN=0 RENDERER_DEFAULT=opengl STRIP=echo
+        ./make-macosx-app.sh release
+        hdiutil create -format UDZO -srcfolder build/release-darwin-universal2/sandbox.app build/sandbox.dmg
 
     - uses: actions/upload-artifact@v4
-      if: matrix.cc == 'clang' && matrix.btype == 'release'
       with:
-        name: macos-${{ matrix.arch }}
-        path: bin
+        name: release-darwin-universal2
+        path: build/sandbox.dmg
         if-no-files-found: error
         retention-days: 5
 
