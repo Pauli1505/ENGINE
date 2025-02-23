@@ -902,7 +902,7 @@ static char *ARB_BuildPostFXProgram( char *buf ) {
     if ( r_fx_greyscale->value != 0.0 ) {
     	s += sprintf( s, "PARAM inner007 = { 0.2126, 0.7152, 0.0722, 1.0 }; \n" );
     	s += sprintf( s, "TEMP inner008; \n" );
-        s += sprintf( s, "DP3 inner008.xyz, base, inner006; \n" );
+        s += sprintf( s, "DP3 inner008.xyz, base, inner007; \n" );
         s += sprintf( s, "LRP base.xyz, %1.2f, inner008, base; \n", r_fx_greyscale->value );
     }
 
@@ -987,9 +987,9 @@ static char *ARB_BuildPostFXProgram( char *buf ) {
 
 	// 10. Bloom
 	if ( r_fx_bloom->value != 0.0 ) {
-    	s += sprintf( s, "TEMP bloom; \n" );
-    	s += sprintf( s, "MUL bloom.xyz, base, %1.2f; \n", r_fx_bloom->value );
-    	s += sprintf( s, "ADD base.xyz, base, bloom; \n" );
+    	s += sprintf( s, "TEMP inner021; \n" );
+    	s += sprintf( s, "MUL inner021.xyz, base, %1.2f; \n", r_fx_bloom->value );
+    	s += sprintf( s, "ADD base.xyz, base, inner021; \n" );
 	}
 
     return buf;
