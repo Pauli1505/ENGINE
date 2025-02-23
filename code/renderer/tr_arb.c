@@ -790,11 +790,8 @@ static char *ARB_BuildBlendProgram( char *buf, int count ) {
 static char *ARB_BuildPostProcessProgram( char *buf ) {
     char *file_contents;
     int file_size;
-    const char *ospath;
 
-    ospath = FS_BuildOSPath(FS_GetHomePath(), FS_GetCurrentGameDir(), r_postprocess->string);
-
-    file_size = FS_ReadFile(ospath, (void **)&file_contents);
+    file_size = FS_ReadFile(va("shaders/%s.fp", r_postprocess->string), (void **)&file_contents);
     if (file_size <= 0) {
         *buf = '\0';
         return buf;
