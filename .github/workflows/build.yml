@@ -112,7 +112,7 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        cc: [gcc]
+        cc: [clang]
         btype: [Release]
         include:
           - btype: Release
