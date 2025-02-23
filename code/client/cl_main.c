@@ -1244,7 +1244,7 @@ qboolean CL_Disconnect( qboolean showMainMenu ) {
 	}
 
 	SCR_StopCinematic();
-	S_StopAllSounds();
+	//S_StopAllSounds();
 	Key_ClearStates();
 
 	if ( uivm && showMainMenu ) {
@@ -3019,7 +3019,7 @@ void CL_Frame( int msec, int realMsec ) {
 	} else	if ( cls.state == CA_DISCONNECTED && !( Key_GetCatcher( ) & KEYCATCH_UI )
 		&& !com_sv_running->integer && uivm ) {
 		// if disconnected, bring up the menu
-		S_StopAllSounds();
+		//S_StopAllSounds();
 		VM_Call( uivm, 1, UI_SET_ACTIVE_MENU, UIMENU_MAIN );
 	}
 

@@ -570,7 +570,7 @@ static void SCR_DrawScreenField( stereoFrame_t stereoFrame ) {
 			break;
 		case CA_DISCONNECTED:
 			// force menu up
-			S_StopAllSounds();
+			//S_StopAllSounds();
 			VM_Call( uivm, 1, UI_SET_ACTIVE_MENU, UIMENU_MAIN );
 			break;
 		case CA_CONNECTING:
@@ -580,9 +580,6 @@ static void SCR_DrawScreenField( stereoFrame_t stereoFrame ) {
 			// refresh to update the time
 			VM_Call( uivm, 1, UI_REFRESH, cls.realtime );
 			VM_Call( uivm, 1, UI_DRAW_CONNECT_SCREEN, qfalse );
-			if ( cgvm ) {
-				CL_CGameRendering( stereoFrame );
-			}
 			break;
 		case CA_LOADING:
 		case CA_PRIMED:
