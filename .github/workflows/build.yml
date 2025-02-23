@@ -161,8 +161,8 @@ jobs:
           - artifact_dir: windows-mingw-x86_64
             artifact_name: sandbox_windows-x86_64.zip
 
-          - artifact_dir: macos-x86_64
-            artifact_name: sandbox_macos-x86_64.zip
+          - artifact_dir: darwin-universal2
+            artifact_name: sandbox_macos.zip
 
     steps:
       - name: Download Artifacts
