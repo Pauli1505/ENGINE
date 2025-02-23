@@ -878,7 +878,7 @@ static char *ARB_BuildPostFXProgram( char *buf ) {
 	    s += sprintf(s, "MOV baseTexCoord, fragment.texcoord[0]; \n");
 
 	    for (i = 0; i < r_fx_blur->integer; i++) {
-	        s += sprintf(s, "PARAM %i = program.local[%i]; \n", i, i);
+	        s += sprintf(s, "PARAM p%i = program.local[%i]; \n", i, i);
 	    }
 
 	    s += sprintf(s, "MOV base, {0.0, 0.0, 0.0, 1.0};\n");
