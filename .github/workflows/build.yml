@@ -107,8 +107,8 @@ jobs:
         retention-days: 5
 
   macos:
-    name: ${{ matrix.btype }} macOS universal2
-    runs-on: macos-13
+    name: ${{ matrix.btype }} macOS
+    runs-on: macos-latest
     strategy:
       fail-fast: false
       matrix:
