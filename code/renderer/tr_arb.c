@@ -788,39 +788,20 @@ static char *ARB_BuildBlendProgram( char *buf, int count ) {
 }
 
 static char *ARB_BuildPostProcessProgram( char *buf ) {
-    FILE *file;
-    long file_size;
-    size_t read_size;
     char *file_contents;
-	const char *ospath;
+    int file_size;
+    const char *ospath;
 
-	ospath = FS_BuildOSPath( FS_GetHomePath(), FS_GetCurrentGameDir(), r_postprocess->string );
+    ospath = FS_BuildOSPath(FS_GetHomePath(), FS_GetCurrentGameDir(), r_postprocess->string);
 
-    file = fopen(ospath, "r");
-    if (!file) {
+    file_size = FS_ReadFile(ospath, (void **)&file_contents);
+    if (file_size <= 0) {
         *buf = '\0';
         return buf;
     }
-
-    fseek(file, 0, SEEK_END);
-    file_size = ftell(file);
-    fseek(file, 0, SEEK_SET);
-
-    file_contents = (char *)malloc(file_size + 1);
-    if (!file_contents) {
-        fclose(file);
-        *buf = '\0';
-        return buf;
-    }
-
-    read_size = fread(file_contents, 1, file_size, file);
-    file_contents[read_size] = '\0';
-
-    fclose(file);
 
     strcpy(buf, file_contents);
-
-    free(file_contents);
+    FS_FreeFile(file_contents);
 
     return buf;
 }
