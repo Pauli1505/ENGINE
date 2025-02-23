@@ -1327,7 +1327,7 @@ const char *Sys_SteamPath( void );
 char    *Sys_DefaultAppPath( void );
 #endif
 
-char **Sys_ListFiles( const char *directory, const char *extension, const char *filter, int *numfiles, int wantsubs );
+char **Sys_ListFiles( const char *directory, const char *extension, const char *filter, int *numfiles, qboolean wantsubs );
 void Sys_FreeFileList( char **list );
 
 qboolean Sys_GetFileStats( const char *filename, fileOffset_t *size, fileTime_t *mtime, fileTime_t *ctime );
