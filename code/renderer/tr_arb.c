@@ -817,19 +817,19 @@ static char *ARB_BuildPostFXProgram( char *buf ) {
 
 	// 1 fragment. Chromatic Aberration
     if (r_fx_chromaticAberration->value != 0.0) {
-        s += sprintf(s, "PARAM chromaticAberration = { %1.6f, %1.6f, %1.6f, %1.6f }; \n",
+        s += sprintf(s, "PARAM inner001 = { %1.6f, %1.6f, %1.6f, %1.6f }; \n",
                      r_fx_chromaticAberration->value,
                      r_fx_chromaticAberration->value,
                      -r_fx_chromaticAberration->value,
                      -r_fx_chromaticAberration->value);
 
         s += sprintf(s, "TEMP redCoord, greenCoord, blueCoord; \n");
-        s += sprintf(s, "ADD redCoord.x, baseTexCoord.x, chromaticAberration.x; \n");
-        s += sprintf(s, "ADD redCoord.y, baseTexCoord.y, chromaticAberration.y; \n");
-        s += sprintf(s, "ADD greenCoord.x, baseTexCoord.x, chromaticAberration.z; \n");
-        s += sprintf(s, "ADD greenCoord.y, baseTexCoord.y, chromaticAberration.w; \n");
-        s += sprintf(s, "ADD blueCoord.x, baseTexCoord.x, -chromaticAberration.x; \n");
-        s += sprintf(s, "ADD blueCoord.y, baseTexCoord.y, -chromaticAberration.y; \n");
+        s += sprintf(s, "ADD redCoord.x, baseTexCoord.x, inner001.x; \n");
+        s += sprintf(s, "ADD redCoord.y, baseTexCoord.y, inner001.y; \n");
+        s += sprintf(s, "ADD greenCoord.x, baseTexCoord.x, inner001.z; \n");
+        s += sprintf(s, "ADD greenCoord.y, baseTexCoord.y, inner001.w; \n");
+        s += sprintf(s, "ADD blueCoord.x, baseTexCoord.x, -inner001.x; \n");
+        s += sprintf(s, "ADD blueCoord.y, baseTexCoord.y, -inner001.y; \n");
         s += sprintf(s, "TEX base.r, redCoord, texture[0], 2D; \n");
         s += sprintf(s, "TEX base.g, greenCoord, texture[0], 2D; \n");
         s += sprintf(s, "TEX base.b, blueCoord, texture[0], 2D; \n");
@@ -837,19 +837,19 @@ static char *ARB_BuildPostFXProgram( char *buf ) {
 
 	// 2 fragment. Chameleon
     if (r_fx_chameleon->value != 0.0) {
-        s += sprintf(s, "PARAM chromaticAberration = { %1.6f, %1.6f, %1.6f, %1.6f }; \n",
+        s += sprintf(s, "PARAM inner002 = { %1.6f, %1.6f, %1.6f, %1.6f }; \n",
                      r_fx_chameleon->value,
                      r_fx_chameleon->value,
                      -r_fx_chameleon->value,
                      -r_fx_chameleon->value);
 
         s += sprintf(s, "TEMP redCoord, greenCoord, blueCoord; \n");
-        s += sprintf(s, "ADD redCoord.x, base.r, chromaticAberration.x; \n");
-        s += sprintf(s, "ADD redCoord.y, base.b, chromaticAberration.y; \n");
-        s += sprintf(s, "ADD greenCoord.x, base.r, chromaticAberration.z; \n");
-        s += sprintf(s, "ADD greenCoord.y, base.b, chromaticAberration.w; \n");
-        s += sprintf(s, "ADD blueCoord.x, base.r, -chromaticAberration.x; \n");
-        s += sprintf(s, "ADD blueCoord.y, base.b, -chromaticAberration.y; \n");
+        s += sprintf(s, "ADD redCoord.x, base.r, inner002.x; \n");
+        s += sprintf(s, "ADD redCoord.y, base.b, inner002.y; \n");
+        s += sprintf(s, "ADD greenCoord.x, base.r, inner002.z; \n");
+        s += sprintf(s, "ADD greenCoord.y, base.b, inner002.w; \n");
+        s += sprintf(s, "ADD blueCoord.x, base.r, -inner002.x; \n");
+        s += sprintf(s, "ADD blueCoord.y, base.b, -inner002.y; \n");
         s += sprintf(s, "TEX base.r, redCoord, texture[0], 2D; \n");
         s += sprintf(s, "TEX base.g, greenCoord, texture[0], 2D; \n");
         s += sprintf(s, "TEX base.b, blueCoord, texture[0], 2D; \n");
@@ -857,18 +857,18 @@ static char *ARB_BuildPostFXProgram( char *buf ) {
 
 	// 3 fragment. Ambient light
     if (r_fx_ambientlight->value != 0.0) {
-        s += sprintf(s, "TEMP blurTexel, blurredColor; \n");
-        s += sprintf(s, "PARAM blurOffsets = { 0.002, 0.0, 0.0, 0.0 }; \n");
-        s += sprintf(s, "ADD blurTexel.xy, baseTexCoord, blurOffsets; \n");
-        s += sprintf(s, "TEX blurTexel.r, blurTexel, texture[0], 2D; \n");
-        s += sprintf(s, "SUB blurTexel.xy, baseTexCoord, blurOffsets; \n");
-        s += sprintf(s, "TEX blurTexel.g, blurTexel, texture[0], 2D; \n");
-        s += sprintf(s, "ADD blurredColor.x, blurTexel.x, base.x; \n");
-        s += sprintf(s, "ADD blurredColor.y, blurTexel.y, base.y; \n");
-        s += sprintf(s, "ADD blurredColor.z, blurTexel.z, base.z; \n");
-        s += sprintf(s, "MUL base.x, blurredColor.x, %1.2f; \n", r_fx_ambientlight->value);
-        s += sprintf(s, "MUL base.y, blurredColor.y, %1.2f; \n", r_fx_ambientlight->value);
-        s += sprintf(s, "MUL base.z, blurredColor.z, %1.2f; \n", r_fx_ambientlight->value);
+        s += sprintf(s, "TEMP inner004, inner005; \n");
+        s += sprintf(s, "PARAM inner003 = { 0.002, 0.0, 0.0, 0.0 }; \n");
+        s += sprintf(s, "ADD inner004.xy, baseTexCoord, inner003; \n");
+        s += sprintf(s, "TEX inner004.r, inner004, texture[0], 2D; \n");
+        s += sprintf(s, "SUB inner004.xy, baseTexCoord, inner003; \n");
+        s += sprintf(s, "TEX inner004.g, inner004, texture[0], 2D; \n");
+        s += sprintf(s, "ADD inner005.x, inner004.x, base.x; \n");
+        s += sprintf(s, "ADD inner005.y, inner004.y, base.y; \n");
+        s += sprintf(s, "ADD inner005.z, inner004.z, base.z; \n");
+        s += sprintf(s, "MUL base.x, inner005.x, %1.2f; \n", r_fx_ambientlight->value);
+        s += sprintf(s, "MUL base.y, inner005.y, %1.2f; \n", r_fx_ambientlight->value);
+        s += sprintf(s, "MUL base.z, inner005.z, %1.2f; \n", r_fx_ambientlight->value);
     }
 
 	// 4 fragment. Blur
@@ -878,47 +878,47 @@ static char *ARB_BuildPostFXProgram( char *buf ) {
 	    s += sprintf(s, "MOV baseTexCoord, fragment.texcoord[0]; \n");
 
 	    for (i = 0; i < r_fx_blur->integer; i++) {
-	        s += sprintf(s, "PARAM p%i = program.local[%i]; \n", i, i);
+	        s += sprintf(s, "PARAM %i = program.local[%i]; \n", i, i);
 	    }
 
 	    s += sprintf(s, "MOV base, {0.0, 0.0, 0.0, 1.0};\n");
 
 	    for (i = 0; i < r_fx_blur->integer; i++) {
-	        s += sprintf(s, "TEMP tc%i, c%i; \n", i, i);
+	        s += sprintf(s, "TEMP inner_tc%i, inner_c%i; \n", i, i);
 	    }
 
 	    for (i = 0; i < r_fx_blur->integer; i++) {
-	        s += sprintf(s, "ADD tc%i.x, baseTexCoord, p%i.x; \n", i, i);
-	        s += sprintf(s, "ADD tc%i.y, baseTexCoord, p%i.y; \n", i, i);
+	        s += sprintf(s, "ADD inner_tc%i.x, baseTexCoord, p%i.x; \n", i, i);
+	        s += sprintf(s, "ADD inner_tc%i.y, baseTexCoord, p%i.y; \n", i, i);
 	    }
 
 	    for (i = 0; i < r_fx_blur->integer; i++) {
-	        s += sprintf(s, "TEX c%i, tc%i, texture[0], 2D; \n", i, i);
-	        s += sprintf(s, "MAD base, c%i, p%i.w, base; \n", i, i);
+	        s += sprintf(s, "TEX inner_c%i, inner_tc%i, texture[0], 2D; \n", i, i);
+	        s += sprintf(s, "MAD base, inner_c%i, p%i.w, base; \n", i, i);
 	    }
 	}
 
     // 1. Greyscale
     if ( r_fx_greyscale->value != 0.0 ) {
-    	s += sprintf( s, "PARAM sRGB = { 0.2126, 0.7152, 0.0722, 1.0 }; \n" );
-    	s += sprintf( s, "TEMP color; \n" );
-        s += sprintf( s, "DP3 color.xyz, base, sRGB; \n" );
-        s += sprintf( s, "LRP base.xyz, %1.2f, color, base; \n", r_fx_greyscale->value );
+    	s += sprintf( s, "PARAM inner007 = { 0.2126, 0.7152, 0.0722, 1.0 }; \n" );
+    	s += sprintf( s, "TEMP inner008; \n" );
+        s += sprintf( s, "DP3 inner008.xyz, base, inner006; \n" );
+        s += sprintf( s, "LRP base.xyz, %1.2f, inner008, base; \n", r_fx_greyscale->value );
     }
 
     // 2. Sepia
     if ( r_fx_sepia->value != 1.0 ) {
-        s += sprintf( s, "PARAM sepiaTone = { 1.2, 1.0, 0.8, 1.0 }; \n" );
-        s += sprintf( s, "LRP base.xyz, %1.2f, base, sepiaTone; \n", r_fx_sepia->value );
+        s += sprintf( s, "PARAM inner009 = { 1.2, 1.0, 0.8, 1.0 }; \n" );
+        s += sprintf( s, "LRP base.xyz, %1.2f, base, inner009; \n", r_fx_sepia->value );
     }
 
 	// 3. Contrast
 	if ( r_fx_contrast->value != 0.0 ) {
    		float contrast = r_fx_contrast->value;
-    	s += sprintf( s, "PARAM contrast = { %1.2f, %1.2f, %1.2f, 1.0 }; \n", contrast, contrast, contrast );
-    	s += sprintf( s, "MUL base.xyz, base, contrast; \n" );
+    	s += sprintf( s, "PARAM inner010 = { %1.2f, %1.2f, %1.2f, 1.0 }; \n", contrast, contrast, contrast );
+    	s += sprintf( s, "MUL base.xyz, base, inner010; \n" );
     	s += sprintf( s, "ADD base.xyz, base, -0.5; \n" );
-    	s += sprintf( s, "MUL base.xyz, base, contrast; \n" );
+    	s += sprintf( s, "MUL base.xyz, base, inner010; \n" );
 	}
 
     // 4. Brightness
@@ -933,56 +933,56 @@ static char *ARB_BuildPostFXProgram( char *buf ) {
 
     // 6. Color Tint
     if ( r_fx_tint_r->value != 1.0 || r_fx_tint_g->value != 1.0 || r_fx_tint_b->value != 1.0 ) {
-        s += sprintf( s, "PARAM tint = { %1.2f, %1.2f, %1.2f, 1.0 }; \n", r_fx_tint_r->value, r_fx_tint_g->value, r_fx_tint_b->value );
-        s += sprintf( s, "MUL base.xyz, base, tint; \n" );
+        s += sprintf( s, "PARAM inner011 = { %1.2f, %1.2f, %1.2f, 1.0 }; \n", r_fx_tint_r->value, r_fx_tint_g->value, r_fx_tint_b->value );
+        s += sprintf( s, "MUL base.xyz, base, inner011; \n" );
     }
 
 	// 7. Posterize
 	if ( r_fx_posterize->value != 0.0 ) {
     	float levels = r_fx_posterize->value;
-    	s += sprintf( s, "PARAM levels = { %1.2f, %1.2f, %1.2f, 1.0 }; \n", levels, levels, levels );
-    	s = Q_stradd( s, "MUL base.xyz, base, levels; \n" );
+    	s += sprintf( s, "PARAM inner012 = { %1.2f, %1.2f, %1.2f, 1.0 }; \n", levels, levels, levels );
+    	s = Q_stradd( s, "MUL base.xyz, base, inner012; \n" );
     	s = Q_stradd( s, "FRC base.xyz, base; \n" );
 	    s = Q_stradd( s, "SUB base.xyz, base, 0.5; \n" );
 	}
 
     // 8. Glow
     if ( r_fx_glow->value != 0.0 ) {
-        s += sprintf( s, "TEMP glow; \n" );
-        s += sprintf( s, "MUL glow.xyz, base, %1.2f; \n", 1.0 + r_fx_glow->value );
-        s += sprintf( s, "LRP base.xyz, %1.2f, glow, base; \n", 0.5 * r_fx_glow->value );
+        s += sprintf( s, "TEMP inner013; \n" );
+        s += sprintf( s, "MUL inner013.xyz, base, %1.2f; \n", 1.0 + r_fx_glow->value );
+        s += sprintf( s, "LRP base.xyz, %1.2f, inner013, base; \n", 0.5 * r_fx_glow->value );
     }
 
     // 9. Filmic
     if ( r_fx_filmic->value != 0.0 ) {
-		s += sprintf( s, "TEMP hueShift; \n" );
-		s += sprintf( s, "PARAM hueRotation = { 1.0, 1.0, 1.0, 1.0 }; \n" );
+		s += sprintf( s, "TEMP inner014; \n" );
+		s += sprintf( s, "PARAM inner015 = { 1.0, 1.0, 1.0, 1.0 }; \n" );
 
 		s += sprintf( s, "ADD base.xyz, base, 0.05; \n" );
 		
-		s += sprintf( s, "DP3 hueShift.x, base, hueRotation; \n" );
-		s += sprintf( s, "MUL hueShift.xyz, base, hueShift.x; \n" );
-		s += sprintf( s, "ADD hueShift.xyz, hueShift, 0.02; \n" );
-		s += sprintf( s, "MUL hueShift.xyz, hueShift, 1.1; \n" );
-		s += sprintf( s, "MOV base, hueShift; \n" );
+		s += sprintf( s, "DP3 inner014.x, base, inner015; \n" );
+		s += sprintf( s, "MUL inner014.xyz, base, inner014.x; \n" );
+		s += sprintf( s, "ADD inner014.xyz, inner014, 0.02; \n" );
+		s += sprintf( s, "MUL inner014.xyz, inner014, 1.1; \n" );
+		s += sprintf( s, "MOV base, inner014; \n" );
 		
-		s += sprintf( s, "TEMP blurTexel, blurredColor; \n" );
-		s += sprintf( s, "PARAM blurOffsets = { 0.002, 0.0, 0.0, 0.0 }; \n" );
-		s += sprintf( s, "PARAM ambientLight = { -0.0050, 0.0075, -0.0050, 5.0 }; \n" );
-		s += sprintf( s, "ADD blurTexel.xy, baseTexCoord, blurOffsets; \n" );
-		s += sprintf( s, "TEX blurTexel.r, blurTexel, texture[1], 2D; \n" );
-		s += sprintf( s, "SUB blurTexel.xy, baseTexCoord, blurOffsets; \n" );
-		s += sprintf( s, "TEX blurTexel.g, blurTexel, texture[1], 2D; \n" );
-		s += sprintf( s, "ADD blurredColor.z, blurTexel.r, base.r; \n" );
-		s += sprintf( s, "ADD blurredColor.y, blurTexel.g, base.g; \n" );
-		s += sprintf( s, "ADD blurredColor.x, blurTexel.b, base.b; \n" );
-		s += sprintf( s, "MUL blurredColor.xyz, blurredColor, ambientLight; \n" );
-		s += sprintf( s, "ADD base.xyz, base, blurredColor; \n" );
+		s += sprintf( s, "TEMP inner015, inner016; \n" );
+		s += sprintf( s, "PARAM inner019 = { 0.002, 0.0, 0.0, 0.0 }; \n" );
+		s += sprintf( s, "PARAM inner020 = { -0.0050, 0.0075, -0.0050, 5.0 }; \n" );
+		s += sprintf( s, "ADD inner015.xy, baseTexCoord, inner019; \n" );
+		s += sprintf( s, "TEX inner015.r, inner015, texture[1], 2D; \n" );
+		s += sprintf( s, "SUB inner015.xy, baseTexCoord, inner019; \n" );
+		s += sprintf( s, "TEX inner015.g, inner015, texture[1], 2D; \n" );
+		s += sprintf( s, "ADD inner016.z, inner015.r, base.r; \n" );
+		s += sprintf( s, "ADD inner016.y, inner015.g, base.g; \n" );
+		s += sprintf( s, "ADD inner016.x, inner015.b, base.b; \n" );
+		s += sprintf( s, "MUL inner016.xyz, inner016, inner020; \n" );
+		s += sprintf( s, "ADD base.xyz, base, inner016; \n" );
 		
-		s += sprintf( s, "PARAM sRGBs = { 0.2126, 0.7152, 0.0722, 1.0 }; \n" );
-		s += sprintf( s, "TEMP colors; \n" );
-		s += sprintf( s, "DP3 colors.xyz, base, sRGBs; \n" );
-		s += sprintf( s, "LRP base.xyz, -0.30, colors, base; \n" );		
+		s += sprintf( s, "PARAM inner017 = { 0.2126, 0.7152, 0.0722, 1.0 }; \n" );
+		s += sprintf( s, "TEMP inner018; \n" );
+		s += sprintf( s, "DP3 inner018.xyz, base, inner017; \n" );
+		s += sprintf( s, "LRP base.xyz, -0.30, inner018, base; \n" );		
     }
 
 	// 10. Bloom
@@ -999,13 +999,13 @@ static char *ARB_BuildPostFXProgram( char *buf ) {
 static const char *blend2FP = {
 	"!!ARBfp1.0 \n"
 	"OPTION ARB_precision_hint_fastest; \n"
-	"PARAM factor = program.local[1]; \n"
+	"PARAM inner000 = program.local[1]; \n"
 	"TEMP base; \n"
 	"TEMP post; \n"
 	"TEX base, fragment.texcoord[0], texture[0], 2D; \n"
 	"TEX post, fragment.texcoord[0], texture[1], 2D; \n"
 	"%s" // for postFX
-	"MAD base, post, factor.x, base; \n"
+	"MAD base, post, inner000.x, base; \n"
 	"MOV base.w, 1.0; \n"
 	"MOV_SAT result.color, base; \n"
 	"END \n"
@@ -1016,13 +1016,13 @@ static const char *blend2gammaFP = {
 	"!!ARBfp1.0 \n"
 	"OPTION ARB_precision_hint_fastest; \n"
 	"PARAM gamma = program.local[0]; \n"
-	"PARAM factor = program.local[1]; \n"
+	"PARAM inner000 = program.local[1]; \n"
 	"TEMP base; \n"
 	"TEMP post; \n"
 	"TEX base, fragment.texcoord[0], texture[0], 2D; \n"
 	"TEX post, fragment.texcoord[0], texture[1], 2D; \n"
 	"%s" // for postFX
-	"MAD base, post, factor.x, base; \n"
+	"MAD base, post, inner000.x, base; \n"
 	"POW base.x, base.x, gamma.x; \n"
 	"POW base.y, base.y, gamma.y; \n"
 	"POW base.z, base.z, gamma.z; \n"
