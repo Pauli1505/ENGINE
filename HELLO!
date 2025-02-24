@@ -1,0 +1,9 @@
+if you are reading this, you have found the Community-Version of the Qytrine engine, a fork of SourceTech.
+i have made an agreement with the copyright holder and maintainer to SourceTech, to duallicense my derived work.
+DM me on Discord (Pauli1505) for more info, or if you want to become a Community-Manager. as a community manager, you will accept and decline
+PR's. Rules in PR's to be valid are:
+No significant changes to the QVM system! you can add little changes, as long as you are 100% CERTAIN it will still work with Game QVMs.
+I do not want the engines to become different engines with different formats, i just want them to go seperate ways, while staying one.
+No tampering with Renderers! Only add changes if its an Improvement or added functions from your mod. You can also DM me incase you are having any problems with the engine.
+or you are having your own fork of it and want to discuss relicensing or dual-licensing to your own derivative work, also note this project's lineage leads all the way back to
+Id-Tech 2, meaning it CAN be complicated.
