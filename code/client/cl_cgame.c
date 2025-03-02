@@ -843,6 +843,8 @@ void CL_InitCGame( void ) {
 	mapname = Info_ValueForKey( info, "mapname" );
 	Com_sprintf( cl.mapname, sizeof( cl.mapname ), "maps/%s.bsp", mapname );
 
+	Cbuf_AddText( va("exec maps/%s.cfg \n", mapname) );		//load map script on client
+
 	// allow vertex lighting for in-game elements
 	re.VertexLighting( qtrue );
 

@@ -176,6 +176,8 @@ static void SV_Map_f( void ) {
 		return;
 	}
 
+	Cbuf_AddText( va("exec maps/%s.cfg \n", map) );		//load map script
+
 	// force latched values to get set
 	Cvar_Get ("g_gametype", "0", CVAR_SERVERINFO | CVAR_USERINFO | CVAR_LATCH );
 
@@ -184,7 +186,7 @@ static void SV_Map_f( void ) {
 		Cvar_SetIntegerValue( "g_gametype", GT_SINGLE_PLAYER );
 		Cvar_Set( "g_doWarmup", "0" );
 		// may not set sv_maxclients directly, always set latched
-		Cvar_SetLatched( "sv_maxclients", "8" );
+		//Cvar_SetLatched( "sv_maxclients", "8" );
 		cmd += 2;
 		if (!Q_stricmp( cmd, "devmap" ) ) {
 			cheat = qtrue;
