@@ -756,13 +756,19 @@ static vmHeader_t *VM_LoadQVM( vm_t *vm, qboolean alloc ) {
 	int					vmPakIndex;
 
 	// load the image
-	Com_sprintf( filename, sizeof(filename), "%s/%s.qvm", cl_changeqvm->string, vm->name );
+	Com_sprintf( filename, sizeof(filename), "qvm/%s/%s.qvm", cl_changeqvm->string, vm->name );
 	Com_Printf( "Loading vm file %s...\n", filename );
 	length = FS_ReadFile( filename, (void **)&header );
+
 	if ( !header ) {
-		Com_Printf( "Failed.\n" );
-		VM_Free( vm );
-		return NULL;
+		Com_sprintf( filename, sizeof(filename), "qvm/%s.qvm", vm->name );
+		Com_Printf( "Loading vm file %s...\n", filename );
+		length = FS_ReadFile( filename, (void **)&header );
+		if ( !header ) {
+			Com_Printf( "Failed.\n" );
+			VM_Free( vm );
+			return NULL;
+		}
 	}
 
 	vmPakIndex = fs_lastPakIndex;
